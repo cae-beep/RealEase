@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BahAI - Login</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f7f9fc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+    .login-container {
+      background: #fff;
+      padding: 2rem 3rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      max-height: 95vh;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .login-container::-webkit-scrollbar {
+      display: none;
+    }
+    .logo h1 {
+      text-align: center;
+      color: #2e7d32;
+      margin-bottom: 1rem;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+    }
+    input {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    .btn {
+      width: 100%;
+      padding: 0.7rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: #2e7d32;
+      color: #fff;
+      margin-top: 0.5rem;
+    }
+    .btn-google {
+      background: #fff;
+      border: 1px solid #ccc;
+      color: #444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 0.6rem;
+    }
+    .btn-google img {
+      width: 20px;
+      height: 20px;
+    }
+    .signup-link {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    .signup-link a {
+      color: #2e7d32;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="logo"><h1>BahAI</h1></div>
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Login to continue your real estate journey</p>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input 
+          type="email" 
+          id="email" 
+          placeholder="Enter your email" 
+          required 
+          aria-label="Email Address" 
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          placeholder="Enter your password" 
+          required 
+          aria-label="Password" 
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary">Login</button>
+      <button type="button" id="googleLoginBtn" class="btn btn-google">
+        <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google Logo" />
+        Continue with Google
+      </button>
+    </form>
+
+    <p class="signup-link">
+      Don't have an account? <a href="signup.html">Sign up here</a>
+    </p>
+  </div>
+
+  <!-- Firebase + Role Redirect Script -->
+  <script type="module">
+    import { auth, db } from './firebase-common.js';
+    import { 
+      signInWithEmailAndPassword, 
+      signInWithPopup, 
+      GoogleAuthProvider 
+    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+    import { 
+      doc, 
+      getDoc, 
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+
+    const googleProvider = new GoogleAuthProvider();
+
+    // ✅ Email/Password Login + KYC Verification
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        const docSnap = await getDoc(doc(db, "users", user.uid));
+
+        if (!docSnap.exists()) {
+          alert("⚠️ User data not found!");
+          return;
+        }
+
+        const data = docSnap.data();
+
+        // 🚫 Only block login if status is pending (waiting for approval)
+        if (data.kycStatus === "pending") {
+          alert("🕒 Your KYC is still pending approval. Please wait for verification to complete.");
+          return;
+        }
+
+        // ✅ Allow login for: approved, not_submitted, and rejected
+        // They can access dashboard, but posting will be blocked for non-approved users
+        const role = data.role;
+        window.location.href = getRedirectPage(role);
+
+      } catch (error) {
+        alert("❌ Login failed: " + error.message);
+      }
+    });
+
+    // ✅ Google Login
+    document.getElementById("googleLoginBtn").addEventListener("click", async () => {
+      try {
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+        const userRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(userRef);
+
+        let data;
+        if (!docSnap.exists()) {
+          const role = prompt("Enter your role (buyer/seller/broker/agent/landlord):").toLowerCase();
+          data = {
+            fullName: user.displayName,
+            email: user.email,
+            role,
+            kycStatus: "not_submitted",
+            createdAt: serverTimestamp()
+          };
+          await setDoc(userRef, data);
+          alert("✅ Account created! Please complete KYC verification to post properties.");
+          window.location.href = getRedirectPage(role);
+          return;
+        } else {
+          data = docSnap.data();
+        }
+
+        // 🚫 Only block if pending
+        if (data.kycStatus === "pending") {
+          alert("🕒 Your KYC is still pending approval. You can access your dashboard but cannot post properties yet.");
+        }
+
+        // ✅ Allow login regardless of KYC status
+        window.location.href = getRedirectPage(data.role);
+
+      } catch (error) {
+        alert("❌ Google sign-in failed: " + error.message);
+      }
+    });
+
+    // ✅ Role-Based Redirect
+    function getRedirectPage(role) {
+      switch (role) {
+        case "seller":
+          return "seller/seller_dashboard.html";
+        case "buyer":
+          return "buyer/buyer_dashboard.html";
+        case "broker":
+          return "broker/broker_dashboard.html";
+        case "agent":
+          return "broker/agent_dashboard.html";
+        case "landlord":
+          return "landlord/landlord_dashboard.html";
+        case "admin":
+          return "approve_users.html";
+        default:
+          return "login.html";
+      }
+    }
+  </script>
+</body>
+</html>
