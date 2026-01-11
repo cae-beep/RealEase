@@ -3,100 +3,393 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bahay - Sign Up</title>
+  <title>BahAI Real Estate - Sign Up</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root { --navy: #0A1E3F; --white: #fff; }
+    :root {
+      --primary: #0b2e52;
+      --primary-dark: #001F3F;
+      --primary-light: #002f3f;
+      --secondary: #1976d2;
+      --accent: #ff9800;
+      --text-dark: #1a202c;
+      --text-light: #718096;
+      --bg-light: #f8fafc;
+      --bg-white: #ffffff;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Poppins, system-ui;
+      font-family: 'Inter', Arial, sans-serif;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      color: var(--text-dark);
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      margin: 0;
-      background: var(--navy);
-      color: var(--white);
-    }
-    .card {
-      background: var(--white);
-      color: #0a1e3f;
       padding: 20px;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
-    label { display: block; margin-top: 10px; font-weight: 600; }
-    input, select, button {
+
+    .signup-container {
+      background: var(--bg-white);
+      padding: 50px 60px;
+      border-radius: 20px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
       width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-top: 6px;
+      max-width: 700px; /* Increased from 560px to 700px */
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    button {
-      background: var(--navy);
-      color: #fff;
-      border: none;
+
+    .signup-container:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .logo h1 {
+      font-size: 42px;
       font-weight: 700;
-      cursor: pointer;
-      margin-top: 20px;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
     }
-    button:hover { opacity: 0.9; }
-    .muted { font-size: 0.9rem; color: #666; margin-top: 10px; }
-    #error { color: #b00020; margin-top: 10px; }
-    #passwordStrength { font-size: 0.8rem; margin-top: 5px; color: #666; }
+
+    .signup-header h2 {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 15px;
+    }
+
+    .signup-subtitle {
+      text-align: center;
+      color: var(--text-light);
+      font-size: 16px;
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    /* Two-column layout for wider container */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      margin-bottom: 25px;
+    }
+
+    .form-group-full {
+      grid-column: 1 / -1;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 0;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 10px;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s ease;
+      background: var(--bg-white);
+    }
+
+    .form-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%230b2e52%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 20px top 50%;
+      background-size: 14px auto;
+    }
+
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(11, 46, 82, 0.1);
+    }
+
+    .password-strength {
+      font-size: 14px;
+      margin-top: 10px;
+      min-height: 24px;
+      transition: color 0.3s ease;
+      padding-left: 5px;
+    }
+
+    .strength-weak {
+      color: #ef4444;
+    }
+
+    .strength-good {
+      color: #f59e0b;
+    }
+
+    .strength-strong {
+      color: #10b981;
+    }
+
+    .form-note {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-top: 10px;
+      line-height: 1.6;
+      padding-left: 5px;
+    }
+
+    .btn-signup {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Inter', sans-serif;
+      margin-top: 15px;
+      box-shadow: var(--shadow);
+    }
+
+    .btn-signup:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    }
+
+    .btn-signup:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .error-message {
+      color: #ef4444;
+      font-size: 15px;
+      margin-top: 20px;
+      min-height: 24px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .info-message {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-top: 20px;
+      text-align: center;
+      line-height: 1.6;
+      padding: 0 10px;
+    }
+
     .login-link {
       text-align: center;
-      margin-top: 15px;
-      font-size: 0.9rem;
-      color: #666;
+      margin-top: 30px;
+      font-size: 15px;
+      color: var(--text-light);
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
     }
+
     .login-link a {
-      color: var(--navy);
+      color: var(--primary);
       text-decoration: none;
       font-weight: 600;
+      transition: color 0.3s ease;
+      margin-left: 5px;
     }
+
     .login-link a:hover {
+      color: var(--primary-dark);
       text-decoration: underline;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .signup-container {
+        padding: 40px 35px;
+        max-width: 100%;
+      }
+      
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .logo h1 {
+        font-size: 36px;
+      }
+      
+      .signup-header h2 {
+        font-size: 24px;
+      }
+      
+      .signup-subtitle {
+        font-size: 15px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .signup-container {
+        padding: 35px 30px;
+        border-radius: 18px;
+      }
+      
+      .form-input, .form-select {
+        padding: 14px 18px;
+        font-size: 14px;
+      }
+      
+      .btn-signup {
+        padding: 16px;
+        font-size: 15px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 15px;
+      }
+      
+      .signup-container {
+        padding: 30px 25px;
+        border-radius: 16px;
+      }
+      
+      .logo h1 {
+        font-size: 32px;
+      }
+      
+      .signup-header h2 {
+        font-size: 22px;
+        margin-bottom: 12px;
+      }
+      
+      .signup-subtitle {
+        font-size: 14px;
+        margin-bottom: 30px;
+      }
+      
+      .form-group label {
+        font-size: 14px;
+      }
+      
+      .form-input, .form-select {
+        padding: 12px 16px;
+        font-size: 14px;
+      }
+      
+      .btn-signup {
+        padding: 15px;
+        font-size: 15px;
+      }
+      
+      .login-link {
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .signup-container {
+        padding: 25px 20px;
+      }
+      
+      .logo h1 {
+        font-size: 28px;
+      }
+      
+      .signup-header h2 {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h2 style="text-align: center;">Create Your Account</h2>
-    <p style="text-align: center; color: #666;">Enter your details to get started.</p>
+  <div class="signup-container">
+    <div class="logo">
+      <h1>BahAI Real Estate</h1>
+    </div>
+    
+    <div class="signup-header">
+      <h2>Create Your Account</h2>
+      <p class="signup-subtitle">Enter your details to get started with BahAI Real Estate</p>
+    </div>
 
-    <label>Full Name</label>
-    <input id="fullName" type="text" placeholder="Enter your full name" />
+    <div class="form-row">
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input id="fullName" type="text" class="form-input" placeholder="Enter your full name" />
+      </div>
 
-    <label>Email</label>
-    <input id="email" type="email" placeholder="Enter your email" />
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input id="email" type="email" class="form-input" placeholder="Enter your email address" />
+      </div>
+    </div>
 
-    <label>Password</label>
-    <input id="password" type="password" placeholder="Create a strong password" />
-    <div id="passwordStrength"></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" type="password" class="form-input" placeholder="Create a strong password" />
+        <div id="passwordStrength" class="password-strength"></div>
+      </div>
 
-    <label>Phone Number</label>
-    <input id="phone" type="tel" placeholder="Enter your phone number" />
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input id="phone" type="tel" class="form-input" placeholder="Enter your phone number" />
+      </div>
+    </div>
 
-    <label>Role</label>
-    <select id="role">
-      <option value="">Select role</option>
-      <option value="broker">Broker (Licensed Real Estate Broker)</option>
-      <option value="agent">Agent (Property Agent under Broker)</option>
-      <option value="seller">Seller (Property Owner)</option>
-      <option value="landlord">Landlord (Property Lessor)</option>
-    </select>
-    <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">
-      Note: You'll need to complete KYC verification after signup to post properties.
+    <div class="form-group-full">
+      <label for="role">Account Type</label>
+      <select id="role" class="form-select">
+        <option value="">Select account type</option>
+        <option value="broker">Broker (Licensed Real Estate Broker)</option>
+        <option value="agent">Agent (Property Agent under Broker)</option>
+        <option value="seller">Seller (Property Owner)</option>
+        <option value="landlord">Landlord (Property Lessor)</option>
+      </select>
+      <p class="form-note">
+        You'll need to complete KYC verification after signup to post properties.
+      </p>
+    </div>
+
+    <button id="signupBtn" class="btn-signup">Create Account</button>
+    <div id="error" class="error-message"></div>
+    <p class="info-message">
+      After signing up, you'll be redirected to your dashboard. KYC verification is required to post property listings.
     </p>
-
-    <button id="signupBtn">Sign Up</button>
-    <p id="error"></p>
-    <p class="muted">After signup, you'll be redirected to your dashboard. KYC is required to post listings.</p>
     
     <p class="login-link">
-      Already have an account? <a href="login.html">Login here</a>
+      Already have an account?
+      <a href="login.html">Login here</a>
     </p>
   </div>
 
@@ -126,9 +419,36 @@
     // Real-time password strength feedback
     el('password').addEventListener('input', () => {
       const password = el('password').value;
+      const strengthEl = el('passwordStrength');
+      
+      if (password.length === 0) {
+        strengthEl.textContent = '';
+        strengthEl.className = 'password-strength';
+        return;
+      }
+      
       const error = validatePassword(password);
-      el('passwordStrength').textContent = error ? `Weak: ${error}` : 'Strong password!';
-      el('passwordStrength').style.color = error ? '#b00020' : '#28a745';
+      
+      if (error) {
+        strengthEl.textContent = `Weak: ${error}`;
+        strengthEl.className = 'password-strength strength-weak';
+      } else {
+        // Calculate strength score
+        let score = 0;
+        if (password.length >= 12) score++;
+        if (/[A-Z]/.test(password)) score++;
+        if (/[a-z]/.test(password)) score++;
+        if (/\d/.test(password)) score++;
+        if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score++;
+        
+        if (score >= 4) {
+          strengthEl.textContent = 'Strong password!';
+          strengthEl.className = 'password-strength strength-strong';
+        } else {
+          strengthEl.textContent = 'Good password, but could be stronger';
+          strengthEl.className = 'password-strength strength-good';
+        }
+      }
     });
 
     el('signupBtn').addEventListener('click', async () => {
@@ -152,8 +472,9 @@
       }
 
       try {
-        el('signupBtn').disabled = true;
-        el('signupBtn').textContent = 'Creating account...';
+        const signupBtn = el('signupBtn');
+        signupBtn.disabled = true;
+        signupBtn.textContent = 'Creating account...';
         
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         const uid = cred.user.uid;
@@ -164,18 +485,29 @@
           createdAt: serverTimestamp()
         });
 
-        // Redirect to role-specific dashboard
+        // Updated redirect paths to match the login page
         const dashboardMap = {
-          broker: 'dashboard_broker.html',
-          agent: 'dashboard_agent.html',
-          seller: 'dashboard_seller.html',
+          broker: 'broker/broker_dashboard.html',
+          agent: 'broker/agent_dashboard.html',
+          seller: 'seller/seller_dashboard.html',
           landlord: 'landlord/landlord_dashboard.html'
         };
-        window.location.href = dashboardMap[role] || 'dashboard_seller.html';
+        
+        const redirectUrl = dashboardMap[role] || 'login.html';
+        window.location.href = redirectUrl;
+        
       } catch (err) {
         el('error').textContent = err.message || 'Sign up failed.';
-        el('signupBtn').disabled = false;
-        el('signupBtn').textContent = 'Sign Up';
+        const signupBtn = el('signupBtn');
+        signupBtn.disabled = false;
+        signupBtn.textContent = 'Create Account';
+      }
+    });
+
+    // Allow form submission with Enter key
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        el('signupBtn').click();
       }
     });
   </script>
