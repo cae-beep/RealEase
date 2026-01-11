@@ -1066,12 +1066,35 @@ const auth = getAuth(app);
 let currentListings = [];
 let currentAgent = null;
 
-// Load agent data first
+// Update the loadAgentData function to handle the case where agent document doesn't exist:
+
 async function loadAgentData(user) {
   try {
-    console.log('👤 Loading agent data for:', user.uid);
+    console.log('👤 Loading agent data for UID:', user.uid);
     
-    // Query agents collection for this user
+    // First try to get from users collection
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      console.log('User data found:', userData);
+      
+      if (userData.userType === 'agent' || userData.role === 'agent') {
+        currentAgent = {
+          id: user.uid,
+          authUid: user.uid,  // Make sure authUid is set
+          firstName: userData.firstName || userData.name?.split(' ')[0] || 'Agent',
+          lastName: userData.lastName || userData.name?.split(' ')[1] || '',
+          email: userData.email || user.email,
+          phone: userData.phone || '',
+          ...userData
+        };
+        console.log('✅ Agent data loaded from users collection');
+        return currentAgent;
+      }
+    }
+    
+    // Try agents collection
     const agentQuery = query(
       collection(db, "agents"),
       where("authUid", "==", user.uid)
@@ -1083,14 +1106,21 @@ async function loadAgentData(user) {
       const agentDoc = agentSnapshot.docs[0];
       currentAgent = {
         id: agentDoc.id,
+        authUid: user.uid,  // Make sure authUid is set
         ...agentDoc.data()
       };
-      console.log('✅ Agent data loaded:', currentAgent);
+      console.log('✅ Agent data loaded from agents collection');
     } else {
-      console.warn('⚠️ No agent data found for user:', user.uid);
-      // Show error or redirect
-      showNoAgentError();
-      return null;
+      // Create minimal agent object
+      console.warn('⚠️ Creating minimal agent object from auth user');
+      currentAgent = {
+        id: user.uid,
+        authUid: user.uid,
+        firstName: user.displayName?.split(' ')[0] || 'Agent',
+        lastName: user.displayName?.split(' ')[1] || '',
+        email: user.email,
+        phone: ''
+      };
     }
     
     return currentAgent;
@@ -1101,27 +1131,116 @@ async function loadAgentData(user) {
   }
 }
 
-// Load agent's listings
 async function loadListings(agent) {
   if (!agent) return;
 
   try {
-    console.log('🔍 Loading listings for agent:', agent.id);
+    console.log('🔍 Loading listings for agent:', agent);
     
-    // Query properties for this agent
-    const q = query(
-      collection(db, "properties"),
-      where("agentId", "==", agent.id)
-    );
-   
-    const querySnapshot = await getDocs(q);
+    // Get current user from auth (agent should have authUid)
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      console.error('No authenticated user found');
+      window.location.href = "login.html";
+      return;
+    }
+    
+    console.log('Current auth user UID:', currentUser.uid);
+    console.log('Agent ID:', agent.id);
+    console.log('Agent authUid:', agent.authUid);
+    
+    // Clear current listings
     currentListings = [];
-   
-    querySnapshot.forEach((doc) => {
-      currentListings.push({ id: doc.id, ...doc.data() });
-    });
-
-    console.log(`✅ Loaded ${currentListings.length} listings for agent`);
+    
+    // Get the user ID to query with (prefer agent.authUid if available)
+    const queryUid = agent.authUid || agent.id || currentUser.uid;
+    console.log('Querying with UID:', queryUid);
+    
+    // Try multiple query strategies
+    const queries = [
+      // Primary query: properties where agentId matches
+      query(collection(db, "properties"), where("agentId", "==", queryUid)),
+      
+      // Secondary query: properties where userId matches
+      query(collection(db, "properties"), where("userId", "==", queryUid)),
+      
+      // Tertiary query: properties with userType = 'agent'
+      query(collection(db, "properties"), 
+        where("userType", "==", "agent"), 
+        where("userId", "==", queryUid)
+      )
+    ];
+    
+    // Execute queries in sequence
+    for (let i = 0; i < queries.length; i++) {
+      try {
+        const querySnapshot = await getDocs(queries[i]);
+        console.log(`Query ${i} (${getQueryDescription(i, queryUid)}) returned ${querySnapshot.size} results`);
+        
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          
+          // Avoid duplicates
+          if (!currentListings.find(l => l.id === doc.id)) {
+            currentListings.push({ 
+              id: doc.id, 
+              ...data,
+              // Ensure type is set correctly
+              type: data.type || data.listingType || 'sale'
+            });
+          }
+        });
+        
+        // If we found listings, we can stop
+        if (currentListings.length > 0 && i > 0) {
+          console.log(`Found listings with query ${i}, stopping further queries`);
+          break;
+        }
+      } catch (error) {
+        console.log(`Query ${i} failed:`, error.message);
+        continue;
+      }
+    }
+    
+    // If still no results, try a broader query
+    if (currentListings.length === 0) {
+      console.log('No results from structured queries, trying collection scan...');
+      try {
+        const allProperties = await getDocs(collection(db, "properties"));
+        allProperties.forEach((doc) => {
+          const data = doc.data();
+          // Manual filter for agent properties
+          if (data.userId === queryUid || 
+              data.agentId === queryUid ||
+              (data.userType === 'agent' && data.userId === queryUid)) {
+            currentListings.push({ 
+              id: doc.id, 
+              ...data,
+              type: data.type || data.listingType || 'sale'
+            });
+          }
+        });
+      } catch (error) {
+        console.log('Collection scan error:', error.message);
+      }
+    }
+    
+    console.log(`✅ Final loaded ${currentListings.length} listings for agent`);
+    
+    // Debug: log all found listings
+    if (currentListings.length > 0) {
+      console.log('Found listings:', currentListings.map(l => ({
+        id: l.id,
+        title: l.title || 'No title',
+        agentId: l.agentId,
+        userId: l.userId,
+        userType: l.userType,
+        type: l.type
+      })));
+    } else {
+      console.log('No listings found for this agent');
+    }
+    
     displayListings(currentListings);
     updateStats(currentListings);
    
@@ -1129,6 +1248,16 @@ async function loadListings(agent) {
     console.error("❌ Error loading listings:", error);
     displayErrorState("Failed to load your properties. Please try again.");
   }
+}
+
+// Helper function to describe queries
+function getQueryDescription(index, uid) {
+  const descriptions = [
+    `where agentId == "${uid}"`,
+    `where userId == "${uid}"`,
+    `where userType == "agent" AND userId == "${uid}"`
+  ];
+  return descriptions[index] || `Query ${index}`;
 }
 
 function displayListings(listings) {
@@ -1561,7 +1690,7 @@ onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "login.html";
   } else {
-    console.log('👤 Agent authenticated:', user.email);
+    console.log('👤 Agent authenticated:', user.email, 'UID:', user.uid);
     const agent = await loadAgentData(user);
     if (agent) {
       await loadListings(agent);
