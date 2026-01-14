@@ -1110,10 +1110,10 @@
 
 <!-- Main Content -->
 <div class="container">
-    <!-- Back Button -->
+    <!-- Back Button - Will be dynamically updated -->
     <div>
-        <a href="profile.html" class="back-button">
-            <i class="fas fa-arrow-left"></i> Back to Profile
+        <a href="#" id="backButton" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
         </a>
     </div>
 
@@ -1169,33 +1169,63 @@ function setupLogoutButton() {
     console.log('Logout button initialized successfully');
 }
 
-// Load sidebar
-fetch('sidebar.html')
-    .then(response => {
+// Function to load sidebar based on user role
+async function loadSidebarBasedOnRole(userRole) {
+    let sidebarFile = 'sidebar.html'; // Default
+    
+    if (userRole === 'agent') {
+        sidebarFile = 'agent_sidebar.html';
+    } else if (userRole === 'broker') {
+        sidebarFile = 'broker_sidebar.html';
+    }
+    // For other roles (admin, landlord, user) use default sidebar
+    
+    try {
+        const response = await fetch(sidebarFile);
         if (!response.ok) {
             throw new Error('Failed to load sidebar: ' + response.status);
         }
-        return response.text();
-    })
-    .then(html => {
+        const html = await response.text();
         document.getElementById('sidebar-container').innerHTML = html;
-        // Highlight active link
-        const links = document.querySelectorAll('.sidebar-link');
-        links.forEach(link => {
-            if (link.getAttribute('href') === 'profile.html') {
-                link.classList.add('active');
-            }
-        });
+        
         // Setup logout button
         setupLogoutButton();
-    })
-    .catch(error => {
+        
+        console.log(`✅ Loaded sidebar: ${sidebarFile} for role: ${userRole}`);
+    } catch (error) {
         console.error('Error loading sidebar:', error);
-        document.getElementById('sidebar-container').innerHTML = 
-            '<div class="sidebar" style="padding: 20px; background: var(--bg-light); color: #ef4444;">' +
-            '<p>Unable to load navigation. Please refresh the page.</p>' +
-            '</div>';
-    });
+        // Fallback to default sidebar
+        try {
+            const fallbackResponse = await fetch('sidebar.html');
+            const fallbackHtml = await fallbackResponse.text();
+            document.getElementById('sidebar-container').innerHTML = fallbackHtml;
+            setupLogoutButton();
+        } catch (fallbackError) {
+            console.error('Failed to load fallback sidebar:', fallbackError);
+            document.getElementById('sidebar-container').innerHTML = 
+                '<div class="sidebar" style="padding: 20px; background: var(--bg-light); color: #ef4444;">' +
+                '<p>Unable to load navigation. Please refresh the page.</p>' +
+                '</div>';
+        }
+    }
+}
+
+// Function to update back button based on user role
+function updateBackButton(userRole) {
+    const backButton = document.getElementById('backButton');
+    
+    if (userRole === 'agent') {
+        backButton.href = 'agent_dashboard.html';
+        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Agent Dashboard';
+    } else if (userRole === 'broker') {
+        backButton.href = 'broker_dashboard.html';
+        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Broker Dashboard';
+    } else {
+        // Default for other roles
+        backButton.href = 'profile.html';
+        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Dashboard';
+    }
+}
 </script>
 
 <!-- Main Application Script -->
@@ -1259,6 +1289,7 @@ let interestRate = 16;
 let currentImageIndex = 0;
 let imageUrls = [];
 let currentListing = null;
+let currentUserRole = null;
 
 // --- HELPER FUNCTIONS ---
 
@@ -2211,16 +2242,50 @@ function showSaveToast(message, isError = false) {
 
 function displayError(message) {
     const container = document.getElementById('propertyDetailsContainer');
+    
+    // Use currentUserRole to determine back link
+    let backLink = 'profile.html';
+    let backText = 'Back to Dashboard';
+    
+    if (currentUserRole === 'agent') {
+        backLink = 'agent_dashboard.html';
+        backText = 'Back to Agent Dashboard';
+    } else if (currentUserRole === 'broker') {
+        backLink = 'broker_dashboard.html';
+        backText = 'Back to Broker Dashboard';
+    }
+    
     container.innerHTML = `
     <div class="error-state">
         <div class="error-icon">⚠️</div>
         <h3 style="color: #ef4444; margin-bottom: 15px;">${message}</h3>
         <p style="color: var(--text-light); margin-bottom: 30px;">Please try again or go back to the dashboard.</p>
-        <a href="profile.html" class="back-button">
+        <a href="${backLink}" class="back-button">
             <i class="fas fa-arrow-left"></i>
-            Back to Dashboard
+            ${backText}
         </a>
     </div>`;
+}
+
+// Function to get user role from Firestore
+async function getUserRole(userId) {
+    try {
+        const userDoc = await getDoc(doc(db, "users", userId));
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            return userData.role || userData.userType || 'user';
+        } else {
+            // Check brokers collection
+            const brokerDoc = await getDoc(doc(db, "brokers", userId));
+            if (brokerDoc.exists()) {
+                const brokerData = brokerDoc.data();
+                return brokerData.role || 'broker';
+            }
+        }
+    } catch (error) {
+        console.error("Error getting user role:", error);
+    }
+    return 'user'; // Default role
 }
 
 // --- INITIALIZATION ---
@@ -2233,6 +2298,17 @@ onAuthStateChanged(auth, async (user) => {
     }
     
     try {
+        // Get user role
+        currentUserRole = await getUserRole(user.uid);
+        console.log(`👤 User role detected: ${currentUserRole}`);
+        
+        // Load appropriate sidebar
+        await window.loadSidebarBasedOnRole(currentUserRole);
+        
+        // Update back button based on role
+        window.updateBackButton(currentUserRole);
+        
+        // Load property details
         await loadPropertyDetails();
     } catch (error) {
         console.error("Error in initialization:", error);
@@ -2243,6 +2319,8 @@ onAuthStateChanged(auth, async (user) => {
 // Export for global use if needed
 window.closeCalculatorModal = closeCalculatorModal;
 window.showMortgageCalculatorModal = showMortgageCalculatorModal;
+window.loadSidebarBasedOnRole = loadSidebarBasedOnRole;
+window.updateBackButton = updateBackButton;
 </script>
 
 </body>

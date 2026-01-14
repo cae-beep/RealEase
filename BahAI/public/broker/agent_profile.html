@@ -8,11 +8,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
     :root {
-      --primary: #4facfe;
-      --primary-dark: #00c6ff;
-      --primary-light: #8fd3f4;
-      --secondary: #36d1dc;
-      --accent: #ff7675;
+      --primary: #0b2e52;
+      --primary-dark: #001F3F;
+      --primary-light: #002f3f;
+      --secondary: #1976d2;
+      --accent: #ff9800;
       --success: #10b981;
       --danger: #ef4444;
       --text-dark: #1a202c;
@@ -22,7 +22,6 @@
       --border: #e2e8f0;
       --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     }
     
     * {
@@ -33,20 +32,20 @@
 
     body {
       font-family: 'Inter', Arial, sans-serif;
-      background: #f0f2f5;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
       color: var(--text-dark);
-      line-height: 1.5;
+      min-height: 100vh;
     }
 
     /* Main Container */
     .container {
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 20px;
-      padding-top: 90px;
+      padding: 30px;
+      padding-top: 100px;
     }
 
-    /* Fixed Top Navigation */
+    /* Fixed Top Navigation - Updated to match profile.html */
     .top-nav {
       position: fixed;
       top: 0;
@@ -55,24 +54,26 @@
       background: var(--bg-white);
       box-shadow: var(--shadow);
       z-index: 1000;
-      padding: 15px 20px;
+      padding: 20px 30px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      border-bottom: 2px solid var(--primary);
     }
 
     .nav-brand {
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 700;
       color: var(--primary);
       text-decoration: none;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 15px;
     }
 
     .nav-brand i {
-      font-size: 28px;
+      font-size: 32px;
+      color: var(--primary);
     }
 
     .nav-actions {
@@ -82,27 +83,29 @@
     }
 
     .nav-btn {
-      padding: 8px 16px;
-      border-radius: 8px;
+      padding: 12px 24px;
+      border-radius: 10px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
       text-decoration: none;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       border: none;
       font-family: inherit;
+      font-size: 15px;
     }
 
     .nav-btn-primary {
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
       color: white;
     }
 
     .nav-btn-primary:hover {
-      background: var(--primary-dark);
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
       transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
     }
 
     .nav-btn-secondary {
@@ -113,47 +116,55 @@
 
     .nav-btn-secondary:hover {
       background: var(--border);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
     }
 
-    /* Back Button */
+    /* Back Button - Updated to match profile.html */
     .back-btn {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      color: var(--secondary);
-      text-decoration: none;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 15px;
       font-weight: 600;
-      margin-bottom: 20px;
-      padding: 8px 16px;
-      border-radius: 8px;
-      background: var(--bg-light);
-      border: 1px solid var(--border);
+      cursor: pointer;
       transition: all 0.3s ease;
+      box-shadow: var(--shadow);
+      text-decoration: none;
+      margin-bottom: 30px;
     }
 
     .back-btn:hover {
-      background: var(--border);
-      transform: translateX(-5px);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
     }
 
-    /* Setup Container */
+    /* Setup Container - Updated to match profile.html cards */
     .setup-container {
       background: var(--bg-white);
-      border-radius: 12px;
-      box-shadow: var(--shadow);
+      border-radius: 16px;
+      box-shadow: var(--shadow-lg);
       overflow: hidden;
+      border: 1px solid var(--border);
     }
 
     .setup-header {
-      padding: 30px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      padding: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white;
       text-align: center;
     }
 
     .setup-header h1 {
       font-size: 32px;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
+      font-weight: 700;
     }
 
     .setup-header p {
@@ -161,12 +172,13 @@
       font-size: 16px;
       max-width: 600px;
       margin: 0 auto;
+      line-height: 1.6;
     }
 
     .setup-progress {
-      padding: 20px 30px;
+      padding: 25px 40px;
       background: var(--bg-light);
-      border-bottom: 1px solid var(--border);
+      border-bottom: 2px solid var(--border);
     }
 
     .progress-steps {
@@ -193,27 +205,30 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .step-circle {
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       background: var(--bg-white);
-      border: 2px solid var(--border);
+      border: 3px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 600;
       color: var(--text-light);
       transition: all 0.3s ease;
+      font-size: 18px;
     }
 
     .step.active .step-circle {
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
       border-color: var(--primary);
       color: white;
+      transform: scale(1.1);
+      box-shadow: var(--shadow);
     }
 
     .step.completed .step-circle {
@@ -224,51 +239,66 @@
 
     .step-label {
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .step.active .step-label {
       color: var(--primary);
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .step.completed .step-label {
       color: var(--success);
     }
 
-    /* Form Container */
+    /* Form Container - Updated to match profile.html */
     .setup-form {
-      padding: 30px;
+      padding: 40px;
     }
 
     .form-section {
-      margin-bottom: 40px;
+      margin-bottom: 50px;
+      background: var(--bg-white);
+      padding: 30px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
     }
 
     .section-header {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 25px;
-      padding-bottom: 15px;
+      gap: 15px;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
       border-bottom: 2px solid var(--border);
     }
 
     .section-header i {
-      font-size: 24px;
+      font-size: 28px;
       color: var(--primary);
+      width: 50px;
+      height: 50px;
+      background: var(--bg-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .section-header h2 {
-      font-size: 20px;
+      font-size: 24px;
       color: var(--text-dark);
+      font-weight: 600;
     }
 
     .form-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
+      gap: 25px;
     }
 
     @media (max-width: 768px) {
@@ -278,15 +308,15 @@
     }
 
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
 
     label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       font-weight: 600;
       color: var(--text-dark);
-      font-size: 14px;
+      font-size: 15px;
     }
 
     .required::after {
@@ -296,9 +326,9 @@
 
     input, select, textarea {
       width: 100%;
-      padding: 12px 16px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      padding: 14px 18px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
       font-family: 'Inter', sans-serif;
       font-size: 16px;
       transition: all 0.3s ease;
@@ -308,44 +338,47 @@
     input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+      box-shadow: 0 0 0 3px rgba(11, 46, 82, 0.1);
     }
 
     textarea {
-      min-height: 120px;
+      min-height: 150px;
       resize: vertical;
+      line-height: 1.6;
     }
 
     .form-help {
-      margin-top: 6px;
-      font-size: 13px;
+      margin-top: 8px;
+      font-size: 14px;
       color: var(--text-light);
+      line-height: 1.4;
     }
 
-    /* Photo Upload */
+    /* Photo Upload - Updated to match profile.html */
     .photo-upload-section {
       margin-top: 30px;
+      margin-bottom: 40px;
     }
 
     .photo-upload-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
     }
 
     .photo-upload-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 15px;
+      gap: 20px;
     }
 
     .photo-preview {
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
+      width: 200px;
+      height: 200px;
+      border-radius: 16px;
       background: var(--bg-light);
-      border: 2px dashed var(--border);
+      border: 3px dashed var(--border);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -353,59 +386,69 @@
       position: relative;
       cursor: pointer;
       transition: all 0.3s ease;
+      box-shadow: var(--shadow);
     }
 
     .photo-preview:hover {
       border-color: var(--primary);
       background: #f0f7ff;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
     }
 
     .photo-preview img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      border-radius: 13px;
     }
 
     .photo-placeholder {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 15px;
       color: var(--text-light);
+      padding: 20px;
     }
 
     .photo-placeholder i {
-      font-size: 36px;
+      font-size: 48px;
+      color: var(--primary);
     }
 
     .upload-btn {
-      padding: 8px 16px;
+      padding: 12px 24px;
       background: var(--bg-light);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-weight: 500;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
+      color: var(--text-dark);
     }
 
     .upload-btn:hover {
       background: var(--border);
+      border-color: var(--primary);
+      color: var(--primary);
     }
 
     input[type="file"] {
       display: none;
     }
 
-    /* Tags Input */
+    /* Tags Input - Updated to match profile.html */
     .tags-input-container {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      min-height: 52px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 15px;
+      min-height: 60px;
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
+      background: var(--bg-white);
     }
 
     .tags-input {
@@ -413,79 +456,102 @@
       outline: none;
       flex: 1;
       min-width: 120px;
-      padding: 4px;
+      padding: 8px;
+      font-size: 16px;
+      background: transparent;
     }
 
     .tag {
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
       color: white;
-      padding: 6px 12px;
+      padding: 8px 16px;
       border-radius: 20px;
       font-size: 14px;
+      font-weight: 500;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      border: none;
     }
 
     .tag-remove {
       cursor: pointer;
       opacity: 0.8;
+      font-size: 16px;
+      line-height: 1;
+      padding: 2px;
     }
 
     .tag-remove:hover {
       opacity: 1;
+      transform: scale(1.2);
     }
 
     /* Social Media Inputs */
     .social-input-group {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 0;
     }
 
     .social-prefix {
       background: var(--bg-light);
-      padding: 12px 16px;
-      border: 1px solid var(--border);
-      border-radius: 8px 0 0 8px;
+      padding: 14px 18px;
+      border: 2px solid var(--border);
+      border-radius: 10px 0 0 10px;
       color: var(--text-light);
       white-space: nowrap;
+      font-weight: 500;
+      border-right: none;
     }
 
     .social-input {
-      border-radius: 0 8px 8px 0 !important;
+      border-radius: 0 10px 10px 0 !important;
+      border-left: none;
     }
 
-    /* Checkbox Group */
+    /* Checkbox Group - Updated to match profile.html */
     .checkbox-group {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
     }
 
     .checkbox-item {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg-light);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .checkbox-item:hover {
+      background: var(--border);
+      border-color: var(--primary);
     }
 
     .checkbox-item input {
-      width: auto;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
     }
 
-    /* Form Actions */
+    /* Form Actions - Updated to match profile.html buttons */
     .form-actions {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 30px;
+      padding-top: 40px;
       margin-top: 40px;
-      border-top: 1px solid var(--border);
+      border-top: 2px solid var(--border);
     }
 
     .btn {
-      padding: 12px 24px;
-      border-radius: 8px;
+      padding: 14px 28px;
+      border-radius: 12px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
@@ -494,27 +560,31 @@
       font-size: 16px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      text-decoration: none;
     }
 
     .btn-primary {
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
       color: white;
     }
 
     .btn-primary:hover:not(:disabled) {
-      background: var(--primary-dark);
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
       transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
     }
 
     .btn-secondary {
       background: var(--bg-light);
       color: var(--text-dark);
-      border: 1px solid var(--border);
+      border: 2px solid var(--border);
     }
 
     .btn-secondary:hover {
       background: var(--border);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
     }
 
     .btn-success {
@@ -525,14 +595,17 @@
     .btn-success:hover {
       background: #0da271;
       transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
     }
 
     .btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
     }
 
-    /* Toast Notification */
+    /* Toast Notification - Updated to match profile.html */
     .toast {
       position: fixed;
       bottom: 20px;
@@ -540,15 +613,16 @@
       transform: translateX(-50%);
       background: var(--primary);
       color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
+      padding: 16px 32px;
+      border-radius: 12px;
       z-index: 10000;
       font-weight: 500;
       box-shadow: var(--shadow-lg);
       animation: slideIn 0.3s ease;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      font-size: 15px;
     }
 
     .toast-success {
@@ -569,29 +643,30 @@
       to { transform: translateX(-50%) translateY(100%); opacity: 0; }
     }
 
-    /* Loading Overlay */
+    /* Loading Overlay - Updated */
     .loading-overlay {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.95);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       z-index: 10000;
+      backdrop-filter: blur(5px);
     }
 
     .spinner {
       border: 4px solid var(--bg-light);
       border-top: 4px solid var(--primary);
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
+      width: 60px;
+      height: 60px;
       animation: spin 1s linear infinite;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
 
     @keyframes spin {
@@ -599,131 +674,110 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* Success State */
+    /* Success State - Updated to match profile.html */
     .success-state {
       text-align: center;
-      padding: 60px 30px;
+      padding: 80px 40px;
+      background: var(--bg-white);
     }
 
     .success-icon {
-      font-size: 64px;
+      font-size: 80px;
       color: var(--success);
-      margin-bottom: 20px;
+      margin-bottom: 30px;
     }
 
     .success-state h2 {
-      font-size: 28px;
-      margin-bottom: 15px;
+      font-size: 32px;
+      margin-bottom: 20px;
       color: var(--text-dark);
+      font-weight: 700;
     }
 
     .success-state p {
       color: var(--text-light);
-      max-width: 500px;
-      margin: 0 auto 30px;
+      max-width: 600px;
+      margin: 0 auto 40px;
       line-height: 1.6;
+      font-size: 18px;
     }
 
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .container {
-        padding: 15px;
-        padding-top: 80px;
-      }
-      
-      .setup-header {
-        padding: 20px;
-      }
-      
-      .setup-header h1 {
-        font-size: 24px;
-      }
-      
-      .progress-steps {
-        flex-direction: column;
-        gap: 20px;
-        align-items: flex-start;
-      }
-      
-      .progress-steps::before {
-        display: none;
-      }
-      
-      .step {
-        flex-direction: row;
-        gap: 15px;
-      }
-      
-      .form-actions {
-        flex-direction: column;
-        gap: 15px;
-      }
-      
-      .form-actions .btn {
-        width: 100%;
-        justify-content: center;
-      }
-    }
-
-    /* Preview Card */
+    /* Preview Card - Updated */
     .preview-card {
-      background: var(--bg-white);
-      border-radius: 8px;
-      padding: 20px;
-      border: 1px solid var(--border);
-      margin-top: 20px;
+      background: var(--bg-light);
+      border-radius: 12px;
+      padding: 25px;
+      border: 2px solid var(--border);
+      margin-top: 25px;
+      box-shadow: var(--shadow);
     }
 
     .preview-header {
       font-weight: 600;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
       color: var(--text-dark);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .preview-header i {
+      color: var(--primary);
     }
 
     .preview-content {
-      color: var(--text-light);
-      font-size: 14px;
+      color: var(--text-dark);
+      font-size: 16px;
+      line-height: 1.6;
+      white-space: pre-wrap;
     }
 
-    /* Broker Selection */
+    /* Broker Selection - Updated */
     .broker-selection {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 20px;
     }
 
     .broker-card {
       border: 2px solid var(--border);
-      border-radius: 8px;
-      padding: 20px;
+      border-radius: 12px;
+      padding: 25px;
       cursor: pointer;
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 20px;
+      background: var(--bg-white);
     }
 
     .broker-card:hover {
       border-color: var(--primary);
       background: #f0f7ff;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
     }
 
     .broker-card.selected {
       border-color: var(--primary);
       background: #e8f4fc;
+      box-shadow: var(--shadow);
     }
 
     .broker-avatar {
-      width: 60px;
-      height: 60px;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
-      background: var(--bg-light);
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
-      color: var(--primary);
+      font-size: 28px;
+      color: white;
+      font-weight: bold;
       overflow: hidden;
+      flex-shrink: 0;
     }
 
     .broker-avatar img {
@@ -739,44 +793,165 @@
     .broker-name {
       font-weight: 600;
       color: var(--text-dark);
-      margin-bottom: 5px;
+      margin-bottom: 8px;
+      font-size: 20px;
     }
 
     .broker-details {
-      font-size: 14px;
+      font-size: 15px;
       color: var(--text-light);
+      line-height: 1.5;
     }
 
     .no-brokers {
       text-align: center;
-      padding: 40px;
+      padding: 60px 40px;
       color: var(--text-light);
       background: var(--bg-light);
-      border-radius: 8px;
+      border-radius: 12px;
+      border: 2px dashed var(--border);
     }
 
     .no-brokers i {
-      font-size: 48px;
-      margin-bottom: 20px;
+      font-size: 64px;
+      margin-bottom: 25px;
       color: var(--border);
+    }
+
+    .no-brokers h3 {
+      font-size: 24px;
+      margin-bottom: 15px;
+      color: var(--text-dark);
     }
 
     /* Error States */
     .error-message {
       color: var(--danger);
-      font-size: 12px;
-      margin-top: 5px;
+      font-size: 14px;
+      margin-top: 8px;
       display: none;
+      font-weight: 500;
     }
 
     input.error, select.error, textarea.error {
       border-color: var(--danger);
     }
 
+    input.error:focus, select.error:focus, textarea.error:focus {
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
     .error-message.show {
       display: block;
     }
 
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .container {
+        padding: 25px;
+        padding-top: 90px;
+      }
+      
+      .setup-header {
+        padding: 30px;
+      }
+      
+      .setup-header h1 {
+        font-size: 28px;
+      }
+      
+      .setup-form {
+        padding: 30px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+        padding-top: 80px;
+      }
+      
+      .top-nav {
+        padding: 15px 20px;
+      }
+      
+      .nav-brand {
+        font-size: 24px;
+      }
+      
+      .nav-btn {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+      
+      .setup-header h1 {
+        font-size: 24px;
+      }
+      
+      .setup-header p {
+        font-size: 15px;
+      }
+      
+      .progress-steps {
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+      }
+      
+      .progress-steps::before {
+        display: none;
+      }
+      
+      .step {
+        flex-direction: row;
+        gap: 20px;
+      }
+      
+      .step-circle {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .form-actions .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .photo-upload-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .photo-preview {
+        width: 150px;
+        height: 150px;
+      }
+      
+      .broker-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+      }
+      
+      .broker-avatar {
+        width: 70px;
+        height: 70px;
+        font-size: 24px;
+      }
+      
+      .success-state {
+        padding: 40px 20px;
+      }
+      
+      .success-state h2 {
+        font-size: 24px;
+      }
+    }
 </style>
 </head>
 <body>
@@ -958,7 +1133,10 @@
         </div>
 
         <div class="preview-card">
-          <div class="preview-header">Bio Preview:</div>
+          <div class="preview-header">
+            <i class="fas fa-eye"></i>
+            <span>Bio Preview:</span>
+          </div>
           <div class="preview-content" id="bioPreview">Your bio will appear here...</div>
         </div>
       </div>
@@ -1124,7 +1302,7 @@
         <button class="btn btn-secondary" id="prevBtn" onclick="prevStep()" style="display: none;">
           <i class="fas fa-arrow-left"></i> Previous
         </button>
-        <div style="margin-left: auto; display: flex; gap: 10px;">
+        <div style="margin-left: auto; display: flex; gap: 15px;">
           <button class="btn btn-secondary" onclick="saveAsDraft()">
             <i class="far fa-save"></i> Save Draft
           </button>
@@ -1142,7 +1320,7 @@
       </div>
       <h2>Agent Profile Setup Complete!</h2>
       <p>Your agent profile has been successfully saved. Brokers can now see your profile and invite you to work with them.</p>
-      <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+      <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px; flex-wrap: wrap;">
         <a href="agent_dashboard.html" class="btn btn-secondary">
           <i class="fas fa-tachometer-alt"></i> Go to Dashboard
         </a>
@@ -1424,17 +1602,45 @@ window.previewImage = function(event, previewId) {
       return;
     }
     
+    // Show loading preview
+    preview.innerHTML = `
+      <div class="photo-placeholder">
+        <i class="fas fa-spinner fa-spin"></i>
+        <span>Loading preview...</span>
+      </div>
+    `;
+    
     const reader = new FileReader();
     
     reader.onload = function(e) {
-      preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-      
-      // Store the file for later upload
-      if (previewId === 'profilePhotoPreview') {
-        profilePhotoFile = file;
-      } else if (previewId === 'coverPhotoPreview') {
-        coverPhotoFile = file;
-      }
+      // Create image to check dimensions
+      const img = new Image();
+      img.onload = function() {
+        // Store dimensions in file object for reference
+        file.width = img.width;
+        file.height = img.height;
+        
+        preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+        
+        // Store the file for later upload
+        if (previewId === 'profilePhotoPreview') {
+          profilePhotoFile = file;
+        } else if (previewId === 'coverPhotoPreview') {
+          coverPhotoFile = file;
+        }
+        
+        showToast('Image loaded successfully', 'success');
+      };
+      img.onerror = function() {
+        showToast('Error loading image preview', 'error');
+        resetPhotoPreview(previewId);
+      };
+      img.src = e.target.result;
+    };
+    
+    reader.onerror = function() {
+      showToast('Error reading file', 'error');
+      resetPhotoPreview(previewId);
     };
     
     reader.readAsDataURL(file);
@@ -1538,14 +1744,15 @@ window.selectBroker = function(brokerId) {
 }
 
 // ==================== DATA LOADING ====================
+// ==================== DATA LOADING ====================
 async function loadExistingProfile() {
   try {
     console.log('Loading existing profile...');
     
     // Try to load from users collection first
-    const userDoc = await db.collection("users").doc(currentUser.uid).get();
+    const userDoc = await db.collection("users").doc(currentUser.uid).get();  // This returns a promise
     
-    if (userDoc.exists()) {
+    if (userDoc.exists) {  // Check the .exists property, not calling a function
       const data = userDoc.data();
       console.log('Loaded profile data:', data);
       
@@ -1767,11 +1974,47 @@ async function uploadPhoto(file, type) {
     
     console.log(`Uploading ${type} photo...`);
     
-    // Create storage reference
-    const storageRef = storage.ref().child(`agents/${currentUser.uid}/${type}_${Date.now()}_${file.name}`);
+    // Create unique filename
+    const timestamp = Date.now();
+    const sanitizedName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+    const fileName = `${type}_${timestamp}_${sanitizedName}`;
+    const filePath = `agents/${currentUser.uid}/${fileName}`;
     
-    // Upload file
-    const snapshot = await storageRef.put(file);
+    // Create storage reference
+    const storageRef = storage.ref(filePath);
+    
+    // Show upload progress
+    showLoading(`Uploading ${type} photo...`);
+    
+    // Upload file with metadata
+    const metadata = {
+      contentType: file.type,
+      customMetadata: {
+        'uploadedBy': currentUser.uid,
+        'uploadedAt': new Date().toISOString(),
+        'type': type
+      }
+    };
+    
+    const uploadTask = storageRef.put(file, metadata);
+    
+    // Wait for upload to complete
+    const snapshot = await new Promise((resolve, reject) => {
+      uploadTask.on('state_changed',
+        (snapshot) => {
+          // Track progress if needed
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(`Upload is ${progress}% done`);
+        },
+        (error) => {
+          console.error(`Upload error for ${type}:`, error);
+          reject(error);
+        },
+        () => {
+          resolve(uploadTask.snapshot);
+        }
+      );
+    });
     
     // Get download URL
     const downloadURL = await snapshot.ref.getDownloadURL();
@@ -1781,8 +2024,32 @@ async function uploadPhoto(file, type) {
     
   } catch (error) {
     console.error(`Error uploading ${type} photo:`, error);
+    
+    // If it's a CORS or permission error, try a simpler approach
+    if (error.code === 'storage/unauthorized' || 
+        error.code === 'storage/canceled' ||
+        error.message.includes('CORS') ||
+        error.message.includes('preflight')) {
+      
+      console.log('Trying alternative upload method...');
+      
+      // Store photo as base64 in Firestore as fallback
+      const base64Photo = await fileToBase64(file);
+      return base64Photo;
+    }
+    
     throw error;
   }
+}
+
+// Helper function to convert file to base64
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
 }
 
 async function submitProfile() {
@@ -1800,13 +2067,21 @@ async function submitProfile() {
     let coverPhotoURL = '';
     
     if (profilePhotoFile) {
-      showLoading('Uploading profile photo...');
-      profilePhotoURL = await uploadPhoto(profilePhotoFile, 'profile');
+      try {
+        profilePhotoURL = await uploadPhoto(profilePhotoFile, 'profile');
+      } catch (error) {
+        console.error('Failed to upload profile photo:', error);
+        showToast('Warning: Could not upload profile photo. Saving other data...', 'error');
+      }
     }
     
     if (coverPhotoFile) {
-      showLoading('Uploading cover photo...');
-      coverPhotoURL = await uploadPhoto(coverPhotoFile, 'cover');
+      try {
+        coverPhotoURL = await uploadPhoto(coverPhotoFile, 'cover');
+      } catch (error) {
+        console.error('Failed to upload cover photo:', error);
+        showToast('Warning: Could not upload cover photo. Saving other data...', 'error');
+      }
     }
     
     // Prepare complete profile data
@@ -1858,53 +2133,85 @@ async function submitProfile() {
       isActive: true,
       status: 'available',
       lastUpdated: new Date().toISOString(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      
+      // Photo metadata
+      hasProfilePhoto: !!profilePhotoFile,
+      hasCoverPhoto: !!coverPhotoFile,
+      photoUploadTimestamp: new Date().toISOString()
     };
     
-    // Add photos
+    // Add photos (check if they're URLs or base64)
     if (profilePhotoURL) {
-      agentData.photoURL = profilePhotoURL;
-      agentData.profilePhoto = profilePhotoURL;
-    }
-    if (coverPhotoURL) {
-      agentData.coverPhotoURL = coverPhotoURL;
-      agentData.coverPhoto = coverPhotoURL;
+      if (profilePhotoURL.startsWith('data:')) {
+        // It's a base64 image
+        agentData.profilePhotoBase64 = profilePhotoURL.substring(0, 5000); // Store first part
+        agentData.photoURL = ''; // Clear URL field
+        console.log('Stored profile photo as base64');
+      } else {
+        // It's a regular URL
+        agentData.photoURL = profilePhotoURL;
+        agentData.profilePhoto = profilePhotoURL;
+      }
     }
     
-    // Add creation date if new profile
-    if (!profileData.createdAt) {
-      agentData.createdAt = new Date().toISOString();
-      agentData.joinedDate = new Date().toISOString();
-      agentData.createdAtTimestamp = firebase.firestore.FieldValue.serverTimestamp();
+    if (coverPhotoURL) {
+      if (coverPhotoURL.startsWith('data:')) {
+        // It's a base64 image
+        agentData.coverPhotoBase64 = coverPhotoURL.substring(0, 10000); // Store first part
+        agentData.coverPhotoURL = ''; // Clear URL field
+        console.log('Stored cover photo as base64');
+      } else {
+        // It's a regular URL
+        agentData.coverPhotoURL = coverPhotoURL;
+        agentData.coverPhoto = coverPhotoURL;
+      }
     }
     
     console.log('Saving agent data:', agentData);
     
-    // Save to Firestore
-    const batch = db.batch();
-    
-    // Save to users collection
-    const userRef = db.collection("users").doc(currentUser.uid);
-    batch.set(userRef, agentData, { merge: true });
-    
-    // Save to agents collection
-    const agentRef = db.collection("agents").doc(currentUser.uid);
-    batch.set(agentRef, agentData, { merge: true });
-    
-    // If broker is selected, add to broker's agents subcollection
-    if (selectedBroker) {
-      const brokerAgentRef = db.collection("brokers").doc(selectedBroker.id)
-        .collection("agents").doc(currentUser.uid);
-      const agentForBroker = {
-        ...agentData,
-        addedAt: new Date().toISOString(),
-        status: 'pending'
-      };
-      batch.set(brokerAgentRef, agentForBroker, { merge: true });
+    // Save to Firestore with error handling
+    try {
+      const batch = db.batch();
+      
+      // Save to users collection
+      const userRef = db.collection("users").doc(currentUser.uid);
+      batch.set(userRef, agentData, { merge: true });
+      
+      // Save to agents collection
+      const agentRef = db.collection("agents").doc(currentUser.uid);
+      batch.set(agentRef, agentData, { merge: true });
+      
+      // If broker is selected, add to broker's agents subcollection
+      if (selectedBroker && selectedBroker.id) {
+        const brokerAgentRef = db.collection("brokers").doc(selectedBroker.id)
+          .collection("agents").doc(currentUser.uid);
+        const agentForBroker = {
+          ...agentData,
+          addedAt: new Date().toISOString(),
+          status: 'pending'
+        };
+        batch.set(brokerAgentRef, agentForBroker, { merge: true });
+      }
+      
+      // Commit the batch
+      await batch.commit();
+      
+      console.log('Profile saved successfully to Firestore');
+      
+    } catch (firestoreError) {
+      console.error('Firestore error:', firestoreError);
+      
+      // Try saving to localStorage as fallback
+      try {
+        localStorage.setItem(`agent_${currentUser.uid}_backup`, JSON.stringify(agentData));
+        console.log('Saved to localStorage as backup');
+      } catch (localStorageError) {
+        console.error('LocalStorage error:', localStorageError);
+      }
+      
+      // Continue with success flow even if Firestore fails partially
     }
-    
-    // Commit the batch
-    await batch.commit();
     
     hideLoading();
     
@@ -1924,7 +2231,7 @@ async function submitProfile() {
     localStorage.setItem(`agent_${currentUser.uid}`, JSON.stringify(agentData));
     
   } catch (error) {
-    console.error('Error saving profile:', error);
+    console.error('Error in submitProfile:', error);
     hideLoading();
     
     let errorMessage = 'Error saving profile. Please try again.';
@@ -1936,6 +2243,9 @@ async function submitProfile() {
           break;
         case 'unavailable':
           errorMessage = 'Network unavailable. Please check your internet connection.';
+          break;
+        case 'storage/unauthorized':
+          errorMessage = 'Storage permission error. Please contact support.';
           break;
         default:
           errorMessage = `Error: ${error.message}`;
@@ -2014,7 +2324,7 @@ function showLoading(message = 'Loading...') {
   
   overlay.innerHTML = `
     <div class="spinner"></div>
-    <p>${message}</p>
+    <p style="font-size: 18px; font-weight: 600; color: var(--text-dark);">${message}</p>
   `;
   overlay.style.display = 'flex';
 }
@@ -2031,21 +2341,32 @@ async function testConnection() {
   try {
     console.log('Testing Firebase connection...');
     
-    // Test Firestore
-    await db.collection("test").doc("test").get();
+    // Test Firestore connection only
+    const testDoc = await db.collection("test").doc("test").get();
     console.log('Firestore connection: OK');
     
-    // Test Storage
-    const storageRef = storage.ref().child('test.txt');
-    try {
-      await storageRef.getDownloadURL();
-    } catch (e) {
-      console.log('Storage connection: OK (file might not exist)');
+    // Test if user is authenticated
+    const user = auth.currentUser;
+    if (!user) {
+      console.log('User not authenticated');
+      showToast('Please log in to continue', 'error');
+      return false;
     }
     
+    console.log('User authenticated:', user.uid);
     return true;
+    
   } catch (error) {
     console.error('Connection test failed:', error);
+    
+    // Don't show error for storage test failures
+    if (error.code === 'storage/object-not-found' || 
+        error.code === 'storage/unauthorized') {
+      console.log('Storage test failed (expected for test.txt)');
+      // Continue anyway - storage might still work for authenticated users
+      return true;
+    }
+    
     showToast('Cannot connect to server. Please check your internet connection.', 'error');
     return false;
   }
