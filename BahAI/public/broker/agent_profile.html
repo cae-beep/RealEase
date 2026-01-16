@@ -1336,29 +1336,45 @@
 </div>
 
 <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { 
+  getAuth, 
+  onAuthStateChanged,
+  signOut 
+} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+import { 
+  getFirestore, 
+  doc, 
+  setDoc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+import { 
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-storage.js";
 
-<script>
-// ==================== FIREBASE CONFIGURATION ====================
 const firebaseConfig = {
   apiKey: "AIzaSyCIfzneDzWVveG8p_0mywoA9D9F5AyzZX4",
   authDomain: "bahai-1b76d.firebaseapp.com",
   projectId: "bahai-1b76d",
-  storageBucket: "bahai-1b76d.appspot.com",
+  storageBucket: "bahai-1b76d.firebasestorage.app",
   messagingSenderId: "646878644941",
   appId: "1:646878644941:web:5b4ccc3412250337587784"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const storage = getStorage(app);
 
-// ==================== GLOBAL VARIABLES ====================
 let currentUser = null;
 let currentStep = 1;
 let profileData = {
@@ -1392,7 +1408,7 @@ document.addEventListener('DOMContentLoaded', function() {
   setupTagsInput('serviceAreasInput', 'serviceAreasContainer', profileData.serviceAreas);
 
   // Check authentication state
-  auth.onAuthStateChanged(async (user) => {
+  onAuthStateChanged(auth, async (user) => {
     if (user) {
       currentUser = user;
       console.log('User authenticated:', user.uid);
@@ -1602,40 +1618,17 @@ window.previewImage = function(event, previewId) {
       return;
     }
     
-    // Show loading preview
-    preview.innerHTML = `
-      <div class="photo-placeholder">
-        <i class="fas fa-spinner fa-spin"></i>
-        <span>Loading preview...</span>
-      </div>
-    `;
-    
     const reader = new FileReader();
     
     reader.onload = function(e) {
-      // Create image to check dimensions
-      const img = new Image();
-      img.onload = function() {
-        // Store dimensions in file object for reference
-        file.width = img.width;
-        file.height = img.height;
-        
-        preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-        
-        // Store the file for later upload
-        if (previewId === 'profilePhotoPreview') {
-          profilePhotoFile = file;
-        } else if (previewId === 'coverPhotoPreview') {
-          coverPhotoFile = file;
-        }
-        
-        showToast('Image loaded successfully', 'success');
-      };
-      img.onerror = function() {
-        showToast('Error loading image preview', 'error');
-        resetPhotoPreview(previewId);
-      };
-      img.src = e.target.result;
+      preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+      
+      // Store the file for later upload
+      if (previewId === 'profilePhotoPreview') {
+        profilePhotoFile = file;
+      } else if (previewId === 'coverPhotoPreview') {
+        coverPhotoFile = file;
+      }
     };
     
     reader.onerror = function() {
@@ -1663,8 +1656,8 @@ async function loadBrokers() {
   try {
     console.log('Loading brokers...');
     
-    const brokersQuery = db.collection("users").where("userType", "==", "broker");
-    const brokersSnapshot = await brokersQuery.get();
+    const brokersQuery = query(collection(db, "users"), where("userType", "==", "broker"));
+    const brokersSnapshot = await getDocs(brokersQuery);
     
     availableBrokers = [];
     brokersSnapshot.forEach(doc => {
@@ -1744,15 +1737,14 @@ window.selectBroker = function(brokerId) {
 }
 
 // ==================== DATA LOADING ====================
-// ==================== DATA LOADING ====================
 async function loadExistingProfile() {
   try {
     console.log('Loading existing profile...');
     
     // Try to load from users collection first
-    const userDoc = await db.collection("users").doc(currentUser.uid).get();  // This returns a promise
+    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
     
-    if (userDoc.exists) {  // Check the .exists property, not calling a function
+    if (userDoc.exists()) {
       const data = userDoc.data();
       console.log('Loaded profile data:', data);
       
@@ -1972,86 +1964,28 @@ async function uploadPhoto(file, type) {
   try {
     if (!file) return null;
     
-    console.log(`Uploading ${type} photo...`);
-    
-    // Create unique filename
+    // Create a unique filename
     const timestamp = Date.now();
-    const sanitizedName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
-    const fileName = `${type}_${timestamp}_${sanitizedName}`;
-    const filePath = `agents/${currentUser.uid}/${fileName}`;
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    const filename = `${type}_${timestamp}.${fileExtension}`;
     
     // Create storage reference
-    const storageRef = storage.ref(filePath);
+    const storageRef = ref(storage, `agents/${currentUser.uid}/${filename}`);
     
-    // Show upload progress
-    showLoading(`Uploading ${type} photo...`);
-    
-    // Upload file with metadata
-    const metadata = {
-      contentType: file.type,
-      customMetadata: {
-        'uploadedBy': currentUser.uid,
-        'uploadedAt': new Date().toISOString(),
-        'type': type
-      }
-    };
-    
-    const uploadTask = storageRef.put(file, metadata);
-    
-    // Wait for upload to complete
-    const snapshot = await new Promise((resolve, reject) => {
-      uploadTask.on('state_changed',
-        (snapshot) => {
-          // Track progress if needed
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log(`Upload is ${progress}% done`);
-        },
-        (error) => {
-          console.error(`Upload error for ${type}:`, error);
-          reject(error);
-        },
-        () => {
-          resolve(uploadTask.snapshot);
-        }
-      );
-    });
+    // Upload file
+    const snapshot = await uploadBytes(storageRef, file);
     
     // Get download URL
-    const downloadURL = await snapshot.ref.getDownloadURL();
+    const downloadURL = await getDownloadURL(snapshot.ref);
     
-    console.log(`${type} photo uploaded successfully:`, downloadURL);
     return downloadURL;
-    
   } catch (error) {
-    console.error(`Error uploading ${type} photo:`, error);
-    
-    // If it's a CORS or permission error, try a simpler approach
-    if (error.code === 'storage/unauthorized' || 
-        error.code === 'storage/canceled' ||
-        error.message.includes('CORS') ||
-        error.message.includes('preflight')) {
-      
-      console.log('Trying alternative upload method...');
-      
-      // Store photo as base64 in Firestore as fallback
-      const base64Photo = await fileToBase64(file);
-      return base64Photo;
-    }
-    
+    console.error('Error uploading photo:', error);
     throw error;
   }
 }
 
-// Helper function to convert file to base64
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
-}
-
+// ==================== PROFILE SUBMISSION ====================
 async function submitProfile() {
   try {
     console.log('Submitting profile...');
@@ -2066,33 +2000,39 @@ async function submitProfile() {
     let profilePhotoURL = '';
     let coverPhotoURL = '';
     
+    // Upload profile photo
     if (profilePhotoFile) {
+      showLoading('Uploading profile photo...');
       try {
         profilePhotoURL = await uploadPhoto(profilePhotoFile, 'profile');
-      } catch (error) {
-        console.error('Failed to upload profile photo:', error);
-        showToast('Warning: Could not upload profile photo. Saving other data...', 'error');
+        console.log('Profile photo URL:', profilePhotoURL);
+      } catch (uploadError) {
+        console.error('Profile photo upload failed:', uploadError);
+        // Continue without photo
       }
     }
     
+    // Upload cover photo (optional)
     if (coverPhotoFile) {
+      showLoading('Uploading cover photo...');
       try {
         coverPhotoURL = await uploadPhoto(coverPhotoFile, 'cover');
-      } catch (error) {
-        console.error('Failed to upload cover photo:', error);
-        showToast('Warning: Could not upload cover photo. Saving other data...', 'error');
+        console.log('Cover photo URL:', coverPhotoURL);
+      } catch (uploadError) {
+        console.error('Cover photo upload failed:', uploadError);
+        // Continue without cover photo
       }
     }
     
-    // Prepare complete profile data
+    // Prepare complete profile data - ensure no undefined values
     const agentData = {
       // Basic info
-      fullName: profileData.fullName,
-      displayName: profileData.fullName,
-      title: profileData.title,
-      location: profileData.location,
-      email: profileData.email || currentUser.email,
-      phone: profileData.phone,
+      fullName: profileData.fullName || '',
+      displayName: profileData.fullName || '',
+      title: profileData.title || '',
+      location: profileData.location || '',
+      email: profileData.email || currentUser.email || '',
+      phone: profileData.phone || '',
       yearsExperience: profileData.yearsExperience || 0,
       
       // Professional details
@@ -2108,18 +2048,6 @@ async function submitProfile() {
       agentSkills: profileData.agentSkills || [],
       commissions: profileData.commissions || '',
       
-      // Broker association
-      brokerId: selectedBroker?.id || '',
-      brokerName: selectedBroker?.fullName || '',
-      brokerCompany: selectedBroker?.company || '',
-      brokerData: selectedBroker ? {
-        id: selectedBroker.id,
-        name: selectedBroker.fullName,
-        company: selectedBroker.company,
-        title: selectedBroker.title,
-        location: selectedBroker.location
-      } : {},
-      
       // Social & contact
       socialMedia: profileData.socialMedia || {},
       contactPreferences: profileData.contactPreferences || {},
@@ -2128,107 +2056,147 @@ async function submitProfile() {
       // Metadata
       userId: currentUser.uid,
       userType: 'agent',
+      userRole: 'agent',
       isProfileComplete: true,
       profileCompleted: true,
       isActive: true,
       status: 'available',
       lastUpdated: new Date().toISOString(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      
-      // Photo metadata
-      hasProfilePhoto: !!profilePhotoFile,
-      hasCoverPhoto: !!coverPhotoFile,
-      photoUploadTimestamp: new Date().toISOString()
+      updatedAt: serverTimestamp(),
     };
     
-    // Add photos (check if they're URLs or base64)
+    // Add photos if available
     if (profilePhotoURL) {
-      if (profilePhotoURL.startsWith('data:')) {
-        // It's a base64 image
-        agentData.profilePhotoBase64 = profilePhotoURL.substring(0, 5000); // Store first part
-        agentData.photoURL = ''; // Clear URL field
-        console.log('Stored profile photo as base64');
-      } else {
-        // It's a regular URL
-        agentData.photoURL = profilePhotoURL;
-        agentData.profilePhoto = profilePhotoURL;
-      }
+      agentData.photoURL = profilePhotoURL;
+      agentData.profilePhoto = profilePhotoURL;
     }
-    
     if (coverPhotoURL) {
-      if (coverPhotoURL.startsWith('data:')) {
-        // It's a base64 image
-        agentData.coverPhotoBase64 = coverPhotoURL.substring(0, 10000); // Store first part
-        agentData.coverPhotoURL = ''; // Clear URL field
-        console.log('Stored cover photo as base64');
-      } else {
-        // It's a regular URL
-        agentData.coverPhotoURL = coverPhotoURL;
-        agentData.coverPhoto = coverPhotoURL;
-      }
+      agentData.coverPhotoURL = coverPhotoURL;
+      agentData.coverPhoto = coverPhotoURL;
     }
     
-    console.log('Saving agent data:', agentData);
+    // Add broker information if selected
+    if (selectedBroker && selectedBroker.id) {
+      // Prepare broker data ensuring no undefined values
+      const brokerData = {
+        id: selectedBroker.id || '',
+        name: selectedBroker.fullName || '',
+        company: selectedBroker.company || '',
+        title: selectedBroker.title || '',
+        location: selectedBroker.location || ''
+      };
+      
+      // Remove empty fields from brokerData
+      Object.keys(brokerData).forEach(key => {
+        if (brokerData[key] === '') {
+          delete brokerData[key];
+        }
+      });
+      
+      agentData.brokerId = selectedBroker.id || '';
+      agentData.brokerName = selectedBroker.fullName || '';
+      agentData.brokerCompany = selectedBroker.company || '';
+      agentData.brokerData = brokerData;
+    } else {
+      // Set default empty values for broker fields
+      agentData.brokerId = '';
+      agentData.brokerName = '';
+      agentData.brokerCompany = '';
+      agentData.brokerData = {};
+    }
     
-    // Save to Firestore with error handling
+    // Add creation date if new profile
+    if (!profileData.createdAt) {
+      agentData.createdAt = new Date().toISOString();
+      agentData.joinedDate = new Date().toISOString();
+      agentData.createdAtTimestamp = serverTimestamp();
+    }
+    
+    // Remove any undefined values from the agentData object
+    Object.keys(agentData).forEach(key => {
+      if (agentData[key] === undefined) {
+        delete agentData[key];
+      }
+    });
+    
+    console.log('Saving agent data to Firestore:', agentData);
+    
     try {
-      const batch = db.batch();
+      // Save to users collection (primary)
+      await setDoc(doc(db, "users", currentUser.uid), agentData, { merge: true });
+      console.log('Saved to users collection');
       
-      // Save to users collection
-      const userRef = db.collection("users").doc(currentUser.uid);
-      batch.set(userRef, agentData, { merge: true });
-      
-      // Save to agents collection
-      const agentRef = db.collection("agents").doc(currentUser.uid);
-      batch.set(agentRef, agentData, { merge: true });
+      // Save to agents collection (secondary)
+      await setDoc(doc(db, "agents", currentUser.uid), agentData, { merge: true });
+      console.log('Saved to agents collection');
       
       // If broker is selected, add to broker's agents subcollection
       if (selectedBroker && selectedBroker.id) {
-        const brokerAgentRef = db.collection("brokers").doc(selectedBroker.id)
-          .collection("agents").doc(currentUser.uid);
-        const agentForBroker = {
-          ...agentData,
-          addedAt: new Date().toISOString(),
-          status: 'pending'
-        };
-        batch.set(brokerAgentRef, agentForBroker, { merge: true });
+        try {
+          const brokerAgentRef = doc(db, "brokers", selectedBroker.id, "agents", currentUser.uid);
+          const agentForBroker = {
+            ...agentData,
+            addedAt: new Date().toISOString(),
+            status: 'pending'
+          };
+          
+          // Remove undefined values from agentForBroker
+          Object.keys(agentForBroker).forEach(key => {
+            if (agentForBroker[key] === undefined) {
+              delete agentForBroker[key];
+            }
+          });
+          
+          await setDoc(brokerAgentRef, agentForBroker, { merge: true });
+          console.log('Added to broker agents subcollection');
+        } catch (brokerError) {
+          console.warn('Could not add to broker agents subcollection:', brokerError);
+          // Continue even if this fails
+        }
       }
       
-      // Commit the batch
-      await batch.commit();
+      hideLoading();
       
-      console.log('Profile saved successfully to Firestore');
+      // Show success state
+      document.getElementById('setupForm').style.display = 'none';
+      document.getElementById('successState').style.display = 'block';
+      
+      // Update success button
+      const viewProfileSuccessBtn = document.getElementById('viewProfileSuccessBtn');
+      if (viewProfileSuccessBtn) {
+        viewProfileSuccessBtn.href = `profile.html?id=${currentUser.uid}`;
+      }
+      
+      showToast('Profile saved successfully!', 'success');
+      
+      // Store in localStorage for immediate access
+      localStorage.setItem(`agent_${currentUser.uid}`, JSON.stringify(agentData));
       
     } catch (firestoreError) {
       console.error('Firestore error:', firestoreError);
+      hideLoading();
       
       // Try saving to localStorage as fallback
       try {
         localStorage.setItem(`agent_${currentUser.uid}_backup`, JSON.stringify(agentData));
         console.log('Saved to localStorage as backup');
+        
+        // Still show success but with warning
+        document.getElementById('setupForm').style.display = 'none';
+        document.getElementById('successState').style.display = 'block';
+        
+        const viewProfileSuccessBtn = document.getElementById('viewProfileSuccessBtn');
+        if (viewProfileSuccessBtn) {
+          viewProfileSuccessBtn.href = `profile.html?id=${currentUser.uid}`;
+        }
+        
+        showToast('Profile saved locally (offline mode)', 'success');
+        
       } catch (localStorageError) {
         console.error('LocalStorage error:', localStorageError);
+        showToast('Error saving profile. Please try again.', 'error');
       }
-      
-      // Continue with success flow even if Firestore fails partially
     }
-    
-    hideLoading();
-    
-    // Show success state
-    document.getElementById('setupForm').style.display = 'none';
-    document.getElementById('successState').style.display = 'block';
-    
-    // Update success button
-    const viewProfileSuccessBtn = document.getElementById('viewProfileSuccessBtn');
-    if (viewProfileSuccessBtn) {
-      viewProfileSuccessBtn.href = `profile.html?id=${currentUser.uid}`;
-    }
-    
-    showToast('Profile saved successfully!', 'success');
-    
-    // Store in localStorage
-    localStorage.setItem(`agent_${currentUser.uid}`, JSON.stringify(agentData));
     
   } catch (error) {
     console.error('Error in submitProfile:', error);
@@ -2248,8 +2216,10 @@ async function submitProfile() {
           errorMessage = 'Storage permission error. Please contact support.';
           break;
         default:
-          errorMessage = `Error: ${error.message}`;
+          errorMessage = `Error: ${error.message || error.code}`;
       }
+    } else if (error.message) {
+      errorMessage = `Error: ${error.message}`;
     }
     
     showToast(errorMessage, 'error');
@@ -2336,49 +2306,16 @@ function hideLoading() {
   }
 }
 
-// ==================== CONNECTION TESTING ====================
-async function testConnection() {
+// Make performLogout available globally (for compatibility with sidebar)
+window.performLogout = async function() {
   try {
-    console.log('Testing Firebase connection...');
-    
-    // Test Firestore connection only
-    const testDoc = await db.collection("test").doc("test").get();
-    console.log('Firestore connection: OK');
-    
-    // Test if user is authenticated
-    const user = auth.currentUser;
-    if (!user) {
-      console.log('User not authenticated');
-      showToast('Please log in to continue', 'error');
-      return false;
-    }
-    
-    console.log('User authenticated:', user.uid);
-    return true;
-    
+    await signOut(auth);
+    window.location.href = "login.html";
   } catch (error) {
-    console.error('Connection test failed:', error);
-    
-    // Don't show error for storage test failures
-    if (error.code === 'storage/object-not-found' || 
-        error.code === 'storage/unauthorized') {
-      console.log('Storage test failed (expected for test.txt)');
-      // Continue anyway - storage might still work for authenticated users
-      return true;
-    }
-    
-    showToast('Cannot connect to server. Please check your internet connection.', 'error');
-    return false;
+    console.error("Logout error:", error);
+    alert("Error logging out. Please try again.");
   }
-}
-
-// Run connection test on load
-window.addEventListener('load', async () => {
-  const connected = await testConnection();
-  if (!connected) {
-    document.getElementById('nextBtn').disabled = true;
-  }
-});
+};
 </script>
 </body>
 </html>

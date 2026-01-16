@@ -1437,49 +1437,52 @@ async function loadAgentProfile(agentId) {
       }
     }
     
-    // Try agents collection first (primary)
+    // IMPORTANT FIX: Try users collection first (where agent_profile.html saves)
     try {
-      const agentDoc = await getDoc(doc(db, "agents", agentId));
-      if (agentDoc.exists()) {
-        const data = agentDoc.data();
-        console.log("Loaded from agents collection:", data);
+      const userDoc = await getDoc(doc(db, "users", agentId));
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        console.log("Loaded from users collection:", data);
         
-        // Merge with existing data
-        if (profileData) {
-          profileData = { ...profileData, ...data, id: agentId };
-        } else {
+        // Check if this looks like an agent profile
+        if (data.userType === 'agent' || data.isProfileComplete || data.title) {
           profileData = { ...data, id: agentId };
+          
+          // Update localStorage
+          localStorage.setItem(`agent_${agentId}`, JSON.stringify(profileData));
+          console.log("Profile data from users collection is valid");
+        } else {
+          console.log("User data found but not an agent profile");
         }
-        
-        // Update localStorage
-        localStorage.setItem(`agent_${agentId}`, JSON.stringify(profileData));
       } else {
-        console.log("No document found in agents collection");
+        console.log("No document found in users collection");
       }
     } catch (error) {
-      console.log("Error loading from agents:", error.message);
+      console.log("Error loading from users:", error.message);
     }
     
-    // If still no data, try users collection
+    // If still no data, try agents collection
     if (!profileData || Object.keys(profileData).length === 0) {
       try {
-        const userDoc = await getDoc(doc(db, "users", agentId));
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          console.log("Loaded from users collection:", data);
+        const agentDoc = await getDoc(doc(db, "agents", agentId));
+        if (agentDoc.exists()) {
+          const data = agentDoc.data();
+          console.log("Loaded from agents collection:", data);
           
-          // Check if this looks like an agent profile
-          if (data.userType === 'agent' || data.agentId || data.brokerId) {
+          // Merge with existing data
+          if (profileData) {
+            profileData = { ...profileData, ...data, id: agentId };
+          } else {
             profileData = { ...data, id: agentId };
-            
-            // Update localStorage
-            localStorage.setItem(`agent_${agentId}`, JSON.stringify(profileData));
           }
+          
+          // Update localStorage
+          localStorage.setItem(`agent_${agentId}`, JSON.stringify(profileData));
         } else {
-          console.log("No document found in users collection");
+          console.log("No document found in agents collection");
         }
       } catch (error) {
-        console.log("Error loading from users:", error.message);
+        console.log("Error loading from agents:", error.message);
       }
     }
     
@@ -1613,7 +1616,7 @@ function displayAgentProfile(agent) {
   updateWebsiteLink(website);
   
   // Update member since
-  updateMemberSince(agent.createdAt || agent.joinedDate || agent.dateCreated);
+  updateMemberSince(agent.createdAt || agent.joinedDate || agent.dateCreated || agent.lastUpdated);
   
   // Update stats
   updateAgentStats(agent);
@@ -1678,7 +1681,15 @@ function setupContactButtons(email, phone, socialMedia) {
 
 function updateTagsSection(containerId, data) {
   const container = document.getElementById(containerId);
-  const items = ensureArray(data);
+  let items = [];
+  
+  if (data) {
+    if (Array.isArray(data)) {
+      items = data;
+    } else if (typeof data === 'string' && data.trim()) {
+      items = data.split(',').map(item => item.trim());
+    }
+  }
   
   if (items.length > 0) {
     container.innerHTML = items
@@ -1693,7 +1704,15 @@ function updateTagsSection(containerId, data) {
 
 function updateAgentSkills(skills) {
   const container = document.getElementById('agentSkills');
-  const skillItems = ensureArray(skills);
+  let skillItems = [];
+  
+  if (skills) {
+    if (Array.isArray(skills)) {
+      skillItems = skills;
+    } else if (typeof skills === 'string' && skills.trim()) {
+      skillItems = skills.split(',').map(skill => skill.trim());
+    }
+  }
   
   if (skillItems.length > 0) {
     container.innerHTML = skillItems
@@ -1724,10 +1743,16 @@ function updateProfilePhoto(photoURL, fullName) {
   const profilePhotoContainer = document.getElementById('profilePhoto');
   const placeholder = document.getElementById('profilePhotoPlaceholder');
   
-  if (photoURL) {
+  // Also check for base64 photos
+  let photoSrc = photoURL;
+  if (!photoURL && window.profileData && window.profileData.profilePhotoBase64) {
+    photoSrc = window.profileData.profilePhotoBase64;
+  }
+  
+  if (photoSrc) {
     // Create image
     const img = document.createElement('img');
-    img.src = photoURL;
+    img.src = photoSrc;
     img.alt = fullName;
     img.onerror = function() {
       // On error, show placeholder with initial
@@ -1761,28 +1786,28 @@ async function loadBrokerInfo(brokerId) {
     
     let brokerData = null;
     
-    // Try brokers collection first
+    // Try users collection first (where brokers are usually stored)
     try {
-      const brokerDoc = await getDoc(doc(db, "brokers", brokerId));
-      if (brokerDoc.exists()) {
-        brokerData = brokerDoc.data();
+      const userDoc = await getDoc(doc(db, "users", brokerId));
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        if (data.userType === 'broker') {
+          brokerData = data;
+        }
       }
     } catch (error) {
-      console.log("Error loading from brokers:", error);
+      console.log("Error loading from users:", error);
     }
     
-    // Try users collection if needed
+    // Try brokers collection if needed
     if (!brokerData) {
       try {
-        const userDoc = await getDoc(doc(db, "users", brokerId));
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          if (data.userType === 'broker') {
-            brokerData = data;
-          }
+        const brokerDoc = await getDoc(doc(db, "brokers", brokerId));
+        if (brokerDoc.exists()) {
+          brokerData = brokerDoc.data();
         }
       } catch (error) {
-        console.log("Error loading from users:", error);
+        console.log("Error loading from brokers:", error);
       }
     }
     
@@ -1845,7 +1870,7 @@ function updateSocialLinks(socialMedia) {
   const container = document.getElementById('socialLinks');
   container.innerHTML = '';
   
-  if (!socialMedia) {
+  if (!socialMedia || typeof socialMedia !== 'object') {
     container.innerHTML = '<p class="no-data" style="width: 100%; text-align: center;">No social media links available</p>';
     return;
   }
@@ -2004,10 +2029,10 @@ async function loadAgentProperties(agentId) {
     
     currentProperties = [];
     
-    // Try multiple queries
+    // Try multiple queries - IMPORTANT: Check both userId and agentId fields
     const queries = [
-      query(collection(db, "properties"), where("agentId", "==", agentId)),
       query(collection(db, "properties"), where("userId", "==", agentId)),
+      query(collection(db, "properties"), where("agentId", "==", agentId)),
       query(collection(db, "properties"), where("createdBy", "==", agentId))
     ];
     
