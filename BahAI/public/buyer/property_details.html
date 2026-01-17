@@ -1011,7 +1011,10 @@ function updateBackButton(userRole) {
         backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Landlord Dashboard';
     } else if (userRole === 'admin') {
         backButton.href = '../admin/admin_dashboard.html';
-        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Admin Dashboard';
+        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Buyer Dashboard';
+    } else if (userRole === 'buyer') {
+        backButton.href = '../buyer/buyer_dashboard.html';
+        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Dashboard';
     } else {
         // Default for other roles
         backButton.href = '../index.html';
@@ -2364,6 +2367,10 @@ function displayError(message) {
     } else if (currentUserRole === 'broker') {
         backLink = 'broker_dashboard.html';
         backText = 'Back to Broker Dashboard';
+    }
+    else if (currentUserRole === 'buyer') {
+        backLink = 'buyer_dashboard.html';
+        backText = 'Back to Buyer Dashboard';
     }
     
     container.innerHTML = `
