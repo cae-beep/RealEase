@@ -966,7 +966,7 @@
       <i class="fas fa-exclamation-circle"></i>
       <p>Your profile is incomplete. Complete your profile to attract more clients.</p>
     </div>
-    <a href="agent_profile.html" class="action-btn btn-primary">
+    <a href="agent_edit_profile.html" class="action-btn btn-primary">
       <i class="fas fa-edit"></i> Complete Profile
     </a>
   </div>
@@ -1268,7 +1268,7 @@ function loadSidebar() {
             links.forEach(link => {
                 link.classList.remove('active');
                 if (link.getAttribute('href') === 'agent_dashboard.html' || 
-                    link.getAttribute('href') === 'agent_details.html') {
+                    link.getAttribute('href') === 'agent_edit_profile.html') {
                     link.classList.add('active');
                 }
             });
@@ -1336,7 +1336,8 @@ import {
   collection,
   query,
   where,
-  getDocs
+  getDocs,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
 // Firebase Configuration
@@ -1418,6 +1419,70 @@ function updatePageTitle(isOwnProfile) {
   }
 }
 
+// ==================== CLEANUP FUNCTION (FIX FOR DUPLICATION) ====================
+async function cleanupDuplicateAgentData(agentId) {
+  try {
+    console.log("🔄 Cleaning up agent data for:", agentId);
+    
+    // Check both collections
+    const [agentDoc, userDoc] = await Promise.all([
+      getDoc(doc(db, "agents", agentId)),
+      getDoc(doc(db, "users", agentId))
+    ]);
+    
+    const agentExists = agentDoc.exists();
+    const userExists = userDoc.exists();
+    
+    if (agentExists && userExists) {
+      const agentData = agentDoc.data();
+      const userData = userDoc.data();
+      
+      // Check if user document is an agent
+      const userIsAgent = userData.userType === 'agent' || userData.role === 'agent';
+      
+      if (userIsAgent) {
+        // Determine which has more complete data
+        const agentComplete = agentData.isProfileComplete || agentData.profileCompleted || false;
+        const userComplete = userData.isProfileComplete || userData.profileCompleted || false;
+        
+        if (userComplete && !agentComplete) {
+          // User has more complete data, merge into agents
+          const mergedData = { ...agentData, ...userData };
+          await setDoc(doc(db, "agents", agentId), mergedData);
+          console.log("✅ Merged complete user data into agents");
+        }
+        
+        // Always delete from users collection to avoid duplicates
+        await deleteDoc(doc(db, "users", agentId));
+        console.log("✅ Removed duplicate from users collection");
+        
+        return { id: agentId, ...agentData };
+      }
+    } else if (userExists && !agentExists) {
+      const userData = userDoc.data();
+      const userIsAgent = userData.userType === 'agent' || userData.role === 'agent';
+      
+      if (userIsAgent) {
+        // Migrate to agents collection
+        await setDoc(doc(db, "agents", agentId), userData);
+        await deleteDoc(doc(db, "users", agentId));
+        console.log("✅ Migrated agent from users to agents");
+        return { id: agentId, ...userData };
+      }
+    } else if (agentExists) {
+      // Only in agents collection - good!
+      const agentData = agentDoc.data();
+      return { id: agentId, ...agentData };
+    }
+    
+    return null;
+    
+  } catch (error) {
+    console.error('Error cleaning up data:', error);
+    return null;
+  }
+}
+
 // ==================== PROFILE FUNCTIONS ====================
 async function loadAgentProfile(agentId) {
   try {
@@ -1426,67 +1491,61 @@ async function loadAgentProfile(agentId) {
     
     let profileData = null;
     
-    // Try to load from localStorage first (for immediate feedback)
-    const localData = localStorage.getItem(`agent_${agentId}`);
-    if (localData) {
-      try {
-        profileData = JSON.parse(localData);
-        console.log("Loaded from localStorage:", profileData);
-      } catch (e) {
-        console.log("Error parsing localStorage data:", e);
-      }
-    }
+    // 🆕 FIX: First clean up any duplicate data BEFORE loading
+    await cleanupDuplicateAgentData(agentId);
     
-    // IMPORTANT FIX: Try users collection first (where agent_profile.html saves)
+    // 🆕 FIX: Only load from ONE primary source
+    // Priority: agents collection first (since it's agent-specific)
     try {
-      const userDoc = await getDoc(doc(db, "users", agentId));
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        console.log("Loaded from users collection:", data);
-        
-        // Check if this looks like an agent profile
-        if (data.userType === 'agent' || data.isProfileComplete || data.title) {
-          profileData = { ...data, id: agentId };
-          
-          // Update localStorage
-          localStorage.setItem(`agent_${agentId}`, JSON.stringify(profileData));
-          console.log("Profile data from users collection is valid");
-        } else {
-          console.log("User data found but not an agent profile");
+      // First try agents collection
+      const agentDocRef = doc(db, "agents", agentId);
+      const agentDoc = await getDoc(agentDocRef);
+      
+      if (agentDoc.exists()) {
+        const data = agentDoc.data();
+        // Check if it's a valid agent profile
+        if (data.isProfileComplete || data.title || data.yearsExperience) {
+          console.log("✅ Loaded from agents collection");
+          profileData = { id: agentId, ...data };
         }
-      } else {
-        console.log("No document found in users collection");
       }
     } catch (error) {
-      console.log("Error loading from users:", error.message);
+      console.log("Error loading from agents:", error.message);
     }
     
-    // If still no data, try agents collection
-    if (!profileData || Object.keys(profileData).length === 0) {
+    // If not found in agents, try users collection
+    if (!profileData) {
       try {
-        const agentDoc = await getDoc(doc(db, "agents", agentId));
-        if (agentDoc.exists()) {
-          const data = agentDoc.data();
-          console.log("Loaded from agents collection:", data);
-          
-          // Merge with existing data
-          if (profileData) {
-            profileData = { ...profileData, ...data, id: agentId };
-          } else {
-            profileData = { ...data, id: agentId };
+        const userDocRef = doc(db, "users", agentId);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          // Only use if it's an agent profile
+          if (data.userType === 'agent' || data.role === 'agent') {
+            console.log("✅ Loaded from users collection");
+            profileData = { id: agentId, ...data };
           }
-          
-          // Update localStorage
-          localStorage.setItem(`agent_${agentId}`, JSON.stringify(profileData));
-        } else {
-          console.log("No document found in agents collection");
         }
       } catch (error) {
-        console.log("Error loading from agents:", error.message);
+        console.log("Error loading from users:", error.message);
       }
     }
     
-    // Display profile
+    // If still no data, check localStorage
+    if (!profileData) {
+      const localData = localStorage.getItem(`agent_${agentId}`);
+      if (localData) {
+        try {
+          profileData = JSON.parse(localData);
+          console.log("Loaded from localStorage");
+        } catch (e) {
+          console.log("Error parsing localStorage data:", e);
+        }
+      }
+    }
+    
+    // Display profile if found
     if (profileData && Object.keys(profileData).length > 0) {
       console.log("Displaying agent profile data:", profileData);
       displayAgentProfile(profileData);
@@ -1535,6 +1594,20 @@ async function loadAgentProfile(agentId) {
 
 function displayAgentProfile(agent) {
   console.log("Displaying agent profile:", agent);
+  
+  // 🆕 FIX: Remove any duplicate fields that might come from merged data
+  // Fields that should not be duplicated
+  const uniqueFields = ['id', 'uid', 'userId', 'agentId'];
+  uniqueFields.forEach(field => {
+    if (agent[field] && Array.isArray(agent[field])) {
+      // If it's an array with duplicates, deduplicate
+      agent[field] = [...new Set(agent[field])];
+    } else if (agent[field] && typeof agent[field] === 'string') {
+      // If it's a comma-separated string with duplicates
+      const items = agent[field].split(',').map(item => item.trim());
+      agent[field] = [...new Set(items)].join(', ');
+    }
+  });
   
   // Extract data with fallbacks
   const fullName = agent.fullName || agent.displayName || agent.name || 'Agent';
@@ -2003,7 +2076,7 @@ function addEditProfileButton() {
   
   if (!document.querySelector('.edit-profile-btn')) {
     const editButton = document.createElement('a');
-    editButton.href = 'agent_profile.html';
+    editButton.href = 'agent_edit_profile.html';
     editButton.className = 'action-btn btn-accent';
     editButton.innerHTML = '<i class="fas fa-edit"></i> Edit Profile';
     profileActions.appendChild(editButton);
