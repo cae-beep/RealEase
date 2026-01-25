@@ -67,3 +67,8 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+# Python virtual environment
+venv/
+__pycache__/
+*.pyc

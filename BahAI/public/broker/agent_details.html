@@ -109,6 +109,53 @@
       font-size: 16px;
     }
 
+    /* Profile Navigation Tabs */
+    .profile-nav-tabs {
+      display: flex;
+      background: var(--bg-white);
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 30px;
+      overflow-x: auto;
+    }
+
+    .profile-nav-tab {
+      flex: 1;
+      text-align: center;
+      padding: 15px 20px;
+      background: none;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
+      min-width: 120px;
+    }
+
+    .profile-nav-tab:hover {
+      color: var(--primary);
+      background: var(--bg-light);
+    }
+
+    .profile-nav-tab.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .profile-nav-tab i {
+      font-size: 16px;
+    }
+
     /* Profile Header */
     .profile-header {
       background: var(--bg-white);
@@ -407,6 +454,152 @@
       font-size: 20px;
       font-weight: 600;
       color: var(--text-dark);
+    }
+
+    /* Settings Section Styles */
+    .settings-section {
+      display: block;
+    }
+
+    .settings-group {
+      margin-bottom: 30px;
+    }
+
+    .settings-group h3 {
+      font-size: 18px;
+      color: var(--text-dark);
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .settings-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .settings-item:last-child {
+      border-bottom: none;
+    }
+
+    .settings-info {
+      flex: 1;
+    }
+
+    .settings-title {
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+
+    .settings-desc {
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .settings-control {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 26px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--success);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+
+    .select-control {
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-white);
+      color: var(--text-dark);
+      font-family: 'Inter', sans-serif;
+      min-width: 150px;
+    }
+
+    .settings-action-btn {
+      padding: 8px 16px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s ease;
+    }
+
+    .settings-action-btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .danger-zone {
+      border: 2px solid var(--danger);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 30px;
+    }
+
+    .danger-zone h3 {
+      color: var(--danger);
+    }
+
+    .danger-btn {
+      background: var(--bg-white);
+      color: var(--danger);
+      border: 1px solid var(--danger);
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .danger-btn:hover {
+      background: var(--danger);
+      color: white;
     }
 
     /* Tags Container */
@@ -935,6 +1128,23 @@
       .skills-grid {
         grid-template-columns: 1fr;
       }
+      
+      .profile-nav-tab {
+        min-width: 100px;
+        padding: 12px 15px;
+        font-size: 14px;
+      }
+      
+      .settings-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      
+      .settings-control {
+        width: 100%;
+        justify-content: space-between;
+      }
     }
 </style>
 </head>
@@ -960,6 +1170,22 @@
     <p id="pageSubtitle">View agent profile and listings</p>
   </div>
 
+  <!-- Profile Navigation Tabs -->
+  <div class="profile-nav-tabs" id="profileNavTabs">
+    <button class="profile-nav-tab active" data-tab="profile">
+      <i class="fas fa-user"></i> Profile
+    </button>
+    <button class="profile-nav-tab" data-tab="settings">
+      <i class="fas fa-cog"></i> Settings
+    </button>
+    <button class="profile-nav-tab" data-tab="preferences">
+      <i class="fas fa-sliders-h"></i> Preferences
+    </button>
+    <button class="profile-nav-tab" data-tab="privacy">
+      <i class="fas fa-shield-alt"></i> Privacy
+    </button>
+  </div>
+
   <!-- Incomplete Profile Banner (hidden by default) -->
   <div id="incompleteBanner" class="incomplete-banner" style="display: none;">
     <div class="incomplete-banner-content">
@@ -971,267 +1197,646 @@
     </a>
   </div>
 
-  <!-- Profile Header -->
-  <div class="profile-header">
-    <div class="profile-badges" id="profileBadges">
-      <span class="profile-badge badge-agent">Agent</span>
-      <span class="profile-badge badge-active">Active</span>
+  <!-- Profile Content (default view) -->
+  <div id="profileContent" class="profile-content-section">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="profile-badges" id="profileBadges">
+        <span class="profile-badge badge-agent">Agent</span>
+        <span class="profile-badge badge-active">Active</span>
+      </div>
+
+      <div class="profile-main">
+        <!-- Profile Photo -->
+        <div class="profile-photo" id="profilePhoto">
+          <div class="profile-photo-placeholder" id="profilePhotoPlaceholder">
+            <!-- Initial will be added by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Profile Details -->
+        <div class="profile-details">
+          <h1 class="profile-name" id="agentName">Loading...</h1>
+          <div class="profile-title" id="agentTitle">Real Estate Agent</div>
+          <div class="profile-location">
+            <i class="fas fa-map-marker-alt"></i>
+            <span id="agentLocation">Location not specified</span>
+            <span id="yearsExperience"></span>
+          </div>
+          
+          <div class="profile-bio" id="agentBio">
+            <p class="no-data">No bio information provided.</p>
+          </div>
+
+          <!-- Profile Stats -->
+          <div class="profile-stats">
+            <div class="stat-card">
+              <div class="stat-value" id="propertiesCount">0</div>
+              <div class="stat-label">Properties</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="yearsExpCount">0</div>
+              <div class="stat-label">Years Experience</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="clientsCount">0</div>
+              <div class="stat-label">Clients Served</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="successRate">0%</div>
+              <div class="stat-label">Success Rate</div>
+            </div>
+          </div>
+
+          <!-- Profile Actions -->
+          <div class="profile-actions" id="profileActions">
+            <a href="#" class="action-btn btn-primary" id="contactBtn">
+              <i class="fas fa-envelope"></i> Contact
+            </a>
+            <a href="#" class="action-btn btn-secondary" id="whatsappBtn" style="display: none;">
+              <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+            <a href="#" class="action-btn btn-outline" id="callBtn">
+              <i class="fas fa-phone"></i> Call Now
+            </a>
+            <a href="#" class="action-btn btn-secondary" id="viberBtn" style="display: none;">
+              <i class="fab fa-viber"></i> Viber
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="profile-main">
-      <!-- Profile Photo -->
-      <div class="profile-photo" id="profilePhoto">
-        <div class="profile-photo-placeholder" id="profilePhotoPlaceholder">
-          <!-- Initial will be added by JavaScript -->
+    <!-- Profile Content -->
+    <div class="profile-content">
+      <!-- Left Column -->
+      <div class="left-column">
+        <!-- About Section -->
+        <div class="profile-card">
+          <div class="section-header">
+            <i class="fas fa-user"></i>
+            <h2>About</h2>
+          </div>
+          <div class="about-content" id="agentAbout">
+            <p class="no-data">No about information provided.</p>
+          </div>
+        </div>
+
+        <!-- Specializations Section -->
+        <div class="profile-card">
+          <div class="section-header">
+            <i class="fas fa-star"></i>
+            <h2>Specializations</h2>
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+            <h3 style="margin-bottom: 10px; color: var(--text-dark); font-size: 16px; font-weight: 600;">Property Types</h3>
+            <div class="tags-container" id="propertyTypes">
+              <span class="tag no-data">Not specified</span>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+            <h3 style="margin-bottom: 10px; color: var(--text-dark); font-size: 16px; font-weight: 600;">Agent Skills</h3>
+            <div class="skills-grid" id="agentSkills">
+              <span class="no-data" style="grid-column: 1 / -1;">No skills specified</span>
+            </div>
+          </div>
+          
+          <div>
+            <h3 style="margin-bottom: 10px; color: var(--text-dark); font-size: 16px; font-weight: 600;">Service Areas</h3>
+            <div class="tags-container" id="serviceAreas">
+              <span class="tag no-data">Not specified</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Broker Information (if applicable) -->
+        <div class="profile-card" id="brokerSection" style="display: none;">
+          <div class="section-header">
+            <i class="fas fa-handshake"></i>
+            <h2>Working With Broker</h2>
+          </div>
+          <div class="broker-info-section" id="brokerInfo">
+            <!-- Broker info will be loaded here -->
+          </div>
+        </div>
+
+        <!-- Properties Section -->
+        <div class="profile-card">
+          <div class="properties-header">
+            <div class="section-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
+              <i class="fas fa-home"></i>
+              <h2>Properties</h2>
+            </div>
+            <div>
+              <select id="propertyFilter" class="filter-select">
+                <option value="all">All Properties</option>
+                <option value="available">Available</option>
+                <option value="sold">Sold</option>
+                <option value="rented">Rented</option>
+                <option value="rent">For Rent</option>
+                <option value="sale">For Sale</option>
+                <option value="lease">For Lease</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="properties-grid" id="propertiesGrid">
+            <!-- Loading State -->
+            <div class="loading-state">
+              <div class="spinner"></div>
+              <p>Loading properties...</p>
+            </div>
+          </div>
+          
+          <!-- View All Button -->
+          <div style="text-align: center; margin-top: 20px;">
+            <a href="#" class="view-all-btn" id="viewAllBtn" style="display: none;">
+              <i class="fas fa-eye"></i> View All Properties
+            </a>
+          </div>
         </div>
       </div>
 
-      <!-- Profile Details -->
-      <div class="profile-details">
-        <h1 class="profile-name" id="agentName">Loading...</h1>
-        <div class="profile-title" id="agentTitle">Real Estate Agent</div>
-        <div class="profile-location">
-          <i class="fas fa-map-marker-alt"></i>
-          <span id="agentLocation">Location not specified</span>
-          <span id="yearsExperience"></span>
-        </div>
-        
-        <div class="profile-bio" id="agentBio">
-          <p class="no-data">No bio information provided.</p>
+      <!-- Right Column -->
+      <div class="right-column">
+        <!-- Contact Information -->
+        <div class="profile-card">
+          <div class="section-header">
+            <i class="fas fa-address-card"></i>
+            <h2>Contact Info</h2>
+          </div>
+          <ul class="contact-list">
+            <li class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <div class="contact-details">
+                <div class="contact-label">Email</div>
+                <div class="contact-value" id="contactEmail">Not provided</div>
+              </div>
+            </li>
+            <li class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-phone"></i>
+              </div>
+              <div class="contact-details">
+                <div class="contact-label">Phone</div>
+                <div class="contact-value" id="contactPhone">Not provided</div>
+              </div>
+            </li>
+            <li class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div class="contact-details">
+                <div class="contact-label">Location</div>
+                <div class="contact-value" id="contactLocation">Not provided</div>
+              </div>
+            </li>
+            <li class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="contact-details">
+                <div class="contact-label">Availability</div>
+                <div class="contact-value" id="contactAvailability">Not specified</div>
+              </div>
+            </li>
+            <li class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-briefcase"></i>
+              </div>
+              <div class="contact-details">
+                <div class="contact-label">Working Hours</div>
+                <div class="contact-value" id="workingHours">Not specified</div>
+              </div>
+            </li>
+            <li class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-globe"></i>
+              </div>
+              <div class="contact-details">
+                <div class="contact-label">Website/Portfolio</div>
+                <a href="#" class="contact-value" id="contactWebsite" target="_blank" style="color: var(--primary); text-decoration: none; display: none;">Visit Portfolio</a>
+                <span id="noWebsite" class="no-data">Not provided</span>
+              </div>
+            </li>
+          </ul>
         </div>
 
-        <!-- Profile Stats -->
-        <div class="profile-stats">
-          <div class="stat-card">
-            <div class="stat-value" id="propertiesCount">0</div>
-            <div class="stat-label">Properties</div>
+        <!-- Professional Details -->
+        <div class="profile-card">
+          <div class="section-header">
+            <i class="fas fa-briefcase"></i>
+            <h2>Professional Details</h2>
           </div>
-          <div class="stat-card">
-            <div class="stat-value" id="yearsExpCount">0</div>
-            <div class="stat-label">Years Experience</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="clientsCount">0</div>
-            <div class="stat-label">Clients Served</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="successRate">0%</div>
-            <div class="stat-label">Success Rate</div>
+          <div class="professional-details">
+            <div style="margin-bottom: 15px;">
+              <div class="contact-label">Agent ID</div>
+              <div class="contact-value" id="agentId">Not assigned</div>
+            </div>
+            <div style="margin-bottom: 15px;">
+              <div class="contact-label">Languages Spoken</div>
+              <div class="contact-value" id="languagesSpoken">Not specified</div>
+            </div>
+            <div style="margin-bottom: 15px;">
+              <div class="contact-label">Commission Preference</div>
+              <div class="contact-value" id="commissionPreference">Not specified</div>
+            </div>
+            <div>
+              <div class="contact-label">Member Since</div>
+              <div class="contact-value" id="memberSince">N/A</div>
+            </div>
           </div>
         </div>
 
-        <!-- Profile Actions -->
-        <div class="profile-actions" id="profileActions">
-          <a href="#" class="action-btn btn-primary" id="contactBtn">
-            <i class="fas fa-envelope"></i> Contact
-          </a>
-          <a href="#" class="action-btn btn-secondary" id="whatsappBtn" style="display: none;">
-            <i class="fab fa-whatsapp"></i> WhatsApp
-          </a>
-          <a href="#" class="action-btn btn-outline" id="callBtn">
-            <i class="fas fa-phone"></i> Call Now
-          </a>
-          <a href="#" class="action-btn btn-secondary" id="viberBtn" style="display: none;">
-            <i class="fab fa-viber"></i> Viber
-          </a>
+        <!-- Social Media -->
+        <div class="profile-card">
+          <div class="section-header">
+            <i class="fas fa-share-alt"></i>
+            <h2>Connect</h2>
+          </div>
+          <div class="social-links" id="socialLinks">
+            <p class="no-data" style="width: 100%; text-align: center;">No social media links available</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Profile Content -->
-  <div class="profile-content">
-    <!-- Left Column -->
-    <div class="left-column">
-      <!-- About Section -->
-      <div class="profile-card">
-        <div class="section-header">
-          <i class="fas fa-user"></i>
-          <h2>About</h2>
-        </div>
-        <div class="about-content" id="agentAbout">
-          <p class="no-data">No about information provided.</p>
-        </div>
+  <!-- Settings Content (hidden by default) -->
+  <div id="settingsContent" class="settings-section" style="display: none;">
+    <div class="profile-card">
+      <div class="section-header">
+        <i class="fas fa-cog"></i>
+        <h2>Account Settings</h2>
       </div>
 
-      <!-- Specializations Section -->
-      <div class="profile-card">
-        <div class="section-header">
-          <i class="fas fa-star"></i>
-          <h2>Specializations</h2>
-        </div>
-        
-        <div style="margin-bottom: 20px;">
-          <h3 style="margin-bottom: 10px; color: var(--text-dark); font-size: 16px; font-weight: 600;">Property Types</h3>
-          <div class="tags-container" id="propertyTypes">
-            <span class="tag no-data">Not specified</span>
+      <div class="settings-group">
+        <h3>Profile Settings</h3>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Profile Visibility</div>
+            <div class="settings-desc">Control who can see your profile</div>
           </div>
-        </div>
-        
-        <div style="margin-bottom: 20px;">
-          <h3 style="margin-bottom: 10px; color: var(--text-dark); font-size: 16px; font-weight: 600;">Agent Skills</h3>
-          <div class="skills-grid" id="agentSkills">
-            <span class="no-data" style="grid-column: 1 / -1;">No skills specified</span>
-          </div>
-        </div>
-        
-        <div>
-          <h3 style="margin-bottom: 10px; color: var(--text-dark); font-size: 16px; font-weight: 600;">Service Areas</h3>
-          <div class="tags-container" id="serviceAreas">
-            <span class="tag no-data">Not specified</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Broker Information (if applicable) -->
-      <div class="profile-card" id="brokerSection" style="display: none;">
-        <div class="section-header">
-          <i class="fas fa-handshake"></i>
-          <h2>Working With Broker</h2>
-        </div>
-        <div class="broker-info-section" id="brokerInfo">
-          <!-- Broker info will be loaded here -->
-        </div>
-      </div>
-
-      <!-- Properties Section -->
-      <div class="profile-card">
-        <div class="properties-header">
-          <div class="section-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
-            <i class="fas fa-home"></i>
-            <h2>Properties</h2>
-          </div>
-          <div>
-            <select id="propertyFilter" class="filter-select">
-              <option value="all">All Properties</option>
-              <option value="available">Available</option>
-              <option value="sold">Sold</option>
-              <option value="rented">Rented</option>
-              <option value="rent">For Rent</option>
-              <option value="sale">For Sale</option>
-              <option value="lease">For Lease</option>
+          <div class="settings-control">
+            <select class="select-control" id="profileVisibility">
+              <option value="public">Public</option>
+              <option value="registered">Registered Users Only</option>
+              <option value="private">Private</option>
             </select>
           </div>
         </div>
-        
-        <div class="properties-grid" id="propertiesGrid">
-          <!-- Loading State -->
-          <div class="loading-state">
-            <div class="spinner"></div>
-            <p>Loading properties...</p>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Contact Information</div>
+            <div class="settings-desc">Show/hide contact details on profile</div>
+          </div>
+          <div class="settings-control">
+            <label class="switch">
+              <input type="checkbox" id="showContactInfo" checked>
+              <span class="slider"></span>
+            </label>
           </div>
         </div>
-        
-        <!-- View All Button -->
-        <div style="text-align: center; margin-top: 20px;">
-          <a href="#" class="view-all-btn" id="viewAllBtn" style="display: none;">
-            <i class="fas fa-eye"></i> View All Properties
-          </a>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Profile Photo</div>
+            <div class="settings-desc">Allow others to see your profile photo</div>
+          </div>
+          <div class="settings-control">
+            <label class="switch">
+              <input type="checkbox" id="showProfilePhoto" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Notification Settings</h3>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Email Notifications</div>
+            <div class="settings-desc">Receive notifications via email</div>
+          </div>
+          <div class="settings-control">
+            <label class="switch">
+              <input type="checkbox" id="emailNotifications" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">SMS Notifications</div>
+            <div class="settings-desc">Receive notifications via SMS</div>
+          </div>
+          <div class="settings-control">
+            <label class="switch">
+              <input type="checkbox" id="smsNotifications">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">New Message Alerts</div>
+            <div class="settings-desc">Get notified about new messages</div>
+          </div>
+          <div class="settings-control">
+            <label class="switch">
+              <input type="checkbox" id="messageAlerts" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Account Management</h3>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Change Password</div>
+            <div class="settings-desc">Update your account password</div>
+          </div>
+          <div class="settings-control">
+            <button class="settings-action-btn" id="changePasswordBtn">Change</button>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Update Email</div>
+            <div class="settings-desc">Change your email address</div>
+          </div>
+          <div class="settings-control">
+            <button class="settings-action-btn" id="updateEmailBtn">Update</button>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Two-Factor Authentication</div>
+            <div class="settings-desc">Add extra security to your account</div>
+          </div>
+          <div class="settings-control">
+            <label class="switch">
+              <input type="checkbox" id="twoFactorAuth">
+              <span class="slider"></span>
+            </label>
+          </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Right Column -->
-    <div class="right-column">
-      <!-- Contact Information -->
-      <div class="profile-card">
-        <div class="section-header">
-          <i class="fas fa-address-card"></i>
-          <h2>Contact Info</h2>
-        </div>
-        <ul class="contact-list">
-          <li class="contact-item">
-            <div class="contact-icon">
-              <i class="fas fa-envelope"></i>
-            </div>
-            <div class="contact-details">
-              <div class="contact-label">Email</div>
-              <div class="contact-value" id="contactEmail">Not provided</div>
-            </div>
-          </li>
-          <li class="contact-item">
-            <div class="contact-icon">
-              <i class="fas fa-phone"></i>
-            </div>
-            <div class="contact-details">
-              <div class="contact-label">Phone</div>
-              <div class="contact-value" id="contactPhone">Not provided</div>
-            </div>
-          </li>
-          <li class="contact-item">
-            <div class="contact-icon">
-              <i class="fas fa-map-marker-alt"></i>
-            </div>
-            <div class="contact-details">
-              <div class="contact-label">Location</div>
-              <div class="contact-value" id="contactLocation">Not provided</div>
-            </div>
-          </li>
-          <li class="contact-item">
-            <div class="contact-icon">
-              <i class="fas fa-clock"></i>
-            </div>
-            <div class="contact-details">
-              <div class="contact-label">Availability</div>
-              <div class="contact-value" id="contactAvailability">Not specified</div>
-            </div>
-          </li>
-          <li class="contact-item">
-            <div class="contact-icon">
-              <i class="fas fa-briefcase"></i>
-            </div>
-            <div class="contact-details">
-              <div class="contact-label">Working Hours</div>
-              <div class="contact-value" id="workingHours">Not specified</div>
-            </div>
-          </li>
-          <li class="contact-item">
-            <div class="contact-icon">
-              <i class="fas fa-globe"></i>
-            </div>
-            <div class="contact-details">
-              <div class="contact-label">Website/Portfolio</div>
-              <a href="#" class="contact-value" id="contactWebsite" target="_blank" style="color: var(--primary); text-decoration: none; display: none;">Visit Portfolio</a>
-              <span id="noWebsite" class="no-data">Not provided</span>
-            </div>
-          </li>
-        </ul>
+  <!-- Preferences Content (hidden by default) -->
+  <div id="preferencesContent" class="settings-section" style="display: none;">
+    <div class="profile-card">
+      <div class="section-header">
+        <i class="fas fa-sliders-h"></i>
+        <h2>Preferences</h2>
       </div>
 
-      <!-- Professional Details -->
-      <div class="profile-card">
-        <div class="section-header">
-          <i class="fas fa-briefcase"></i>
-          <h2>Professional Details</h2>
+      <div class="settings-group">
+        <h3>Display Preferences</h3>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Theme</div>
+            <div class="settings-desc">Choose your preferred theme</div>
+          </div>
+          <div class="settings-control">
+            <select class="select-control" id="themePreference">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="auto">Auto (System)</option>
+            </select>
+          </div>
         </div>
-        <div class="professional-details">
-          <div style="margin-bottom: 15px;">
-            <div class="contact-label">Agent ID</div>
-            <div class="contact-value" id="agentId">Not assigned</div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Language</div>
+            <div class="settings-desc">Choose your preferred language</div>
           </div>
-          <div style="margin-bottom: 15px;">
-            <div class="contact-label">Languages Spoken</div>
-            <div class="contact-value" id="languagesSpoken">Not specified</div>
+          <div class="settings-control">
+            <select class="select-control" id="languagePreference">
+              <option value="en">English</option>
+              <option value="es">Spanish</option>
+              <option value="fr">French</option>
+            </select>
           </div>
-          <div style="margin-bottom: 15px;">
-            <div class="contact-label">Commission Preference</div>
-            <div class="contact-value" id="commissionPreference">Not specified</div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Properties Per Page</div>
+            <div class="settings-desc">Number of properties to show per page</div>
           </div>
-          <div>
-            <div class="contact-label">Member Since</div>
-            <div class="contact-value" id="memberSince">N/A</div>
+          <div class="settings-control">
+            <select class="select-control" id="itemsPerPage">
+              <option value="10">10</option>
+              <option value="20" selected>20</option>
+              <option value="30">30</option>
+              <option value="50">50</option>
+            </select>
           </div>
         </div>
       </div>
 
-      <!-- Social Media -->
-      <div class="profile-card">
-        <div class="section-header">
-          <i class="fas fa-share-alt"></i>
-          <h2>Connect</h2>
+      <div class="settings-group">
+        <h3>Property Preferences</h3>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Default Property View</div>
+            <div class="settings-desc">How properties are displayed by default</div>
+          </div>
+          <div class="settings-control">
+            <select class="select-control" id="defaultPropertyView">
+              <option value="grid">Grid View</option>
+              <option value="list">List View</option>
+              <option value="map">Map View</option>
+            </select>
+          </div>
         </div>
-        <div class="social-links" id="socialLinks">
-          <p class="no-data" style="width: 100%; text-align: center;">No social media links available</p>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Auto-save Drafts</div>
+            <div class="settings-desc">Automatically save property drafts</div>
+          </div>
+          <div class="settings-control">
+            <label class="switch">
+              <input type="checkbox" id="autoSaveDrafts" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Default Currency</div>
+            <div class="settings-desc">Preferred currency for prices</div>
+          </div>
+          <div class="settings-control">
+            <select class="select-control" id="defaultCurrency">
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="PHP" selected>PHP (₱)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Communication Preferences</h3>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Preferred Contact Method</div>
+            <div class="settings-desc">How clients should contact you</div>
+          </div>
+          <div class="settings-control">
+            <select class="select-control" id="preferredContactMethod">
+              <option value="email">Email</option>
+              <option value="phone">Phone</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="viber">Viber</option>
+              <option value="all">All Methods</option>
+            </select>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Auto-reply Messages</div>
+            <div class="settings-desc">Send automatic replies to inquiries</div>
+          </div>
+          <div class="settings-control">
+            <label class="switch">
+              <input type="checkbox" id="autoReplyMessages">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Business Hours Only</div>
+            <div class="settings-desc">Only receive notifications during business hours</div>
+          </div>
+          <div class="settings-control">
+            <label class="switch">
+              <input type="checkbox" id="businessHoursOnly">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Privacy Content (hidden by default) -->
+  <div id="privacyContent" class="settings-section" style="display: none;">
+    <div class="profile-card">
+      <div class="section-header">
+        <i class="fas fa-shield-alt"></i>
+        <h2>Privacy & Security</h2>
+      </div>
+
+      <div class="settings-group">
+        <h3>Data Privacy</h3>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Data Sharing</div>
+            <div class="settings-desc">Allow sharing of anonymous usage data</div>
+          </div>
+          <div class="settings-control">
+            <label class="switch">
+              <input type="checkbox" id="dataSharing">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Personalized Ads</div>
+            <div class="settings-desc">Show personalized advertisements</div>
+          </div>
+          <div class="settings-control">
+            <label class="switch">
+              <input type="checkbox" id="personalizedAds">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Search Engine Indexing</div>
+            <div class="settings-desc">Allow search engines to index your profile</div>
+          </div>
+          <div class="settings-control">
+            <label class="switch">
+              <input type="checkbox" id="searchEngineIndexing" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Security Settings</h3>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Login Notifications</div>
+            <div class="settings-desc">Get notified of new logins</div>
+          </div>
+          <div class="settings-control">
+            <label class="switch">
+              <input type="checkbox" id="loginNotifications" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Session Timeout</div>
+            <div class="settings-desc">Auto-logout after inactivity</div>
+          </div>
+          <div class="settings-control">
+            <select class="select-control" id="sessionTimeout">
+              <option value="15">15 minutes</option>
+              <option value="30" selected>30 minutes</option>
+              <option value="60">1 hour</option>
+              <option value="120">2 hours</option>
+            </select>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Trusted Devices</div>
+            <div class="settings-desc">Manage devices logged into your account</div>
+          </div>
+          <div class="settings-control">
+            <button class="settings-action-btn" id="manageDevicesBtn">Manage</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="danger-zone">
+        <h3>Danger Zone</h3>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Delete Account</div>
+            <div class="settings-desc">Permanently delete your account and all data</div>
+          </div>
+          <div class="settings-control">
+            <button class="danger-btn" id="deleteAccountBtn">Delete Account</button>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <div class="settings-title">Export Data</div>
+            <div class="settings-desc">Download all your data from BahAI Real Estate</div>
+          </div>
+          <div class="settings-control">
+            <button class="settings-action-btn" id="exportDataBtn">Export Data</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1249,41 +1854,176 @@ document.getElementById('mobileMenuToggle').addEventListener('click', function()
     }
 });
 
-// Load sidebar based on authentication
-function loadSidebar() {
-    fetch('agent_sidebar.html')
-        .then(response => {
-            if (!response.ok) {
-                console.log('Agent sidebar not found, trying default sidebar');
-                return fetch('sidebar.html');
-            }
-            return response;
-        })
-        .then(response => response.text())
-        .then(html => {
-            document.getElementById('sidebar-container').innerHTML = html;
+// Tab navigation functionality (NEW - from broker profile)
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.profile-nav-tab');
+    const sections = {
+        profile: document.getElementById('profileContent'),
+        settings: document.getElementById('settingsContent'),
+        preferences: document.getElementById('preferencesContent'),
+        privacy: document.getElementById('privacyContent')
+    };
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
             
-            // Highlight active link
-            const links = document.querySelectorAll('.sidebar-link, .nav-link');
-            links.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === 'agent_dashboard.html' || 
-                    link.getAttribute('href') === 'agent_edit_profile.html') {
-                    link.classList.add('active');
+            // Update active tab
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Show selected section, hide others
+            Object.keys(sections).forEach(key => {
+                if (key === targetTab) {
+                    sections[key].style.display = 'block';
+                } else {
+                    sections[key].style.display = 'none';
                 }
             });
             
-            // Setup logout button
-            setupLogoutButton();
-        })
-        .catch(error => {
-            console.error('Error loading sidebar:', error);
-            document.getElementById('sidebar-container').innerHTML = 
-                '<div class="sidebar" style="padding: 20px; background: var(--bg-light); color: #ef4444;">' +
-                '<p>Unable to load navigation.</p>' +
-                '</div>';
+            // Update page title and subtitle
+            updatePageTitleForTab(targetTab);
         });
+    });
+});
+
+function updatePageTitleForTab(tab) {
+    const title = document.getElementById('pageTitle');
+    const subtitle = document.getElementById('pageSubtitle');
+    
+    switch(tab) {
+        case 'profile':
+            title.textContent = isOwnProfile ? 'My Profile' : 'Agent Profile';
+            subtitle.textContent = isOwnProfile ? 'Manage your profile and view your listings' : 'View agent profile and listings';
+            break;
+        case 'settings':
+            title.textContent = 'Account Settings';
+            subtitle.textContent = 'Manage your account settings and preferences';
+            break;
+        case 'preferences':
+            title.textContent = 'Preferences';
+            subtitle.textContent = 'Customize your experience and display settings';
+            break;
+        case 'privacy':
+            title.textContent = 'Privacy & Security';
+            subtitle.textContent = 'Manage your privacy settings and security options';
+            break;
+    }
 }
+
+// Settings functionality (NEW - from broker profile)
+document.addEventListener('DOMContentLoaded', function() {
+    // Load saved settings
+    loadSettings();
+    
+    // Save settings on change
+    document.querySelectorAll('input[type="checkbox"], select').forEach(element => {
+        element.addEventListener('change', saveSettings);
+    });
+    
+    // Button handlers
+    document.getElementById('changePasswordBtn').addEventListener('click', function() {
+        showToast('Password change feature coming soon!', 'info');
+    });
+    
+    document.getElementById('updateEmailBtn').addEventListener('click', function() {
+        showToast('Email update feature coming soon!', 'info');
+    });
+    
+    document.getElementById('manageDevicesBtn').addEventListener('click', function() {
+        showToast('Device management feature coming soon!', 'info');
+    });
+    
+    document.getElementById('exportDataBtn').addEventListener('click', function() {
+        showToast('Data export feature coming soon!', 'info');
+    });
+    
+    document.getElementById('deleteAccountBtn').addEventListener('click', function() {
+        if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+            showToast('Account deletion feature coming soon!', 'error');
+        }
+    });
+});
+
+function loadSettings() {
+    const settings = JSON.parse(localStorage.getItem('agent_settings')) || {};
+    
+    // Load toggle switches
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        const id = checkbox.id;
+        if (settings[id] !== undefined) {
+            checkbox.checked = settings[id];
+        }
+    });
+    
+    // Load select dropdowns
+    const selects = document.querySelectorAll('select');
+    selects.forEach(select => {
+        const id = select.id;
+        if (settings[id] !== undefined) {
+            select.value = settings[id];
+        }
+    });
+}
+
+function saveSettings() {
+    const settings = {};
+    
+    // Save toggle switches
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        settings[checkbox.id] = checkbox.checked;
+    });
+    
+    // Save select dropdowns
+    const selects = document.querySelectorAll('select');
+    selects.forEach(select => {
+        settings[select.id] = select.value;
+    });
+    
+    localStorage.setItem('agent_settings', JSON.stringify(settings));
+    showToast('Settings saved successfully!', 'success');
+}
+
+// Load sidebar
+fetch('agent_sidebar.html')
+    .then(response => {
+        if (!response.ok) {
+            console.log('Agent sidebar not found, trying default sidebar');
+            return fetch('sidebar.html');
+        }
+        return response;
+    })
+    .then(response => response.text())
+    .then(html => {
+        document.getElementById('sidebar-container').innerHTML = html;
+        
+        // Highlight active link based on current page
+        const currentPage = window.location.pathname.split('/').pop() || window.location.href;
+        const links = document.querySelectorAll('.sidebar-link, .nav-link');
+        
+        links.forEach(link => {
+            link.classList.remove('active');
+            const href = link.getAttribute('href');
+            
+            // Check if current page matches the link
+            if (href && currentPage.includes(href) || 
+                (href === 'agent_profile.html' && currentPage.includes('agent_profile'))) {
+                link.classList.add('active');
+            }
+        });
+        
+        // Setup logout button
+        setupLogoutButton();
+    })
+    .catch(error => {
+        console.error('Error loading sidebar:', error);
+        document.getElementById('sidebar-container').innerHTML = 
+            '<div class="sidebar" style="padding: 20px; background: var(--bg-light); color: #ef4444;">' +
+            '<p>Unable to load navigation.</p>' +
+            '</div>';
+    });
 
 // Simple logout function
 function setupLogoutButton() {
@@ -1316,9 +2056,6 @@ function setupLogoutButton() {
 
     console.log('Logout button initialized successfully');
 }
-
-// Load sidebar on page load
-document.addEventListener('DOMContentLoaded', loadSidebar);
 </script>
 
 <!-- Firebase -->
@@ -1419,70 +2156,6 @@ function updatePageTitle(isOwnProfile) {
   }
 }
 
-// ==================== CLEANUP FUNCTION (FIX FOR DUPLICATION) ====================
-async function cleanupDuplicateAgentData(agentId) {
-  try {
-    console.log("🔄 Cleaning up agent data for:", agentId);
-    
-    // Check both collections
-    const [agentDoc, userDoc] = await Promise.all([
-      getDoc(doc(db, "agents", agentId)),
-      getDoc(doc(db, "users", agentId))
-    ]);
-    
-    const agentExists = agentDoc.exists();
-    const userExists = userDoc.exists();
-    
-    if (agentExists && userExists) {
-      const agentData = agentDoc.data();
-      const userData = userDoc.data();
-      
-      // Check if user document is an agent
-      const userIsAgent = userData.userType === 'agent' || userData.role === 'agent';
-      
-      if (userIsAgent) {
-        // Determine which has more complete data
-        const agentComplete = agentData.isProfileComplete || agentData.profileCompleted || false;
-        const userComplete = userData.isProfileComplete || userData.profileCompleted || false;
-        
-        if (userComplete && !agentComplete) {
-          // User has more complete data, merge into agents
-          const mergedData = { ...agentData, ...userData };
-          await setDoc(doc(db, "agents", agentId), mergedData);
-          console.log("✅ Merged complete user data into agents");
-        }
-        
-        // Always delete from users collection to avoid duplicates
-        await deleteDoc(doc(db, "users", agentId));
-        console.log("✅ Removed duplicate from users collection");
-        
-        return { id: agentId, ...agentData };
-      }
-    } else if (userExists && !agentExists) {
-      const userData = userDoc.data();
-      const userIsAgent = userData.userType === 'agent' || userData.role === 'agent';
-      
-      if (userIsAgent) {
-        // Migrate to agents collection
-        await setDoc(doc(db, "agents", agentId), userData);
-        await deleteDoc(doc(db, "users", agentId));
-        console.log("✅ Migrated agent from users to agents");
-        return { id: agentId, ...userData };
-      }
-    } else if (agentExists) {
-      // Only in agents collection - good!
-      const agentData = agentDoc.data();
-      return { id: agentId, ...agentData };
-    }
-    
-    return null;
-    
-  } catch (error) {
-    console.error('Error cleaning up data:', error);
-    return null;
-  }
-}
-
 // ==================== PROFILE FUNCTIONS ====================
 async function loadAgentProfile(agentId) {
   try {
@@ -1491,61 +2164,64 @@ async function loadAgentProfile(agentId) {
     
     let profileData = null;
     
-    // 🆕 FIX: First clean up any duplicate data BEFORE loading
-    await cleanupDuplicateAgentData(agentId);
+    // Try to load from localStorage first (for immediate feedback)
+    const localData = localStorage.getItem(`agent_${agentId}`);
+    if (localData) {
+      try {
+        profileData = JSON.parse(localData);
+        console.log("Loaded from localStorage:", profileData);
+      } catch (e) {
+        console.log("Error parsing localStorage data:", e);
+      }
+    }
     
-    // 🆕 FIX: Only load from ONE primary source
-    // Priority: agents collection first (since it's agent-specific)
+    // Try agents collection first (primary)
     try {
-      // First try agents collection
-      const agentDocRef = doc(db, "agents", agentId);
-      const agentDoc = await getDoc(agentDocRef);
-      
+      const agentDoc = await getDoc(doc(db, "agents", agentId));
       if (agentDoc.exists()) {
         const data = agentDoc.data();
-        // Check if it's a valid agent profile
-        if (data.isProfileComplete || data.title || data.yearsExperience) {
-          console.log("✅ Loaded from agents collection");
-          profileData = { id: agentId, ...data };
+        console.log("Loaded from agents collection:", data);
+        
+        // Merge with existing data
+        if (profileData) {
+          profileData = { ...profileData, ...data, id: agentId };
+        } else {
+          profileData = { ...data, id: agentId };
         }
+        
+        // Update localStorage
+        localStorage.setItem(`agent_${agentId}`, JSON.stringify(profileData));
+      } else {
+        console.log("No document found in agents collection");
       }
     } catch (error) {
       console.log("Error loading from agents:", error.message);
     }
     
-    // If not found in agents, try users collection
-    if (!profileData) {
+    // If still no data, try users collection
+    if (!profileData || Object.keys(profileData).length === 0) {
       try {
-        const userDocRef = doc(db, "users", agentId);
-        const userDoc = await getDoc(userDocRef);
-        
+        const userDoc = await getDoc(doc(db, "users", agentId));
         if (userDoc.exists()) {
           const data = userDoc.data();
-          // Only use if it's an agent profile
-          if (data.userType === 'agent' || data.role === 'agent') {
-            console.log("✅ Loaded from users collection");
-            profileData = { id: agentId, ...data };
+          console.log("Loaded from users collection:", data);
+          
+          // Check if this looks like an agent profile
+          if (data.userType === 'agent' || data.role === 'agent' || data.title || data.agentId) {
+            profileData = { ...data, id: agentId };
+            
+            // Update localStorage
+            localStorage.setItem(`agent_${agentId}`, JSON.stringify(profileData));
           }
+        } else {
+          console.log("No document found in users collection");
         }
       } catch (error) {
         console.log("Error loading from users:", error.message);
       }
     }
     
-    // If still no data, check localStorage
-    if (!profileData) {
-      const localData = localStorage.getItem(`agent_${agentId}`);
-      if (localData) {
-        try {
-          profileData = JSON.parse(localData);
-          console.log("Loaded from localStorage");
-        } catch (e) {
-          console.log("Error parsing localStorage data:", e);
-        }
-      }
-    }
-    
-    // Display profile if found
+    // Display profile
     if (profileData && Object.keys(profileData).length > 0) {
       console.log("Displaying agent profile data:", profileData);
       displayAgentProfile(profileData);
@@ -1574,7 +2250,7 @@ async function loadAgentProfile(agentId) {
       if (isOwnProfile) {
         showToast('No profile found. Please complete your agent profile setup.', 'error');
         setTimeout(() => {
-          window.location.href = 'agent_profile.html';
+          window.location.href = 'agent_edit_profile.html';
         }, 2000);
       } else {
         displayEmptyProfile();
@@ -1594,20 +2270,6 @@ async function loadAgentProfile(agentId) {
 
 function displayAgentProfile(agent) {
   console.log("Displaying agent profile:", agent);
-  
-  // 🆕 FIX: Remove any duplicate fields that might come from merged data
-  // Fields that should not be duplicated
-  const uniqueFields = ['id', 'uid', 'userId', 'agentId'];
-  uniqueFields.forEach(field => {
-    if (agent[field] && Array.isArray(agent[field])) {
-      // If it's an array with duplicates, deduplicate
-      agent[field] = [...new Set(agent[field])];
-    } else if (agent[field] && typeof agent[field] === 'string') {
-      // If it's a comma-separated string with duplicates
-      const items = agent[field].split(',').map(item => item.trim());
-      agent[field] = [...new Set(items)].join(', ');
-    }
-  });
   
   // Extract data with fallbacks
   const fullName = agent.fullName || agent.displayName || agent.name || 'Agent';
@@ -1816,16 +2478,10 @@ function updateProfilePhoto(photoURL, fullName) {
   const profilePhotoContainer = document.getElementById('profilePhoto');
   const placeholder = document.getElementById('profilePhotoPlaceholder');
   
-  // Also check for base64 photos
-  let photoSrc = photoURL;
-  if (!photoURL && window.profileData && window.profileData.profilePhotoBase64) {
-    photoSrc = window.profileData.profilePhotoBase64;
-  }
-  
-  if (photoSrc) {
+  if (photoURL) {
     // Create image
     const img = document.createElement('img');
-    img.src = photoSrc;
+    img.src = photoURL;
     img.alt = fullName;
     img.onerror = function() {
       // On error, show placeholder with initial
