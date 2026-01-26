@@ -111,13 +111,18 @@ class TeamNLUTrainer:
                              'information about', 'living in', 'like to live',
                              'what\'s it like', 'is it good', 'lifestyle'],
             'find_property': ['find', 'search for', 'show me', 'looking for',
-                             'need', 'want', 'locate', 'discover'],
+                             'need', 'want', 'locate', 'discover', 
+                              'what apartments', 'what houses', 'what condos',  
+                     'do you have', 'any properties', 'available properties'], 
             'find_property_for_need': ['for family', 'for students', 'for professionals',
                                       'for couple', 'for retirees', 'for business',
                                       'for investors', 'for single', 'for workers'],
-            'find_property_with_criteria': ['under', 'below', 'less than', 'with bedrooms',
-                                           'with bathroom', 'with price', 'budget',
-                                           'affordable', 'cheap', 'maximum'],
+             'find_property_with_criteria': [
+        'under', 'below', 'less than', 'maximum', 'up to',
+        'with bedroom', 'with bath', 'with bathrooms',
+        'with bedrooms', 'bedroom', 'bathroom', 'rooms',
+        'price range', 'budget', 'affordable', 'cheap'
+    ],
             'match_needs': ['match my', 'suitable for', 'fitting my', 'appropriate for',
                            'compatible with', 'what matches', 'recommendations for']
         }
@@ -271,6 +276,42 @@ class TeamNLUTrainer:
         print("\n🔧 Adding corrective training samples...")
         
         corrective_samples = [
+            # Clear examples of find_property_with_criteria
+            ("houses under 30 million with 4 bedrooms", "find_property_with_criteria"),
+            ("show me properties below 20M with 3 bedrooms", "find_property_with_criteria"),
+            ("find condos under 10M with 2 baths", "find_property_with_criteria"),
+            
+            # Clear examples of find_property (no price/bedroom criteria)
+            ("find houses in nasugbu", "find_property"),
+            ("show me apartments in batangas city", "find_property"),
+            ("look for condos in lipa", "find_property"),
+            
+            # Boundary cases
+            ("houses with 4 bedrooms", "find_property_with_criteria"),  # has bedroom count
+            ("houses under 30M", "find_property_with_criteria"),  # has price
+            ("houses in batangas", "find_property"),  # only location
+            
+            # General property searches WITHOUT location
+            ("find apartments", "find_property"),
+            ("show me houses", "find_property"),
+            ("look for condos", "find_property"),
+            ("search for properties", "find_property"),
+            ("i need a house", "find_property"),
+            ("show me available properties", "find_property"),
+            ("find beachfront properties", "find_property"),
+            ("show me commercial spaces", "find_property"),
+            ("looking for townhouses", "find_property"),
+            ("need a studio", "find_property"),
+            
+            # General property type questions
+            ("what apartments do you have", "find_property"),
+            ("what houses are available", "find_property"),
+            ("show me all condos", "find_property"),
+            ("what properties do you offer", "find_property"),
+            ("do you have any apartments", "find_property"),
+            ("any houses for sale", "find_property"),
+            ("any condos for rent", "find_property"),
+            
             # Financing intent fixes
             ("properties that accept bank financing", "financing"),
             ("show me properties that accept bank financing", "financing"),
@@ -353,7 +394,7 @@ class TeamNLUTrainer:
         
         print(f"   ✅ Added {len(texts)} corrective samples")
         return texts, intents
-
+    
     def load_shared_questions(self, shared_path='data/shared'):
         """Load question templates from all_questions.json"""
         texts = []
@@ -793,19 +834,90 @@ def create_additional_training_file():
     """Create/update additional training data file"""
     additional_data = {
         "additional_samples": [
-            # Financing samples
+             # General property searches (no location)
+            {"text": "find apartments", "intent": "find_property"},
+            {"text": "show me houses", "intent": "find_property"},
+            {"text": "look for condos", "intent": "find_property"},
+            {"text": "search for properties", "intent": "find_property"},
+            {"text": "i need a house", "intent": "find_property"},
+            {"text": "show me available properties", "intent": "find_property"},
+            {"text": "find beachfront properties", "intent": "find_property"},
+            {"text": "what apartments do you have", "intent": "find_property"},
+            {"text": "what houses are available", "intent": "find_property"},
+            {"text": "show me all condos", "intent": "find_property"},
+            {"text": "do you have any apartments", "intent": "find_property"},
+            {"text": "any houses for sale", "intent": "find_property"},
+            {"text": "any condos for rent", "intent": "find_property"},
+            {"text": "properties for rent", "intent": "find_property"},
+            {"text": "properties for sale", "intent": "find_property"},
+            
+            # Force "find X in Y" to be find_property (not location_info)
+             {"text": "show me house in nasugbu", "intent": "find_property"},
+            {"text": "show me houses in nasugbu", "intent": "find_property"},
+            {"text": "show me properties in nasugbu", "intent": "find_property"},
+            {"text": "show me apartments in batangas city", "intent": "find_property"},
+            {"text": "show me condos in lipa city", "intent": "find_property"},
+            {"text": "show me beachfront properties in nasugbu", "intent": "find_property"},
+            
+            # Make "show me" more distinct from location_info
+            {"text": "show me what's available in nasugbu", "intent": "find_property"},
+            {"text": "show me options in nasugbu", "intent": "find_property"},
+            {"text": "show me listings in nasugbu", "intent": "find_property"},
+            {"text": "find apartments in batangas city", "intent": "find_property"},
+            {"text": "find house in nasugbu", "intent": "find_property"},
+            {"text": "find condos in lipa city", "intent": "find_property"},
+            {"text": "find townhouses in sto. tomas", "intent": "find_property"},
+            {"text": "find commercial spaces in batangas city", "intent": "find_property"},
+            {"text": "find beachfront properties in nasugbu", "intent": "find_property"},
+            {"text": "find resort properties in nasugbu", "intent": "find_property"},
+            {"text": "find agricultural land in nasugbu", "intent": "find_property"},
+            {"text": "find apartments in nasugbu", "intent": "find_property"},
+            
+            # More variations with "find" keyword
+            {"text": "look for apartments in batangas city", "intent": "find_property"},
+            {"text": "search for apartments in batangas", "intent": "find_property"},
+            {"text": "i need apartments in batangas city", "intent": "find_property"},
+            {"text": "show me houses in batangas city", "intent": "find_property"},
+            {"text": "show me condos in tanauan city", "intent": "find_property"},
+            {"text": "i'm looking for a house in lipa", "intent": "find_property"},
+            {"text": "can you find apartments in batangas city", "intent": "find_property"},
+            {"text": "please locate apartments in batangas", "intent": "find_property"},
+            
+            # Location info samples should NOT have "find" keyword
+            {"text": "tell me about batangas city", "intent": "location_info"},
+            {"text": "what is batangas city like", "intent": "location_info"},
+            {"text": "describe batangas city", "intent": "location_info"},
+            {"text": "living in batangas city", "intent": "location_info"},
+            {"text": "about batangas city", "intent": "location_info"},
+            {"text": "information about batangas city", "intent": "location_info"},
+            {"text": "what's it like in batangas city", "intent": "location_info"},
+            {"text": "batangas city lifestyle", "intent": "location_info"},
+            {"text": "how is life in batangas city", "intent": "location_info"},
+            
+            # ============================================
+            # ORIGINAL SAMPLES (with improvements)
+            # ============================================
+            
+            # Financing samples - with more variations
             {"text": "properties that accept bank financing", "intent": "financing"},
             {"text": "houses that accept bank loans", "intent": "financing"},
             {"text": "how to get bank financing", "intent": "financing"},
             {"text": "bank financing requirements", "intent": "financing"},
             {"text": "pag-ibig financing requirements", "intent": "financing"},
+            {"text": "properties with in-house financing", "intent": "financing"},
+            {"text": "properties that accept cash payment", "intent": "financing"},
+            {"text": "properties that accept installment payment", "intent": "financing"},
+            {"text": "what documents are needed for bank financing", "intent": "financing"},
             
-            # Ready property samples
+            # Ready property samples - more specific
             {"text": "ready to move in properties", "intent": "find_ready_property"},
             {"text": "available now properties", "intent": "find_ready_property"},
             {"text": "immediate occupancy houses", "intent": "find_ready_property"},
             {"text": "move in ready condos", "intent": "find_ready_property"},
             {"text": "ready for occupancy apartments", "intent": "find_ready_property"},
+            {"text": "ready to occupy units", "intent": "find_ready_property"},
+            {"text": "properties available immediately", "intent": "find_ready_property"},
+            {"text": "find ready to move in properties", "intent": "find_ready_property"},
             
             # Process info samples
             {"text": "steps for buying", "intent": "process_info"},
@@ -813,6 +925,9 @@ def create_additional_training_file():
             {"text": "property purchase process", "intent": "process_info"},
             {"text": "timeline for buying a house", "intent": "process_info"},
             {"text": "requirements for property purchase", "intent": "process_info"},
+            {"text": "steps for buying a condo", "intent": "process_info"},
+            {"text": "how to get a mortgage", "intent": "process_info"},
+            {"text": "process for renting", "intent": "process_info"},
             
             # With feature samples
             {"text": "properties with swimming pool", "intent": "find_with_feature"},
@@ -820,6 +935,9 @@ def create_additional_training_file():
             {"text": "apartments with parking", "intent": "find_with_feature"},
             {"text": "condos with security", "intent": "find_with_feature"},
             {"text": "properties with wifi", "intent": "find_with_feature"},
+            {"text": "find properties with swimming pool", "intent": "find_with_feature"},
+            {"text": "show me houses with garden", "intent": "find_with_feature"},
+            {"text": "look for apartments with parking", "intent": "find_with_feature"},
             
             # Near landmark samples
             {"text": "properties near schools", "intent": "find_near_landmark"},
@@ -827,13 +945,63 @@ def create_additional_training_file():
             {"text": "apartments near hospitals", "intent": "find_near_landmark"},
             {"text": "condos near beaches", "intent": "find_near_landmark"},
             {"text": "properties near churches", "intent": "find_near_landmark"},
+            {"text": "find properties near schools", "intent": "find_near_landmark"},
+            {"text": "show me houses near malls", "intent": "find_near_landmark"},
+            {"text": "look for apartments near hospitals", "intent": "find_near_landmark"},
             
-            # Location info samples
-            {"text": "tell me about batangas city", "intent": "location_info"},
+            # More location info samples
+            {"text": "tell me about lipa city", "intent": "location_info"},
             {"text": "what is lipa city like", "intent": "location_info"},
             {"text": "describe tanauan city", "intent": "location_info"},
             {"text": "information about nasugbu", "intent": "location_info"},
-            {"text": "living in san juan", "intent": "location_info"}
+            {"text": "living in san juan", "intent": "location_info"},
+            {"text": "tell me about calatagan", "intent": "location_info"},
+            {"text": "what's it like to live in taal", "intent": "location_info"},
+            {"text": "describe mabini batangas", "intent": "location_info"},
+            {"text": "information about sto. tomas city", "intent": "location_info"},
+            
+            # ============================================
+            # ADDITIONAL CONTEXTUAL SAMPLES
+            # ============================================
+            
+            # Clear distinction samples
+            {"text": "i want to find a house in batangas", "intent": "find_property"},
+            {"text": "i want to know about batangas city", "intent": "location_info"},
+            {"text": "search properties in nasugbu", "intent": "find_property"},
+            {"text": "give me information about nasugbu", "intent": "location_info"},
+            {"text": "show me available properties in lipa", "intent": "find_property"},
+            {"text": "tell me about living in lipa", "intent": "location_info"},
+            
+            # Property for need samples
+            {"text": "properties for family needs in lipa", "intent": "find_property_for_need"},
+            {"text": "houses for big family", "intent": "find_property_for_need"},
+            {"text": "apartments for students in batangas city", "intent": "find_property_for_need"},
+            {"text": "condos for professionals", "intent": "find_property_for_need"},
+            {"text": "properties for retirees", "intent": "find_property_for_need"},
+            
+            # Match needs samples
+            {"text": "match properties to my budget", "intent": "match_needs"},
+            {"text": "recommend properties for me", "intent": "match_needs"},
+            {"text": "find suitable properties", "intent": "match_needs"},
+            {"text": "what properties match my needs", "intent": "match_needs"},
+            
+            # Property with criteria samples
+            {"text": "houses under 3M with 3 bedrooms", "intent": "find_property_with_criteria"},
+            {"text": "apartments under 15000 pesos", "intent": "find_property_with_criteria"},
+            {"text": "condos with 2 bedrooms and 2 bathrooms", "intent": "find_property_with_criteria"},
+            {"text": "properties under 10M with swimming pool", "intent": "find_property_with_criteria"},
+            
+            # ============================================
+            # NEGATIVE EXAMPLES (what should NOT match)
+            # ============================================
+            
+            # These should NOT be location_info (they have "find" keywords)
+            {"text": "find tell me about batangas city", "intent": "find_property"},  # Edge case
+            {"text": "search information about lipa", "intent": "find_property"},     # Mixed intent
+            
+            # These should NOT be find_property (they don't have search keywords)
+            {"text": "about finding houses", "intent": "location_info"},  # Has "finding" but starts with "about"
+            {"text": "information on searching properties", "intent": "location_info"},  # Has "searching" but starts with "information"
         ]
     }
     
@@ -841,8 +1009,10 @@ def create_additional_training_file():
     with open('data/additional_training.json', 'w', encoding='utf-8') as f:
         json.dump(additional_data, f, indent=2)
     
-    print("✅ Created/updated additional_training.json with specific samples")
-
+    print("✅ Created/updated additional_training.json with specific intent corrections")
+    print(f"   Total samples: {len(additional_data['additional_samples'])}")
+    print(f"   Focus: Fixing 'find X in Y' vs 'tell me about Y' confusion")
+    
 def main():
     print("="*60)
     print("🚀 BAH.AI PROPERTY CHATBOT TRAINING SYSTEM v3.4")

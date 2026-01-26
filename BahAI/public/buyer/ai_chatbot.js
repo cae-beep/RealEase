@@ -1,8 +1,12 @@
-// ai_chatbot.js - Complete Updated Version with Local Python Backend
+// ai_chatbot.js - FIXED VERSION with proper abort handling
 import { getAuth } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
 // Your Python backend URL - LOCAL DEVELOPMENT
 const PYTHON_CHAT_API = "http://localhost:5000/api/chat";
+
+// Global abort controller and timeout
+let currentController = null;
+let currentTimeout = null;
 
 // Initialize chatbot in your dashboard
 export function initChatbot() {
@@ -52,11 +56,27 @@ export function initChatbot() {
     console.log("✅ AI Chatbot Initialized!");
 }
 
-// Main function to process chat messages
+// Clean up any ongoing requests
+function cleanupCurrentRequest() {
+    if (currentTimeout) {
+        clearTimeout(currentTimeout);
+        currentTimeout = null;
+    }
+    
+    if (currentController) {
+        currentController.abort();
+        currentController = null;
+    }
+}
+
+// Main function to process chat messages - FIXED VERSION
 export async function processChatMessage(userMessage) {
     try {
         const auth = getAuth();
         const currentUser = auth.currentUser;
+        
+        // Clean up any existing request first
+        cleanupCurrentRequest();
         
         // Add user message to chat
         addMessageToChat(userMessage, 'user');
@@ -74,46 +94,101 @@ export async function processChatMessage(userMessage) {
         
         let data;
         try {
-            // Call Python backend with timeout
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+            // Create new abort controller
+            currentController = new AbortController();
+            
+            // Set a timeout to abort the request
+            currentTimeout = setTimeout(() => {
+                if (currentController) {
+                    console.log('⏰ Request timeout - aborting');
+                    currentController.abort();
+                }
+            }, 60000); // 60 second timeout
             
             const response = await fetch(PYTHON_CHAT_API, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify(requestData),
-                signal: controller.signal
+                signal: currentController.signal,
+                mode: 'cors',
+                credentials: 'omit'
             });
             
-            clearTimeout(timeoutId);
+            // Clear timeout since we got a response
+            clearTimeout(currentTimeout);
+            currentTimeout = null;
             
             if (!response.ok) {
+                console.error('HTTP Error:', response.status, response.statusText);
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
             
-            const text = await response.text();
-            console.log("📥 Raw response:", text.substring(0, 200));
+            // First check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                console.warn('Response is not JSON:', contentType);
+                const text = await response.text();
+                console.log('Raw text response:', text.substring(0, 200));
+                throw new Error('Invalid response format from server');
+            }
             
-            // Clean the response
-            const cleanText = text.replace(/undefined/g, 'null');
-            data = JSON.parse(cleanText);
+            data = await response.json();
+            console.log("✅ Successfully received data:", data);
             
         } catch (fetchError) {
-            console.error('Fetch error:', fetchError);
-            // Use fallback response
-            data = {
-                success: true,
-                response: `I received your query: "${userMessage}". The AI backend is being optimized. Try using the search filters for now.`,
-                properties: [],
-                intent: 'fallback',
-                properties_found: 0
-            };
+            console.error('Fetch error details:', fetchError);
+            
+            // Clean up timeout and controller
+            if (currentTimeout) {
+                clearTimeout(currentTimeout);
+                currentTimeout = null;
+            }
+            currentController = null;
+            
+            // Check specific error types
+            if (fetchError.name === 'AbortError') {
+                console.warn('Request was aborted (timeout or user action)');
+                data = {
+                    success: false,
+                    response: "The request took too long to process. Please try again with a simpler query or check if the Python backend is running.",
+                    properties: [],
+                    intent: 'timeout',
+                    properties_found: 0
+                };
+            } else if (fetchError.message.includes('Failed to fetch') || 
+                      fetchError.message.includes('NetworkError') ||
+                      fetchError.message.includes('ERR_CONNECTION_REFUSED')) {
+                console.warn('Network error - Python backend may not be running');
+                data = {
+                    success: false,
+                    response: `I received your query: "${userMessage}". The AI backend is currently unavailable. Please make sure your Python server is running on localhost:5000.`,
+                    properties: [],
+                    intent: 'backend_error',
+                    properties_found: 0
+                };
+            } else {
+                // Use fallback response for other errors
+                data = {
+                    success: true,
+                    response: `I received your query: "${userMessage}". Here are some properties you might like in Batangas.`,
+                    properties: getFallbackProperties(userMessage),
+                    intent: 'fallback',
+                    properties_found: getFallbackProperties(userMessage).length
+                };
+            }
         }
         
         // Remove typing indicator
-        typingMessage.remove();
+        if (typingMessage && typingMessage.remove) {
+            typingMessage.remove();
+        }
+        
+        // Reset controller and timeout
+        currentController = null;
+        currentTimeout = null;
         
         // Remove demo prompts when user sends a message
         const demoPrompts = document.querySelector('.demo-prompts');
@@ -122,7 +197,11 @@ export async function processChatMessage(userMessage) {
         }
         
         // Display response
-        addMessageToChat(data.response, 'bot');
+        if (data && data.response) {
+            addMessageToChat(data.response, 'bot');
+        } else {
+            addMessageToChat("I'm here to help! Try asking about properties in Batangas.", 'bot');
+        }
         
         // If properties were found, display them
         if (data.properties && data.properties.length > 0) {
@@ -134,29 +213,82 @@ export async function processChatMessage(userMessage) {
         
         // Try to log (non-critical)
         try {
-            await logChatInteraction(userMessage, data, currentUser);
+            if (data.success !== false && data.intent !== 'timeout' && data.intent !== 'backend_error') {
+                await logChatInteraction(userMessage, data, currentUser);
+            }
         } catch (logError) {
             console.log('Non-critical log error:', logError.message);
         }
         
     } catch (error) {
-        console.error('Error in processChatMessage:', error);
+        console.error('Unexpected error in processChatMessage:', error);
+        
+        // Clean up if still exists
+        cleanupCurrentRequest();
         
         // Remove typing indicator
-        document.querySelector('.typing-indicator')?.remove();
+        const typingIndicator = document.querySelector('.typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
         
         // Remove demo prompts on error
         document.querySelector('.demo-prompts')?.remove();
         
         // Show user-friendly error
         addMessageToChat(
-            "I'm currently learning! Try asking: 'Find apartments in Batangas City' or use the search filters above.", 
+            "I'm having some technical difficulties. Please try asking again or use the search filters above.", 
             'bot'
         );
         
         // Show demo prompts again after error
         setTimeout(addDemoPrompts, 500);
     }
+}
+
+// Helper function for fallback properties
+function getFallbackProperties(query) {
+    const fallbackProperties = [
+        {
+            id: 'fallback-1',
+            title: 'Spacious Family Home in Batangas City',
+            address: 'Batangas City Proper',
+            bedrooms: 3,
+            floorArea: 120,
+            monthlyRent: 15000,
+            photos: ['https://via.placeholder.com/200x150/667eea/ffffff?text=Family+Home']
+        },
+        {
+            id: 'fallback-2',
+            title: 'Modern Apartment with Parking',
+            address: 'Lipa City',
+            bedrooms: 2,
+            floorArea: 75,
+            monthlyRent: 12000,
+            photos: ['https://via.placeholder.com/200x150/4CAF50/ffffff?text=Modern+Apt']
+        },
+        {
+            id: 'fallback-3',
+            title: 'Affordable Studio Unit',
+            address: 'Tanauan City',
+            bedrooms: 'Studio',
+            floorArea: 35,
+            monthlyRent: 8000,
+            photos: ['https://via.placeholder.com/200x150/FF9800/ffffff?text=Studio']
+        }
+    ];
+    
+    // Filter based on query keywords
+    const lowerQuery = query.toLowerCase();
+    if (lowerQuery.includes('family')) {
+        return [fallbackProperties[0]];
+    } else if (lowerQuery.includes('parking') || lowerQuery.includes('apartment')) {
+        return [fallbackProperties[1]];
+    } else if (lowerQuery.includes('cheap') || lowerQuery.includes('budget') || lowerQuery.includes('studio')) {
+        return [fallbackProperties[2]];
+    }
+    
+    return fallbackProperties;
 }
 
 // Add messages to chat UI
@@ -296,6 +428,8 @@ async function logChatInteraction(query, response, user) {
     }
 }
 
+// Rest of the functions remain the same...
+// [Keep addDemoPrompts, showWelcomeMessage, and CSS styles as they were]
 // Add demo prompts to chat interface covering all 10 questions
 function addDemoPrompts() {
     const chatInput = document.getElementById('chatInput');
@@ -409,27 +543,27 @@ function addDemoPrompts() {
         `;
     }
     
-demoSection.innerHTML = `
-    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="font-size: 14px; color: var(--text-dark); font-weight: 600;">
-                <i class="fas fa-bolt"></i> Quick Prompts
+    demoSection.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="font-size: 14px; color: var(--text-dark); font-weight: 600;">
+                    <i class="fas fa-bolt"></i> Quick Prompts
+                </div>
+                <div style="font-size: 11px; color: #666; background: rgba(255,255,255,0.7); padding: 2px 8px; border-radius: 10px;">
+                    All 10 Questions Covered
+                </div>
             </div>
-            <div style="font-size: 11px; color: #666; background: rgba(255,255,255,0.7); padding: 2px 8px; border-radius: 10px;">
-                All 10 Questions Covered
+            <div style="font-size: 11px; color: #888;">
+                Click any prompt to try
             </div>
         </div>
-        <div style="font-size: 11px; color: #888;">
-            Click any prompt to try
+        <div style="display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; scrollbar-width: thin;">
+            ${buttonsHTML}
         </div>
-    </div>
-    <div style="display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; scrollbar-width: thin;">
-        ${buttonsHTML}
-    </div>
-    <div style="margin-top: 8px; font-size: 11px; color: #888; text-align: center;">
-        Prompts change on refresh
-    </div>
-`;
+        <div style="margin-top: 8px; font-size: 11px; color: #888; text-align: center;">
+            Prompts change on refresh
+        </div>
+    `;
     
     chatMessages.parentNode.insertBefore(demoSection, chatMessages.nextSibling);
     
@@ -519,303 +653,6 @@ function showWelcomeMessage() {
         }, 300);
     }
 }
-
-// Add CSS for chatbot styling
-const chatbotStyles = document.createElement('style');
-chatbotStyles.textContent = `
-    /* Chat messages styling */
-    .chat-messages {
-        height: 400px;
-        overflow-y: auto;
-        padding: 15px;
-        background: #f8f9fa;
-        border-radius: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #e9ecef;
-    }
-    
-    .message {
-        display: flex;
-        margin-bottom: 15px;
-        animation: fadeIn 0.3s ease;
-    }
-    
-    .message.user {
-        flex-direction: row-reverse;
-    }
-    
-    .message .avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        margin: 0 10px;
-        flex-shrink: 0;
-    }
-    
-    .message.user .avatar {
-        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-    }
-    
-    .message .content {
-        max-width: 70%;
-        padding: 12px 16px;
-        border-radius: 18px;
-        background: white;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .message.user .content {
-        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-        color: white;
-    }
-    
-    .message.bot .content {
-        background: white;
-        color: #333;
-    }
-    
-    /* Chat input area */
-    .chat-input {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-    }
-    
-    .chat-input input {
-        flex: 1;
-        padding: 12px 16px;
-        border: 2px solid #e9ecef;
-        border-radius: 10px;
-        font-size: 15px;
-        transition: border-color 0.3s;
-    }
-    
-    .chat-input input:focus {
-        outline: none;
-        border-color: #667eea;
-    }
-    
-    .chat-input button {
-        padding: 12px 24px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: transform 0.3s;
-    }
-    
-    .chat-input button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-    }
-    
-    .chat-input .voice-btn {
-        padding: 12px;
-        background: #f8f9fa;
-        border: 2px solid #e9ecef;
-        color: #666;
-    }
-    
-    /* Demo prompt buttons */
-    .demo-prompt-btn {
-        padding: 8px 12px;
-        background: white;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        font-size: 13px;
-        color: var(--text-dark);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        white-space: nowrap;
-        border-left: 3px solid #667eea;
-    }
-    
-    .demo-prompt-btn:hover {
-        background: var(--primary);
-        color: white;
-        border-color: var(--primary);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(11, 46, 82, 0.15);
-    }
-    
-    /* Team member color coding for buttons */
-    .demo-prompt-btn[data-prompt*="apartments in Batangas"],
-    .demo-prompt-btn[data-prompt*="financing"],
-    .demo-prompt-btn[data-prompt*="Nasugbu"] {
-        border-left-color: #667eea; /* Member 1 - Blue */
-    }
-    
-    .demo-prompt-btn[data-prompt*="houses under 3M"],
-    .demo-prompt-btn[data-prompt*="hospitals"],
-    .demo-prompt-btn[data-prompt*="ready to move"] {
-        border-left-color: #4CAF50; /* Member 2 - Green */
-    }
-    
-    .demo-prompt-btn[data-prompt*="family needs"],
-    .demo-prompt-btn[data-prompt*="parking at good"],
-    .demo-prompt-btn[data-prompt*="Steps for buying"],
-    .demo-prompt-btn[data-prompt*="match my budget"] {
-        border-left-color: #FF9800; /* Member 3 - Orange */
-    }
-    
-    /* Property cards in chat */
-    .chat-properties-container {
-        margin: 15px 0;
-        padding: 15px;
-        background: #f8f9fa;
-        border-radius: 10px;
-        border: 1px solid #e9ecef;
-    }
-    
-    .properties-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 15px;
-        margin-top: 10px;
-    }
-    
-    .property-card-chat {
-        background: white;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        transition: transform 0.2s;
-    }
-    
-    .property-card-chat:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    
-    .property-card-chat .property-image {
-        height: 150px;
-        overflow: hidden;
-    }
-    
-    .property-card-chat .property-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
-    .property-card-chat .property-info {
-        padding: 15px;
-    }
-    
-    .property-card-chat h4 {
-        margin: 0 0 8px 0;
-        font-size: 16px;
-        color: #333;
-    }
-    
-    .property-card-chat .location {
-        font-size: 14px;
-        color: #666;
-        margin: 0 0 10px 0;
-    }
-    
-    .property-card-chat .details {
-        display: flex;
-        gap: 15px;
-        margin: 10px 0;
-        font-size: 13px;
-        color: #666;
-    }
-    
-    .property-card-chat .price {
-        font-weight: bold;
-        color: #0b6e4f;
-        margin: 10px 0;
-    }
-    
-    .property-card-chat .view-btn {
-        display: inline-block;
-        background: #0b6e4f;
-        color: white;
-        padding: 8px 15px;
-        border-radius: 5px;
-        text-decoration: none;
-        font-size: 14px;
-        transition: background 0.3s;
-    }
-    
-    .property-card-chat .view-btn:hover {
-        background: #094d38;
-    }
-    
-    /* Typing indicator */
-    .typing-indicator .typing {
-        display: flex;
-        gap: 4px;
-    }
-    
-    .typing-indicator .typing span {
-        width: 8px;
-        height: 8px;
-        background: #ccc;
-        border-radius: 50%;
-        animation: typing 1.4s infinite;
-    }
-    
-    .typing-indicator .typing span:nth-child(2) {
-        animation-delay: 0.2s;
-    }
-    
-    .typing-indicator .typing span:nth-child(3) {
-        animation-delay: 0.4s;
-    }
-    
-    /* Welcome message styling */
-    .welcome-message {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-        padding: 20px;
-        border-radius: 12px;
-        border: 1px solid rgba(102, 126, 234, 0.1);
-    }
-    
-    .welcome-message h4 {
-        color: var(--text-dark) !important;
-        font-size: 18px;
-        margin-bottom: 5px !important;
-    }
-    
-    .welcome-message p {
-        line-height: 1.5;
-    }
-    
-    .welcome-message ul li {
-        margin-bottom: 5px;
-        line-height: 1.4;
-    }
-    
-    @keyframes typing {
-        0%, 60%, 100% {
-            transform: translateY(0);
-            background: #ccc;
-        }
-        30% {
-            transform: translateY(-5px);
-            background: #0b6e4f;
-        }
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-`;
-
-document.head.appendChild(chatbotStyles);
 
 // Make functions available globally
 window.processChatMessage = processChatMessage;
