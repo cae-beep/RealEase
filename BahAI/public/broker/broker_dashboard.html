@@ -260,7 +260,7 @@
       overflow: hidden;
       cursor: pointer;
       position: relative;
-      height: 520px; /* Fixed height for consistent card sizes */
+      height: 450px;
       display: flex;
       flex-direction: column;
     }
@@ -306,8 +306,8 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
-      min-height: 46px; /* Fixed height for 2 lines */
-      max-height: 46px; /* Fixed height for 2 lines */
+      min-height: 46px;
+      max-height: 46px;
     }
 
     .listing-price {
@@ -420,14 +420,14 @@
       font-weight: 600;
       text-transform: uppercase;
       white-space: nowrap;
-      margin-top: auto; /* Push to bottom */
-      align-self: flex-start; /* Align to start of flex container */
+      margin-top: auto;
+      align-self: flex-start;
     }
 
     /* Update the status-active class to have green background */
     .status-active {
-      background: #10b981; /* Green background */
-      color: white; /* White text for better contrast */
+      background: #10b981;
+      color: white;
     }
 
     .status-pending {
@@ -535,7 +535,7 @@
       }
       
       .listing-card {
-        height: 500px; /* Slightly smaller on tablets */
+        height: 500px;
       }
     }
 
@@ -564,7 +564,7 @@
       }
       
       .listing-card {
-        height: auto; /* Auto height on mobile */
+        height: auto;
         min-height: 480px;
       }
     }
@@ -919,22 +919,26 @@ function displayListings(listings) {
     // Get user initials for avatar
     const initials = userInfo.displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'UU';
     
-    // Normalize status text to show "Available" if status is active/available
+    // Normalize status text
     let statusText = listing.status || 'active';
     let statusClass = 'status-active';
-    
+    let showStatus = false;
+
     if (statusText.toLowerCase() === 'active' || statusText.toLowerCase() === 'available' || 
         statusText.toLowerCase() === 'published' || statusText === true || statusText === 'true') {
-      statusText = 'Available';
-      statusClass = 'status-active'; // This now has green background
+      statusText = '';
+      statusClass = '';
+      showStatus = false;
     } else if (statusText.toLowerCase() === 'pending') {
       statusClass = 'status-pending';
+      showStatus = true;
+    } else {
+      showStatus = true;
     }
     
     return `
     <div class="listing-card" data-listing-id="${listing.id}">
       <a href="property_details.html?id=${listing.id}" class="card-link-overlay" aria-label="View ${listing.title}"></a>
-      
       <img src="${imageUrl}" alt="${listing.title}" class="listing-image">
       <div class="listing-content">
         <div class="listing-header">
@@ -943,7 +947,6 @@ function displayListings(listings) {
           </div>
           <div class="listing-price">${priceInfo.label}</div>
         </div>
-        
         <div class="listing-location">
           <span>📍</span>
           <div class="listing-location-text">
@@ -951,7 +954,6 @@ function displayListings(listings) {
             <br><small>${listingType}</small>
           </div>
         </div>
-        
         <div class="listing-details">
           <div class="detail">
             <span>🛏️</span> ${listing.bedrooms || 0} beds
@@ -963,7 +965,6 @@ function displayListings(listings) {
             <span>📐</span> ${listing.floorArea || listing.totalArea || listing.squareFootage || 'N/A'} ${typeof (listing.floorArea || listing.totalArea) === 'number' ? 'sqm' : ''}
           </div>
         </div>
-        
         <div class="listing-broker">
           <div class="broker-avatar">${initials}</div>
           <div class="broker-info">
@@ -973,10 +974,7 @@ function displayListings(listings) {
             </div>
           </div>
         </div>
-        
-        <div class="listing-status ${statusClass}">
-          ${statusText}
-        </div>
+        ${showStatus ? `<div class="listing-status ${statusClass}">${statusText}</div>` : ''}
       </div>
     </div>
     `;

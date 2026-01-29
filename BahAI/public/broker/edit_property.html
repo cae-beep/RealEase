@@ -1280,6 +1280,32 @@
             <input type="hidden" id="saleTypeInput" name="saleType" required>
           </div>
         </div>
+
+        <!-- Availability Status -->
+        <h3 class="section-title"><i class="bi bi-check-circle"></i> Availability Status</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="saleStatus" class="required">Property Status</label>
+            <select id="saleStatus" required>
+              <option value="available">Available</option>
+              <option value="sold">Sold</option>
+            </select>
+            <small style="color: var(--text-light); display: block; margin-top: 5px;">
+              Update the current status of this property
+            </small>
+          </div>
+          
+          <div class="form-group" id="saleDateContainer" style="display: none;">
+            <label for="saleDate" class="required">Sale Date</label>
+            <div class="input-with-icon">
+              <i class="bi bi-calendar-event"></i>
+              <input type="date" id="saleDate">
+            </div>
+            <small style="color: var(--text-light); display: block; margin-top: 5px;">
+              Date when property was sold
+            </small>
+          </div>
+        </div>
         
         <!-- Bank Financing Options -->
         <div id="bankOptionsSection" class="bank-options-section">
@@ -1635,6 +1661,35 @@
               <i class="bi bi-calendar-month"></i>
               <input type="number" id="advancePayment" placeholder="e.g., 3" min="1" value="1">
             </div>
+          </div>
+        </div>
+
+        <!-- Availability Status -->
+        <h3 class="section-title"><i class="bi bi-check-circle"></i> Availability Status</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="leaseStatus" class="required">Property Status</label>
+            <select id="leaseStatus" required>
+              <option value="available">Available for Lease</option>
+              <option value="pending">Lease Pending</option>
+              <option value="leased">Leased</option>
+              <option value="reserved">Reserved</option>
+              <option value="under_negotiation">Under Negotiation</option>
+            </select>
+            <small style="color: var(--text-light); display: block; margin-top: 5px;">
+              Update the current status of this property
+            </small>
+          </div>
+          
+          <div class="form-group" id="leaseDateContainer" style="display: none;">
+            <label for="leaseDate" class="required">Lease Start Date</label>
+            <div class="input-with-icon">
+              <i class="bi bi-calendar-event"></i>
+              <input type="date" id="leaseDate">
+            </div>
+            <small style="color: var(--text-light); display: block; margin-top: 5px;">
+              Date when lease started
+            </small>
           </div>
         </div>
         
@@ -2237,6 +2292,21 @@
     // Description
     document.getElementById('saleDescription').value = data.description || '';
     
+    // Availability Status
+    if (data.status) {
+      document.getElementById('saleStatus').value = data.status;
+      
+      // Show date field if sold
+      if (data.status === 'sold') {
+        document.getElementById('saleDateContainer').style.display = 'block';
+        if (data.saleDate) {
+          // Format date for input field (YYYY-MM-DD)
+          const saleDate = new Date(data.saleDate.seconds * 1000);
+          document.getElementById('saleDate').value = saleDate.toISOString().split('T')[0];
+        }
+      }
+    }
+    
     // Existing Images
     existingSaleImages = data.imageUrls || data.photos || [];
     updateSaleExistingImages();
@@ -2334,6 +2404,21 @@
     // Description
     document.getElementById('leaseDescription').value = data.description || '';
     
+    // Availability Status
+    if (data.status) {
+      document.getElementById('leaseStatus').value = data.status;
+      
+      // Show date field if leased
+      if (data.status === 'leased') {
+        document.getElementById('leaseDateContainer').style.display = 'block';
+        if (data.leaseStartDate || data.saleDate) {
+          // Format date for input field (YYYY-MM-DD)
+          const leaseDate = new Date((data.leaseStartDate || data.saleDate).seconds * 1000);
+          document.getElementById('leaseDate').value = leaseDate.toISOString().split('T')[0];
+        }
+      }
+    }
+    
     // Existing Images
     existingLeaseImages = data.imageUrls || data.photos || [];
     updateLeaseExistingImages();
@@ -2388,6 +2473,19 @@
         }
       });
     });
+    
+    // Initialize availability status handler
+    const saleStatus = document.getElementById('saleStatus');
+    if (saleStatus) {
+      saleStatus.addEventListener('change', function() {
+        const dateContainer = document.getElementById('saleDateContainer');
+        if (this.value === 'sold') {
+          dateContainer.style.display = 'block';
+        } else {
+          dateContainer.style.display = 'none';
+        }
+      });
+    }
     
     // Initialize map when Google Maps loads
     if (window.google && window.google.maps) {
@@ -2453,6 +2551,19 @@
         selectLeaseType(this.querySelector('h4').textContent.toLowerCase().replace(/\s+/g, '_'));
       });
     });
+    
+    // Initialize availability status handler
+    const leaseStatus = document.getElementById('leaseStatus');
+    if (leaseStatus) {
+      leaseStatus.addEventListener('change', function() {
+        const dateContainer = document.getElementById('leaseDateContainer');
+        if (this.value === 'leased') {
+          dateContainer.style.display = 'block';
+        } else {
+          dateContainer.style.display = 'none';
+        }
+      });
+    }
     
     // Form submission
     document.getElementById('leasePropertyForm').addEventListener('submit', handleLeaseUpdate);
@@ -3285,7 +3396,7 @@
     const requiredFields = [
       'saleTitle', 'salePropertyCategory', 'salePropertyType', 'saleBedrooms', 'saleBathrooms',
       'saleFloorArea', 'salePrice', 'saleAddress', 'saleCity', 'saleProvince',
-      'commissionType', 'commissionValue', 'saleDescription'
+      'commissionType', 'commissionValue', 'saleDescription', 'saleStatus'
     ];
     
     for (const fieldId of requiredFields) {
@@ -3304,6 +3415,13 @@
     
     if (!selectedSaleType) {
       showMessage('Please select a sale type', 'error');
+      return false;
+    }
+    
+    // Validation for sold status
+    const saleStatus = document.getElementById('saleStatus').value;
+    if (saleStatus === 'sold' && !document.getElementById('saleDate').value) {
+      showMessage('Please enter sale date for sold properties', 'error');
       return false;
     }
     
@@ -3335,7 +3453,7 @@
     const requiredFields = [
       'leaseTitle', 'leasePropertyCategory', 'leasePropertyType', 'totalArea',
       'leaseDuration', 'annualRent', 'leaseCommissionType', 'leaseCommissionValue',
-      'leaseAddress', 'leaseCity', 'leaseProvince', 'leaseDescription'
+      'leaseAddress', 'leaseCity', 'leaseProvince', 'leaseDescription', 'leaseStatus'
     ];
     
     for (const fieldId of requiredFields) {
@@ -3354,6 +3472,13 @@
     
     if (!selectedLeaseType) {
       showMessage('Please select a lease type', 'error');
+      return false;
+    }
+    
+    // Validation for leased status
+    const leaseStatus = document.getElementById('leaseStatus').value;
+    if (leaseStatus === 'leased' && !document.getElementById('leaseDate').value) {
+      showMessage('Please enter lease start date for leased properties', 'error');
       return false;
     }
     
@@ -3406,6 +3531,11 @@
       }
     }
     
+    // Get status and sale date
+    const status = document.getElementById('saleStatus').value;
+    const saleDate = status === 'sold' && document.getElementById('saleDate').value ? 
+      new Date(document.getElementById('saleDate').value) : null;
+    
     return {
       title: document.getElementById('saleTitle').value,
       propertyCategory: document.getElementById('salePropertyCategory').value,
@@ -3432,6 +3562,8 @@
       longitude: parseFloat(document.getElementById('saleLongitude').value),
       amenities: amenities,
       description: document.getElementById('saleDescription').value,
+      status: status,
+      saleDate: saleDate,
       type: 'sale',
       listingType: 'sale',
       updatedAt: new Date()
@@ -3462,6 +3594,11 @@
     
     const commissionType = document.getElementById('leaseCommissionType').value;
     const commissionValue = parseFloat(document.getElementById('leaseCommissionValue').value);
+    
+    // Get status and lease start date
+    const status = document.getElementById('leaseStatus').value;
+    const leaseStartDate = status === 'leased' && document.getElementById('leaseDate').value ? 
+      new Date(document.getElementById('leaseDate').value) : null;
     
     return {
       title: document.getElementById('leaseTitle').value,
@@ -3496,6 +3633,8 @@
       maintenance: document.getElementById('maintenance').value || null,
       amenities: amenities,
       description: document.getElementById('leaseDescription').value,
+      status: status,
+      leaseStartDate: leaseStartDate,
       type: 'lease',
       listingType: 'lease',
       updatedAt: new Date()

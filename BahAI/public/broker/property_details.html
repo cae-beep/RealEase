@@ -956,9 +956,9 @@
 <div class="container">
     <!-- Back Button - Will be dynamically updated -->
     <div>
-        <a href="#" id="backButton" class="back-button">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
+        <button id="backButton" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
     </div>
 
     <!-- Property Details Container -->
@@ -1054,27 +1054,62 @@ async function loadSidebarBasedOnRole(userRole) {
     }
 }
 
-// Function to update back button based on user role
+// Function to update back button based on user role with history back fallback
 function updateBackButton(userRole) {
     const backButton = document.getElementById('backButton');
     
+    // Remove any existing event listeners by cloning the button
+    const newBackButton = backButton.cloneNode(true);
+    backButton.parentNode.replaceChild(newBackButton, backButton);
+    
+    // Add click event listener
+    newBackButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // First, try to go back in history
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            // If no history, fall back to dashboard based on role
+            let fallbackUrl = '../index.html';
+            let fallbackText = 'Back to Home';
+            
+            if (userRole === 'agent') {
+                fallbackUrl = '../agent/agent_dashboard.html';
+                fallbackText = 'Back to Agent Dashboard';
+            } else if (userRole === 'broker') {
+                fallbackUrl = '../broker/broker_dashboard.html';
+                fallbackText = 'Back';
+            } else if (userRole === 'landlord') {
+                fallbackUrl = '../landlord/landlord_dashboard.html';
+                fallbackText = 'Back to Landlord Dashboard';
+            } else if (userRole === 'admin') {
+                fallbackUrl = '../admin/admin_dashboard.html';
+                fallbackText = 'Back to Admin Dashboard';
+            }
+            
+            // Show a fallback message
+            const shouldGoToFallback = confirm(`Cannot go back in history. Go to ${fallbackText}?`);
+            if (shouldGoToFallback) {
+                window.location.href = fallbackUrl;
+            }
+        }
+    });
+    
+    // Update button text based on role for visual reference
+    let buttonText = 'Back';
     if (userRole === 'agent') {
-        backButton.href = '../agent/agent_dashboard.html';
-        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Agent Dashboard';
+        buttonText = 'Back';
     } else if (userRole === 'broker') {
-        backButton.href = '../broker/broker_dashboard.html';
-        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Broker Dashboard';
+        buttonText = 'Back';
     } else if (userRole === 'landlord') {
-        backButton.href = '../landlord/landlord_dashboard.html';
-        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Landlord Dashboard';
+        buttonText = 'Back';
     } else if (userRole === 'admin') {
-        backButton.href = '../admin/admin_dashboard.html';
-        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Admin Dashboard';
-    } else {
-        // Default for other roles
-        backButton.href = '../index.html';
-        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Home';
+        buttonText = 'Back';
     }
+    
+    newBackButton.innerHTML = `<i class="fas fa-arrow-left"></i> ${buttonText}`;
+    newBackButton.id = 'backButton'; // Restore the ID
 }
 </script>
 
