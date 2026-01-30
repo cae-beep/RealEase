@@ -20,19 +20,20 @@
         --border-radius: 16px;
         --border-radius-sm: 12px;
         --border-radius-lg: 24px;
+        --text-dark: #1a202c;
+        --text-light: #718096;
     }
 
-    /* Hero Section */
+    /* Hero Section - same as buyer dashboard */
     .hero-section {
         background: var(--primary-gradient);
         color: white;
         border-radius: var(--border-radius-lg);
-        padding: 40px 35px;
+        padding: 50px 40px;
         margin-bottom: 40px;
         position: relative;
         overflow: hidden;
     }
-    
     .hero-section::before {
         content: '';
         position: absolute;
@@ -44,17 +45,17 @@
         background-size: cover;
         opacity: 0.1;
     }
-    
     .hero-section h1 {
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         font-weight: 700;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
         line-height: 1.2;
+        max-width: 800px;
     }
-    
     .hero-section p {
         font-size: 1.1rem;
         opacity: 0.9;
+        max-width: 600px;
         margin-bottom: 20px;
     }
     
@@ -154,10 +155,9 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        min-width: 180px;
+        min-width: 200px;
         justify-content: center;
     }
-    
     .search-button:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
@@ -176,10 +176,9 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        min-width: 180px;
+        min-width: 200px;
         justify-content: center;
     }
-    
     .reset-button:hover {
         background: #f9fafb;
         border-color: var(--primary-light);
@@ -187,14 +186,14 @@
     }
     
     .back-button {
-        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-        color: white;
-        border: none;
+        background: white;
+        color: var(--text-dark);
+        border: 2px solid #e5e7eb;
     }
-    
     .back-button:hover {
-        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
-        border-color: #4b5563;
+        background: #f9fafb;
+        border-color: var(--primary-light);
+        transform: translateY(-2px);
     }
 
     /* Results Header */
@@ -558,32 +557,37 @@
         margin: 0 auto 20px;
     }
     
-    .empty-state-icon, .error-icon {
-        font-size: 3rem;
+    .empty-state-icon {
+        font-size: 64px;
         margin-bottom: 20px;
-        opacity: 0.7;
+        opacity: 0.5;
+    }
+    .empty-state h3 {
+        font-size: 20px;
+        margin-bottom: 10px;
+        color: var(--text-dark);
+    }
+    .error-icon {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: #ef4444;
     }
 
-    /* Badge styling for property types */
+    /* Badge styling for property types - dashboard gradients */
     .type-sale {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        background: var(--primary-gradient);
         color: white;
     }
-    
     .type-rent {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        background: var(--secondary-gradient);
         color: white;
     }
-    
     .type-lease {
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        background: var(--accent-gradient);
         color: white;
     }
-    
-    /* Price styling */
-    .price-sale { color: #3b82f6; }
-    .price-rent { color: #3b82f6; }
-    .price-lease { color: #3b82f6; }
+    /* Price styling - same as dashboard */
+    .listing-price, .price-sale, .price-rent, .price-lease { color: var(--primary-dark); }
 
     /* Messaging Modal - Updated to match dashboard */
     .message-modal {
@@ -613,8 +617,8 @@
         max-width: 700px;
         max-height: 85vh;
         background: white;
-        border-radius: var(--border-radius-lg);
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-hover-shadow);
         display: flex;
         flex-direction: column;
         overflow: hidden;
@@ -910,14 +914,16 @@
         to { transform: translateY(0); opacity: 1; }
     }
 
-    /* Responsive Design */
+    /* Responsive - same as buyer dashboard */
+    @media (max-width: 1024px) {
+        .hero-stats { gap: 20px; }
+    }
     @media (max-width: 768px) {
         .hero-section {
-            padding: 30px 20px;
+            padding: 30px 24px;
         }
-        
         .hero-section h1 {
-            font-size: 2rem;
+            font-size: 1.8rem;
         }
         
         .search-grid {
@@ -995,23 +1001,22 @@
         }
     }
 
-    /* Toast notifications */
+    /* Toast notifications - same as dashboard */
     .save-toast {
         position: fixed;
         top: 20px;
         right: 20px;
-        background: #10b981;
+        background: var(--secondary-gradient);
         color: white;
         padding: 12px 24px;
-        border-radius: 8px;
+        border-radius: var(--border-radius-sm);
         z-index: 9999;
         font-weight: 500;
-        box-shadow: var(--card-shadow);
+        box-shadow: var(--card-hover-shadow);
         animation: slideIn 0.3s ease;
     }
-    
     .save-toast.error {
-        background: #ef4444;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     }
 </style>
 </head>
@@ -2684,7 +2689,7 @@ async function displayListings(listings) {
                             <div>
                                 <h3 class="listing-title" title="${title}">${truncatedTitle}</h3>
                                 <div class="listing-location">
-                                    <span class="location-icon">📍</span>
+                                    <i class="fas fa-map-marker-alt" style="flex-shrink: 0;"></i>
                                     <span class="location-text" title="${completeAddress}">${truncatedAddress}</span>
                                 </div>
                             </div>
@@ -2736,11 +2741,11 @@ async function displayListings(listings) {
                                     data-user-id="${listing.userId}"
                                     data-user-name="${userInfo.displayName}"
                                     aria-label="Contact ${userInfo.role === 'landlord' ? 'owner' : 'broker'}">
-                                <span class="contact-icon">📞</span>
+                                <i class="fas fa-phone"></i>
                                 Contact ${userInfo.role === 'landlord' ? 'Owner' : 'Broker'}
                             </button>
                             <button class="action-btn view-btn" aria-label="View property details">
-                                <span class="view-icon">👁️</span>
+                                <i class="fas fa-eye"></i>
                                 View Details
                             </button>
                         </div>
@@ -2808,7 +2813,7 @@ function displayNoListings() {
                 <i class="fas fa-redo"></i>
                 Reset Filters
             </button>
-            <button class="search-button" onclick="window.location.href='buyer_dashboard.html'" style="margin-top: 10px; background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);">
+            <button class="reset-button back-button" onclick="window.location.href='buyer_dashboard.html'" style="margin-top: 10px;">
                 <i class="fas fa-arrow-left"></i>
                 Back to Dashboard
             </button>
