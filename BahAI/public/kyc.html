@@ -5,20 +5,26 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>KYC Verification - BahAI Real Estate</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="buyer/style.css">
 <style>
+    /* Same design tokens as buyer dashboard */
     :root {
-      --primary: #0b2e52;
-      --primary-dark: #001F3F;
-      --primary-light: #002f3f;
-      --secondary: #1976d2;
-      --accent: #ff9800;
+      --primary-gradient: linear-gradient(135deg, #0b2e52 0%, #667eea 100%);
+      --primary-light: #667eea;
+      --primary-dark: #764ba2;
+      --secondary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      --card-hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+      --border-radius: 16px;
+      --border-radius-sm: 12px;
+      --border-radius-lg: 24px;
       --text-dark: #1a202c;
       --text-light: #718096;
       --bg-light: #f8fafc;
       --bg-white: #ffffff;
-      --border: #e2e8f0;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --border: #e5e7eb;
     }
     
     * {
@@ -38,46 +44,82 @@
       padding: 20px;
     }
 
-    /* Header */
-    .header {
+    /* Hero Section - same as buyer dashboard */
+    .hero-section {
+      background: var(--primary-gradient);
+      color: white;
+      border-radius: var(--border-radius-lg);
+      padding: 50px 40px;
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
       width: 100%;
       max-width: 1000px;
-      text-align: center;
-      margin-bottom: 40px;
-      padding-top: 20px;
     }
-
-    .logo {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--primary);
-      text-decoration: none;
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="white"/></svg>');
+      background-size: cover;
+      opacity: 0.1;
+    }
+    .hero-logo-link {
       display: inline-block;
       margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
     }
-
-    .logo span {
-      color: var(--secondary);
+    .hero-logo-link img {
+      height: 48px;
+      width: auto;
+      filter: brightness(0) invert(1);
     }
-
-    .page-header h1 {
-      font-size: 32px;
+    .hero-section h1 {
+      font-size: 2.8rem;
       font-weight: 700;
-      color: var(--text-dark);
-      margin-bottom: 12px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      margin-bottom: 15px;
       line-height: 1.2;
+      max-width: 800px;
+      position: relative;
+      z-index: 1;
     }
-
-    .page-header p {
-      color: var(--text-light);
-      font-size: 16px;
-      line-height: 1.4;
+    .hero-section p {
+      font-size: 1.1rem;
+      opacity: 0.9;
       max-width: 600px;
-      margin: 0 auto;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-actions {
+      margin-top: 25px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-actions a {
+      color: white;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.4);
+      border-radius: var(--border-radius-sm);
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .hero-actions a:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     }
 
     /* Status Cards */
@@ -91,23 +133,23 @@
     }
 
     .status-card {
-      background: var(--bg-white);
+      background: white;
       padding: 25px;
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       text-align: center;
     }
-
     .status-card:hover {
       transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--card-hover-shadow);
     }
 
     .status-icon {
       font-size: 40px;
       margin-bottom: 15px;
+      color: var(--primary-light);
     }
 
     .status-value {
@@ -134,28 +176,25 @@
       letter-spacing: 0.5px;
     }
 
-    .status-not_submitted { 
-      background: #fef3c7;
-      color: #92400e;
-      border: 1px solid #fde68a;
+    .status-not_submitted {
+      background: var(--accent-gradient);
+      color: white;
+      border: none;
     }
-    
-    .status-pending { 
-      background: #dbeafe;
-      color: #1e40af;
-      border: 1px solid #93c5fd;
+    .status-pending {
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+      color: white;
+      border: none;
     }
-    
-    .status-approved { 
-      background: #d1fae5;
-      color: #065f46;
-      border: 1px solid #a7f3d0;
+    .status-approved {
+      background: var(--secondary-gradient);
+      color: white;
+      border: none;
     }
-    
-    .status-rejected { 
-      background: #fee2e2;
-      color: #991b1b;
-      border: 1px solid #fca5a5;
+    .status-rejected {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      border: none;
     }
 
     /* Main Content Container */
@@ -169,20 +208,19 @@
 
     /* KYC Form Container */
     .kyc-container {
-      background: var(--bg-white);
+      background: white;
       padding: 40px;
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       width: 100%;
       margin-bottom: 30px;
     }
-
     .role-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      background: var(--primary-gradient);
       color: white;
       padding: 8px 20px;
       border-radius: 20px;
@@ -190,16 +228,14 @@
       font-size: 14px;
       margin-bottom: 25px;
     }
-
     .info-box {
-      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-      border: 1px solid #bae6fd;
-      border-radius: 16px;
+      background: rgba(102, 126, 234, 0.08);
+      border: 1px solid rgba(102, 126, 234, 0.2);
+      border-radius: var(--border-radius);
       padding: 25px;
       margin-bottom: 30px;
-      border-left: 5px solid var(--secondary);
+      border-left: 4px solid var(--primary-light);
     }
-
     .info-box h3 {
       font-size: 18px;
       font-weight: 600;
@@ -208,6 +244,9 @@
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+    .info-box h3 i {
+      color: var(--primary-light);
     }
 
     .info-box ul {
@@ -228,21 +267,25 @@
     }
 
     .info-box strong {
-      color: var(--primary);
+      color: var(--primary-light);
       min-width: 200px;
     }
-
     .form-section {
       margin-bottom: 30px;
     }
-
+    /* Section title - same as buyer dashboard */
     .section-title {
-      font-size: 18px;
+      font-size: 1.5rem;
       font-weight: 600;
       color: var(--text-dark);
       margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title i {
+      color: var(--primary-light);
+      font-size: 1.3rem;
     }
 
     .form-grid {
@@ -275,7 +318,7 @@
     .form-input, .form-select {
       padding: 12px 16px;
       border: 2px solid var(--border);
-      border-radius: 10px;
+      border-radius: var(--border-radius-sm);
       font-size: 14px;
       font-family: 'Inter', sans-serif;
       transition: all 0.3s ease;
@@ -285,10 +328,9 @@
 
     .form-input:focus, .form-select:focus {
       outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(11, 46, 82, 0.1);
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
-
     .form-input.file-input {
       padding: 20px;
       border: 2px dashed #cbd5e0;
@@ -296,10 +338,9 @@
       cursor: pointer;
       text-align: center;
     }
-
     .form-input.file-input:hover {
-      border-color: var(--primary);
-      background: #f0f9ff;
+      border-color: var(--primary-light);
+      background: rgba(102, 126, 234, 0.05);
     }
 
     .help-text {
@@ -346,9 +387,9 @@
       margin-top: 5px;
     }
     
-    .quality-good { background: #d1fae5; color: #065f46; }
-    .quality-warning { background: #fef3c7; color: #92400e; }
-    .quality-bad { background: #fee2e2; color: #991b1b; }
+    .quality-good { background: var(--secondary-gradient); color: white; }
+    .quality-warning { background: var(--accent-gradient); color: white; }
+    .quality-bad { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; }
 
     /* Progress Bar */
     .progress-bar {
@@ -362,7 +403,7 @@
     
     .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, var(--secondary), var(--primary));
+      background: var(--primary-gradient);
       transition: width 0.3s ease;
       border-radius: 6px;
     }
@@ -403,7 +444,7 @@
     .submit-btn, .back-btn {
       flex: 1;
       padding: 16px 24px;
-      border-radius: 12px;
+      border-radius: var(--border-radius-sm);
       font-weight: 600;
       font-size: 15px;
       cursor: pointer;
@@ -417,37 +458,33 @@
     }
 
     .submit-btn {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      background: var(--primary-gradient);
       color: white;
     }
-
     .submit-btn:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
-      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
     }
-
     .submit-btn:disabled {
       background: #94a3b8;
       cursor: not-allowed;
       opacity: 0.7;
     }
-
     .back-btn {
-      background: var(--bg-white);
+      background: white;
       color: var(--text-dark);
-      border: 2px solid var(--border);
+      border: 2px solid #e5e7eb;
     }
-
     .back-btn:hover {
-      background: var(--bg-light);
+      border-color: var(--primary-light);
+      background: #f9fafb;
       transform: translateY(-2px);
     }
 
     /* Message Box */
     .message-box {
       padding: 16px 20px;
-      border-radius: 12px;
+      border-radius: var(--border-radius-sm);
       margin: 20px 0;
       font-weight: 500;
       text-align: center;
@@ -455,23 +492,21 @@
     }
     
     .message-box.success {
-      background: #d1fae5;
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
       color: #065f46;
-      border: 1px solid #a7f3d0;
+      border: 1px solid rgba(16, 185, 129, 0.3);
       display: block;
     }
-    
     .message-box.error {
-      background: #fee2e2;
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
       color: #991b1b;
-      border: 1px solid #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
       display: block;
     }
-    
     .message-box.warning {
-      background: #fef3c7;
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
       color: #92400e;
-      border: 1px solid #fde68a;
+      border: 1px solid rgba(245, 158, 11, 0.3);
       display: block;
     }
 
@@ -510,9 +545,11 @@
       body {
         padding: 15px;
       }
-      
-      .page-header h1 {
-        font-size: 28px;
+      .hero-section h1 {
+        font-size: 1.8rem;
+      }
+      .hero-section {
+        padding: 30px 24px;
       }
       
       .status-grid {
@@ -538,8 +575,8 @@
     }
 
     @media (max-width: 480px) {
-      .page-header h1 {
-        font-size: 24px;
+      .hero-section h1 {
+        font-size: 1.5rem;
       }
       
       .preview-item {
@@ -558,26 +595,31 @@
 </head>
 
 <body>
-<!-- Header -->
-<header class="header">
-  <a href="index.html" class="logo">Bah<span>AI</span> Real Estate</a>
-  <div class="page-header">
-    <h1>KYC Verification</h1>
-    <p>Complete your identity verification to access all features</p>
-  </div>
-</header>
-
 <!-- Main Content -->
 <main class="main-container">
+  <!-- Hero Section - matches buyer dashboard -->
+  <section class="hero-section">
+    <a href="index.html" class="hero-logo-link">
+      <img src="images/logo-bahai.png" alt="BahAI Real Estate" />
+    </a>
+    <h1>KYC Verification</h1>
+    <p>Complete your identity verification to access all features</p>
+    <div class="hero-actions">
+      <a href="#" id="backLink">
+        <i class="fas fa-arrow-left"></i>
+        Back to Dashboard
+      </a>
+    </div>
+  </section>
   <!-- Status Overview -->
   <div class="status-grid">
     <div class="status-card">
-      <div class="status-icon">📋</div>
+      <div class="status-icon"><i class="fas fa-clipboard-list"></i></div>
       <div class="status-value" id="roleBadge">Loading...</div>
       <div class="status-label">Your Role</div>
     </div>
     <div class="status-card">
-      <div class="status-icon">🔄</div>
+      <div class="status-icon"><i class="fas fa-sync-alt"></i></div>
       <div class="status-value">
         <span class="status-badge" id="statusBadge">Loading...</span>
       </div>
@@ -589,7 +631,7 @@
   <div class="kyc-container">
     <!-- Role-specific Information -->
     <div id="brokerInfo" class="info-box hidden">
-      <h3>📋 Required Documents for Brokers</h3>
+      <h3><i class="fas fa-clipboard-list"></i> Required Documents for Brokers</h3>
       <ul>
         <li><strong>PRC License Number</strong> - Your Professional Regulation Commission License</li>
         <li><strong>PRC License Document</strong> - Clear photo/scan of your PRC License (PDF/JPG/PNG)</li>
@@ -600,7 +642,7 @@
     </div>
 
     <div id="agentInfo" class="info-box hidden">
-      <h3>📋 Required Documents for Agents</h3>
+      <h3><i class="fas fa-clipboard-list"></i> Required Documents for Agents</h3>
       <ul>
         <li><strong>Valid Government ID</strong> - National ID, Driver's License, Passport, etc.</li>
         <li><strong>Selfie with ID</strong> - Hold your ID next to your face</li>
@@ -611,7 +653,7 @@
     </div>
 
     <div id="landlordInfo" class="info-box hidden">
-      <h3>📋 Required Documents for Landlords/Sellers</h3>
+      <h3><i class="fas fa-clipboard-list"></i> Required Documents for Landlords/Sellers</h3>
       <ul>
         <li><strong>Valid Government ID</strong> - National ID, Driver's License, Passport, etc.</li>
         <li><strong>Selfie with ID</strong> - Hold your ID next to your face</li>
@@ -720,8 +762,10 @@
 
         <!-- Buttons -->
         <div class="button-group">
-          <button type="submit" id="submitBtn" class="submit-btn">Submit for Verification</button>
-          <a href="#" id="backLink" class="back-btn">← Back to Dashboard</a>
+          <button type="submit" id="submitBtn" class="submit-btn">
+            <i class="fas fa-paper-plane"></i>
+            Submit for Verification
+          </button>
         </div>
       </form>
     </div>
@@ -950,10 +994,11 @@ onAuthStateChanged(auth, async (user) => {
 
         // Set back link based on role
         const dashboardMap = {
-            broker: 'broker_dashboard.html',
+            broker: 'broker/broker_dashboard.html',
             agent: 'broker/agent_dashboard.html',
-            seller: 'seller_dashboard.html',
-            landlord: 'landlord_dashboard.html'
+            buyer: 'buyer/buyer_dashboard.html',
+            seller: 'buyer/buyer_dashboard.html',
+            landlord: 'landlord/landlord_dashboard.html'
         };
         const backLink = document.getElementById("backLink");
         backLink.href = dashboardMap[userRole] || 'dashboard.html';
