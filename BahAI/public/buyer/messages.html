@@ -6,22 +6,27 @@
 <title>My Messages - BahAI Real Estate</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
 <style>
+    /* Same design tokens as buyer dashboard */
     :root {
-      --primary: #0b2e52;
-      --primary-dark: #001F3F;
-      --primary-light: #002f3f;
-      --secondary: #1976d2;
-      --accent: #ff9800;
+      --primary-gradient: linear-gradient(135deg, #0b2e52 0%, #667eea 100%);
+      --primary-light: #667eea;
+      --primary-dark: #764ba2;
+      --secondary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      --card-hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+      --border-radius: 16px;
+      --border-radius-sm: 12px;
+      --border-radius-lg: 24px;
       --text-dark: #1a202c;
       --text-light: #718096;
       --bg-light: #f8fafc;
       --bg-white: #ffffff;
-      --border: #e2e8f0;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-      --unread-bg: #e8f4ff;
-      --unread-border: #b3d9ff;
+      --border: #e5e7eb;
+      --unread-bg: #eef2ff;
+      --unread-border: rgba(102, 126, 234, 0.3);
       --message-sent: #e3f2fd;
       --message-received: #f5f5f5;
       --success: #10b981;
@@ -55,22 +60,22 @@
       min-height: 100vh;
     }
 
-    /* Mobile Menu Toggle */
+    /* Mobile Menu Toggle - same as buyer dashboard */
     .mobile-menu-toggle {
       display: none;
       position: fixed;
       top: 20px;
       left: 20px;
       z-index: 1001;
-      background: var(--primary);
+      background: var(--primary-gradient);
       color: white;
       border: none;
       width: 50px;
       height: 50px;
-      border-radius: 12px;
+      border-radius: var(--border-radius-sm);
       font-size: 24px;
       cursor: pointer;
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--card-hover-shadow);
     }
 
     .container {
@@ -80,55 +85,76 @@
       transition: margin-left 0.3s ease;
     }
 
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      gap: 20px;
-    }
-
-    .page-header h1 {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--text-dark);
-      margin-bottom: 8px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      line-height: 1.2;
-    }
-
-    .page-header p {
-      color: var(--text-light);
-      font-size: 16px;
-      line-height: 1.4;
-    }
-
-    .refresh-btn {
-      background: var(--primary);
+    /* Hero Section - same as buyer dashboard */
+    .hero-section {
+      background: var(--primary-gradient);
       color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-size: 14px;
+      border-radius: var(--border-radius-lg);
+      padding: 50px 40px;
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="white"/></svg>');
+      background-size: cover;
+      opacity: 0.1;
+    }
+    .hero-section h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      line-height: 1.2;
+      max-width: 800px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-section p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-actions {
+      margin-top: 25px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    .refresh-btn {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      padding: 14px 24px;
+      border-radius: var(--border-radius-sm);
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
-
     .refresh-btn:hover {
-      background: var(--primary-dark);
+      background: rgba(255,255,255,0.3);
       transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     }
-
     .refresh-btn.refreshing {
-      background: var(--text-light);
+      background: rgba(255,255,255,0.15);
       cursor: not-allowed;
+      transform: none;
     }
 
     .messages-container {
@@ -139,12 +165,12 @@
       min-height: 600px;
     }
 
-    /* Conversations List */
+    /* Conversations List - same card style as dashboard */
     .conversations-sidebar {
-      background: var(--bg-white);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -227,8 +253,8 @@
       margin-top: 10px;
       padding: 10px;
       background: rgba(255, 255, 255, 0.8);
-      border-radius: 8px;
-      border-left: 3px solid var(--primary);
+      border-radius: var(--border-radius-sm);
+      border-left: 4px solid var(--primary-light);
     }
 
     .schedule-notes-label {
@@ -264,23 +290,22 @@
     }
 
     .schedule-action-btn.primary {
-      background: var(--primary);
+      background: var(--primary-gradient);
       color: white;
+      border: none;
     }
-
     .schedule-action-btn.primary:hover {
-      background: var(--primary-dark);
       transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
     }
-
     .schedule-action-btn.secondary {
-      background: var(--bg-light);
+      background: white;
       color: var(--text-dark);
-      border: 1px solid var(--border);
+      border: 2px solid #e5e7eb;
     }
-
     .schedule-action-btn.secondary:hover {
-      background: var(--border);
+      border-color: var(--primary-light);
+      background: #f9fafb;
       transform: translateY(-2px);
     }
 
@@ -297,33 +322,34 @@
     }
 
     .status-confirmed {
-      background: #d1fae5;
-      color: #065f46;
+      background: var(--secondary-gradient);
+      color: white;
     }
-
     .status-pending {
-      background: #fef3c7;
-      color: #92400e;
+      background: var(--accent-gradient);
+      color: white;
     }
-
     .status-declined {
-      background: #fee2e2;
-      color: #991b1b;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
     }
-
     .status-alternative {
-      background: #dbeafe;
-      color: #1e40af;
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+      color: white;
     }
 
     .conversations-header h2 {
-      font-size: 18px;
+      font-size: 1.25rem;
       font-weight: 600;
       color: var(--text-dark);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 15px;
+    }
+    .conversations-header h2 i {
+      color: var(--primary-light);
+      font-size: 1.2rem;
     }
 
     .index-notice {
@@ -337,7 +363,7 @@
     }
 
     .index-notice a {
-      color: var(--primary);
+      color: var(--primary-light);
       font-weight: 600;
       text-decoration: underline;
     }
@@ -358,7 +384,7 @@
 
     .stat-value {
       font-weight: 700;
-      color: var(--primary);
+      color: var(--primary-light);
       font-size: 20px;
     }
 
@@ -374,12 +400,12 @@
     }
 
     .filter-btn {
-      padding: 8px 16px;
-      border: 1px solid var(--border);
-      background: var(--bg-light);
+      padding: 10px 18px;
+      border: 2px solid #e5e7eb;
+      background: white;
       color: var(--text-dark);
-      border-radius: 8px;
-      font-size: 13px;
+      border-radius: var(--border-radius-sm);
+      font-size: 14px;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.3s ease;
@@ -391,13 +417,13 @@
     }
 
     .filter-btn:hover {
-      background: var(--border);
+      border-color: var(--primary-light);
+      background: #f9fafb;
     }
-
     .filter-btn.active {
-      background: var(--primary);
+      background: var(--primary-gradient);
       color: white;
-      border-color: var(--primary);
+      border-color: transparent;
     }
 
     .conversations-search {
@@ -416,8 +442,8 @@
 
     .conversations-search input:focus {
       outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(11, 46, 82, 0.1);
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
     .conversations-search i {
@@ -450,7 +476,7 @@
 
     .conversation-item.active {
       background: var(--unread-bg);
-      border-left: 4px solid var(--primary);
+      border-left: 4px solid var(--primary-light);
     }
 
     .conversation-item.unread {
@@ -461,7 +487,7 @@
       width: 50px;
       height: 50px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      background: var(--primary-gradient);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -511,10 +537,10 @@
       align-items: center;
       gap: 6px;
       font-size: 12px;
-      color: var(--primary);
-      background: rgba(11, 46, 82, 0.08);
+      color: var(--primary-light);
+      background: rgba(102, 126, 234, 0.08);
       padding: 4px 8px;
-      border-radius: 6px;
+      border-radius: var(--border-radius-sm);
       width: fit-content;
       max-width: 100%;
       overflow: hidden;
@@ -530,7 +556,7 @@
       position: absolute;
       top: 16px;
       right: 20px;
-      background: var(--secondary);
+      background: var(--secondary-gradient);
       color: white;
       font-size: 11px;
       font-weight: 600;
@@ -573,12 +599,12 @@
       transform: scale(1.1);
     }
 
-    /* Chat Container */
+    /* Chat Container - same card style as dashboard */
     .chat-container {
-      background: var(--bg-white);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -607,7 +633,7 @@
       width: 45px;
       height: 45px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      background: var(--primary-gradient);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -655,8 +681,8 @@
     }
 
     .chat-property-info:hover {
-      background: var(--bg-white);
-      box-shadow: var(--shadow);
+      background: white;
+      box-shadow: var(--card-shadow);
     }
 
     .chat-property-info h4 {
@@ -681,7 +707,7 @@
     .chat-property-price {
       font-size: 16px;
       font-weight: 700;
-      color: var(--primary);
+      color: var(--primary-dark);
     }
 
     .chat-messages-container {
@@ -744,7 +770,7 @@
     }
 
     .message-bubble.sent .message-content {
-      background: var(--primary);
+      background: var(--primary-gradient);
       color: white;
       border-bottom-right-radius: 4px;
     }
@@ -809,8 +835,8 @@
     .chat-input {
       flex: 1;
       padding: 12px 16px;
-      border: 2px solid var(--border);
-      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: var(--border-radius-sm);
       font-family: 'Inter', sans-serif;
       font-size: 14px;
       resize: none;
@@ -821,17 +847,16 @@
 
     .chat-input:focus {
       outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(11, 46, 82, 0.1);
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
-
     .send-button {
-      background: var(--primary);
+      background: var(--primary-gradient);
       color: white;
       border: none;
       width: 44px;
       height: 44px;
-      border-radius: 12px;
+      border-radius: var(--border-radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -839,14 +864,12 @@
       transition: all 0.3s ease;
       flex-shrink: 0;
     }
-
     .send-button:hover {
-      background: var(--primary-dark);
       transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
     }
-
     .send-button:disabled {
-      background: var(--border);
+      background: #e5e7eb;
       cursor: not-allowed;
       transform: none;
     }
@@ -884,13 +907,13 @@
     }
 
     .spinner {
-      border: 4px solid var(--bg-light);
-      border-top: 4px solid var(--primary);
+      border: 4px solid rgba(102, 126, 234, 0.2);
+      border-top: 4px solid var(--primary-light);
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
       animation: spin 1s linear infinite;
-      margin-bottom: 20px;
+      margin: 0 auto 20px;
     }
 
     @keyframes spin {
@@ -929,8 +952,8 @@
     }
 
     .property-quick-view:hover {
-      background: var(--bg-white);
-      box-shadow: var(--shadow);
+      background: white;
+      box-shadow: var(--card-shadow);
     }
 
     .property-quick-view img {
@@ -968,20 +991,20 @@
     .property-quick-price {
       font-size: 16px;
       font-weight: 700;
-      color: var(--primary);
+      color: var(--primary-dark);
     }
 
-    /* Toast Notifications */
+    /* Toast Notifications - same as buyer dashboard */
     .toast {
       position: fixed;
       top: 20px;
       right: 20px;
-      background: var(--success);
+      background: var(--secondary-gradient);
       color: white;
       padding: 12px 24px;
-      border-radius: 8px;
+      border-radius: var(--border-radius-sm);
       font-weight: 500;
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--card-hover-shadow);
       z-index: 9999;
       animation: slideInRight 0.3s ease;
       display: flex;
@@ -1000,7 +1023,7 @@
     }
 
     .toast.error {
-      background: var(--error);
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     }
 
     /* Quick Actions */
@@ -1033,13 +1056,13 @@
     }
 
     .action-btn.primary {
-      background: var(--primary);
+      background: var(--primary-gradient);
       color: white;
-      border-color: var(--primary);
+      border: none;
     }
-
     .action-btn.primary:hover {
-      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
     }
 
     /* Delete Conversation Modal */
@@ -1065,12 +1088,12 @@
     }
 
     .modal {
-      background: var(--bg-white);
-      border-radius: 16px;
+      background: white;
+      border-radius: var(--border-radius);
       padding: 30px;
       max-width: 500px;
       width: 90%;
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--card-hover-shadow);
       transform: translateY(-20px);
       transition: transform 0.3s ease;
     }
@@ -1181,12 +1204,11 @@
       }
     }
 
-    /* Large Mobile */
+    /* Large Mobile - same as buyer dashboard */
     @media (max-width: 768px) {
       .container {
         padding: 20px;
       }
-      
       .mobile-menu-toggle {
         top: 15px;
         left: 15px;
@@ -1194,21 +1216,15 @@
         height: 45px;
         font-size: 20px;
       }
-      
-      .page-header h1 {
-        font-size: 24px;
+      .hero-section h1 {
+        font-size: 1.8rem;
       }
-      
-      .page-header p {
-        font-size: 14px;
+      .hero-section {
+        padding: 30px 24px;
       }
-      
-      .topbar {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
+      .hero-actions {
+        margin-top: 20px;
       }
-      
       .refresh-btn {
         align-self: flex-start;
       }
@@ -1286,16 +1302,17 @@
 <!-- Include Sidebar -->
 <div id="sidebar-container"></div>
 
-<!-- Main -->
+<!-- Main - same layout as buyer dashboard -->
 <div class="container">
-  <div class="topbar">
-    <div class="page-header">
-      <h1>My Messages</h1>
-      <p>View and manage your conversations with brokers and property owners</p>
+  <!-- Hero Section - same design as buyer dashboard -->
+  <div class="hero-section">
+    <h1>My Messages</h1>
+    <p>View and manage your conversations with brokers and property owners</p>
+    <div class="hero-actions">
+      <button class="refresh-btn" id="refreshBtn">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
     </div>
-    <button class="refresh-btn" id="refreshBtn">
-      <i class="fas fa-sync-alt"></i> Refresh
-    </button>
   </div>
 
   <div class="messages-container">
@@ -1334,7 +1351,7 @@
           <button class="filter-btn" id="filterToday">
             <i class="fas fa-calendar-day"></i> Today
           </button>
-          <button class="filter-btn" id="fixDataBtn" style="background: var(--accent); color: white; border-color: var(--accent);">
+          <button class="filter-btn" id="fixDataBtn" style="background: var(--accent-gradient); color: white; border: none;">
             <i class="fas fa-wrench"></i> Fix Data
           </button>
         </div>
