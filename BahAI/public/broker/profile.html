@@ -6,15 +6,21 @@
 <title>Profile - BahAI Real Estate</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../buyer/style.css">
 <style>
+    /* Same design tokens as broker dashboard */
     :root {
       --primary: #0b2e52;
-      --primary-dark: #001F3F;
-      --primary-light: #002f3f;
-      --secondary: #1976d2;
-      --accent: #ff9800;
-      --success: #10b981;
-      --danger: #ef4444;
+      --primary-gradient: linear-gradient(135deg, #0b2e52 0%, #667eea 100%);
+      --primary-light: #667eea;
+      --primary-dark: #764ba2;
+      --secondary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      --card-hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+      --border-radius: 16px;
+      --border-radius-sm: 12px;
+      --border-radius-lg: 24px;
       --text-dark: #1a202c;
       --text-light: #718096;
       --bg-light: #f8fafc;
@@ -22,6 +28,8 @@
       --border: #e2e8f0;
       --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --success: #10b981;
+      --danger: #ef4444;
     }
     
     * {
@@ -38,24 +46,6 @@
       min-height: 100vh;
     }
 
-    /* Mobile Menu Toggle */
-    .mobile-menu-toggle {
-      display: none;
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      z-index: 1001;
-      background: var(--primary);
-      color: white;
-      border: none;
-      width: 50px;
-      height: 50px;
-      border-radius: 12px;
-      font-size: 24px;
-      cursor: pointer;
-      box-shadow: var(--shadow-lg);
-    }
-
     .container {
       flex: 1;
       margin-left: 280px;
@@ -63,59 +53,95 @@
       transition: margin-left 0.3s ease;
     }
 
-    /* Back Button */
+    /* Hero Section - same as broker dashboard */
+    .hero-section {
+      background: var(--primary-gradient);
+      color: white;
+      border-radius: var(--border-radius-lg);
+      padding: 50px 40px;
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="white"/></svg>');
+      background-size: cover;
+      opacity: 0.1;
+    }
+    .hero-section h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      line-height: 1.2;
+      max-width: 800px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-section p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-actions {
+      margin-top: 25px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
     .back-button {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      gap: 10px;
+      background: rgba(255,255,255,0.2);
       color: white;
-      border: none;
+      border: 2px solid rgba(255,255,255,0.4);
       padding: 14px 28px;
-      border-radius: 12px;
-      font-size: 15px;
+      border-radius: var(--border-radius-sm);
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: var(--shadow);
       text-decoration: none;
-      margin-bottom: 30px;
     }
-
     .back-button:hover {
+      background: rgba(255,255,255,0.3);
+      border-color: rgba(255,255,255,0.6);
       transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
-      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     }
-
-    /* Page Header */
     .page-header {
       margin-bottom: 30px;
     }
-
     .page-header h1 {
       font-size: 32px;
       font-weight: 700;
       color: var(--text-dark);
       margin-bottom: 10px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      line-height: 1.2;
     }
-
     .page-header p {
       color: var(--text-light);
       font-size: 16px;
     }
 
-    /* Profile Header */
+    /* Profile Header - same card style as broker dashboard */
     .profile-header {
       background: var(--bg-white);
       padding: 30px;
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       margin-bottom: 30px;
       position: relative;
       overflow: hidden;
@@ -137,23 +163,23 @@
     }
 
     .badge-broker {
-      background: #d1fae5;
-      color: #065f46;
+      background: var(--secondary-gradient);
+      color: white;
     }
 
     .badge-agent {
-      background: #dbeafe;
-      color: #1e40af;
+      background: var(--primary-gradient);
+      color: white;
     }
 
     .badge-active {
-      background: #dcfce7;
-      color: #166534;
+      background: var(--secondary-gradient);
+      color: white;
     }
 
     .badge-verified {
-      background: #fef3c7;
-      color: #92400e;
+      background: var(--accent-gradient);
+      color: white;
     }
 
     .profile-main {
@@ -193,7 +219,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      background: var(--primary-gradient);
       color: white;
       font-size: 60px;
       font-weight: bold;
@@ -212,7 +238,7 @@
 
     .profile-title {
       font-size: 18px;
-      color: var(--primary);
+      color: var(--primary-light);
       font-weight: 600;
       margin-bottom: 10px;
     }
@@ -227,7 +253,7 @@
     }
 
     .profile-location i {
-      color: var(--secondary);
+      color: var(--primary-light);
     }
 
     .profile-bio {
@@ -259,22 +285,22 @@
     .stat-card {
       background: var(--bg-white);
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      border-radius: var(--border-radius-sm);
+      box-shadow: var(--card-shadow);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       text-align: center;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .stat-card:hover {
       transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--card-hover-shadow);
     }
 
     .stat-value {
       font-size: 36px;
       font-weight: 700;
-      color: var(--primary);
+      color: var(--primary-light);
       margin-bottom: 5px;
       line-height: 1;
     }
@@ -313,51 +339,57 @@
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      background: var(--primary-gradient);
       color: white;
     }
 
     .btn-primary:hover {
-      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
     }
 
     .btn-secondary {
-      background: var(--bg-light);
+      background: white;
       color: var(--text-dark);
-      border: 1px solid var(--border);
+      border: 2px solid #e5e7eb;
     }
 
     .btn-secondary:hover {
-      background: var(--border);
+      background: #f9fafb;
+      border-color: var(--primary-light);
+      transform: translateY(-2px);
     }
 
     .btn-success {
-      background: var(--success);
+      background: var(--secondary-gradient);
       color: white;
     }
 
     .btn-success:hover {
-      background: #0da271;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
     }
 
     .btn-outline {
       background: transparent;
-      color: var(--primary);
-      border: 1px solid var(--primary);
+      color: var(--primary-light);
+      border: 2px solid var(--primary-light);
     }
 
     .btn-outline:hover {
-      background: var(--primary);
+      background: var(--primary-light);
       color: white;
+      transform: translateY(-2px);
     }
 
     .btn-accent {
-      background: var(--accent);
+      background: var(--accent-gradient);
       color: white;
     }
 
     .btn-accent:hover {
-      background: #e68900;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
     }
 
     /* Profile Content Grid */
@@ -373,13 +405,13 @@
       }
     }
 
-    /* Card Styles */
+    /* Card Styles - same as broker dashboard */
     .profile-card {
       background: var(--bg-white);
       padding: 25px;
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       margin-bottom: 25px;
     }
 
@@ -394,7 +426,7 @@
 
     .section-header i {
       font-size: 22px;
-      color: var(--primary);
+      color: var(--primary-light);
     }
 
     .section-header h2 {
@@ -422,7 +454,7 @@
     }
 
     .tag-primary {
-      background: var(--primary);
+      background: var(--primary-gradient);
       color: white;
       border: none;
     }
@@ -448,11 +480,11 @@
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: var(--bg-light);
+      background: rgba(102, 126, 234, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--primary);
+      color: var(--primary-light);
       font-size: 18px;
     }
 
@@ -528,17 +560,17 @@
 
     .property-card {
       background: var(--bg-white);
-      border-radius: 16px;
+      border-radius: var(--border-radius);
       overflow: hidden;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      box-shadow: var(--card-shadow);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       transition: all 0.3s ease;
       cursor: pointer;
     }
 
     .property-card:hover {
       transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--card-hover-shadow);
     }
 
     .property-image {
@@ -581,7 +613,7 @@
     .property-price {
       font-size: 20px;
       font-weight: 700;
-      color: var(--primary);
+      color: var(--primary-light);
       white-space: nowrap;
     }
 
@@ -619,18 +651,18 @@
     }
 
     .status-available {
-      background: #d1fae5;
-      color: #065f46;
+      background: var(--secondary-gradient);
+      color: white;
     }
 
     .status-sold {
-      background: #fef3c7;
-      color: #92400e;
+      background: var(--accent-gradient);
+      color: white;
     }
 
     .status-pending {
-      background: #dbeafe;
-      color: #1e40af;
+      background: var(--primary-gradient);
+      color: white;
     }
 
     /* Loading State */
@@ -638,18 +670,18 @@
       text-align: center;
       padding: 60px 20px;
       background: var(--bg-white);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       margin-bottom: 25px;
     }
 
     .spinner {
-      border: 4px solid var(--bg-light);
-      border-top: 4px solid var(--primary);
+      border: 4px solid rgba(102, 126, 234, 0.2);
+      border-top: 4px solid var(--primary-light);
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
       animation: spin 1s linear infinite;
       margin: 0 auto 20px;
     }
@@ -684,13 +716,13 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background: var(--primary);
+      background: var(--primary-gradient);
       color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
+      padding: 14px 24px;
+      border-radius: var(--border-radius-sm);
       z-index: 10000;
-      font-weight: 500;
-      box-shadow: var(--shadow-lg);
+      font-weight: 600;
+      box-shadow: var(--card-hover-shadow);
       animation: slideIn 0.3s ease;
       display: flex;
       align-items: center;
@@ -717,9 +749,9 @@
 
     /* Incomplete Profile Banner */
     .incomplete-banner {
-      background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-      border: 1px solid #ffe8a1;
-      border-radius: 12px;
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: var(--border-radius-sm);
       padding: 20px;
       margin-bottom: 30px;
       display: flex;
@@ -768,11 +800,11 @@
 
     .filter-select:focus {
       outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(11, 46, 82, 0.1);
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
-    /* Responsive Design */
+    /* Responsive - same as broker dashboard */
     @media (max-width: 1024px) {
       .container {
         margin-left: 0;
@@ -784,6 +816,14 @@
         align-items: center;
         justify-content: center;
       }
+      
+      .hero-section h1 {
+        font-size: 1.8rem;
+      }
+      
+      .hero-section {
+        padding: 30px 24px;
+      }
     }
 
     @media (max-width: 768px) {
@@ -791,8 +831,8 @@
         padding: 20px;
       }
       
-      .page-header h1 {
-        font-size: 24px;
+      .hero-section h1 {
+        font-size: 1.5rem;
       }
       
       .profile-photo {
@@ -832,20 +872,17 @@
 <!-- Include Sidebar -->
 <div id="sidebar-container"></div>
 
-<!-- Main Content -->
+<!-- Main Content - same layout as broker dashboard -->
 <div class="container">
-
-<!-- Back Button -->
-<div>
-  <a href="#" class="back-button" id="backButton">
-    <i class="fas fa-arrow-left"></i> Back to Dashboard
-  </a>
-</div>
-
-  <!-- Page Header -->
-  <div class="page-header">
+  <!-- Hero Section - same design as broker dashboard -->
+  <div class="hero-section">
     <h1 id="pageTitle">Profile</h1>
     <p id="pageSubtitle">View profile and listings</p>
+    <div class="hero-actions">
+      <a href="#" class="back-button" id="backButton">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
   </div>
 
   <!-- Incomplete Profile Banner (hidden by default) -->
