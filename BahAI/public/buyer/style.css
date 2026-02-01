@@ -1,20 +1,23 @@
 :root {
+    /* Navy blue - primary */
     --primary: #0b2e52;
-    --primary-dark: #001F3F;
-    --primary-light: #002f3f;
-    --secondary: #1976d2;
-    --accent: #ff9800;
+    --primary-dark: #071e38;
+    --primary-light: #1e3a5f;
+    /* Gold - accent / secondary / CTAs */
+    --secondary: #d4af37;
+    --accent: #d4af37;
+    --accent-dark: #b8860b;
     --text-dark: #1a202c;
     --text-light: #718096;
-    --bg-light: #f8fafc;
+    --bg-light: #f1f5f9;
     --bg-white: #ffffff;
     --border: #e2e8f0;
     --border-light: #e2e8f0;
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --rent-color: #10b981;
-    --sale-color: #3b82f6;
-    --lease-color: #8e44ad;
+    --rent-color: #059669;
+    --sale-color: #0b2e52;
+    --lease-color: #b8860b;
     --card-radius: 12px;
 }
 
@@ -26,18 +29,18 @@
 
 body {
     font-family: 'Inter', Arial, sans-serif;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
     color: var(--text-dark);
     display: flex;
     min-height: 100vh;
 }
 
-/* Sidebar Styles */
+/* Sidebar Styles - navy background (overridden by sidebar.html inline for full navy theme) */
 .sidebar {
     width: 280px;
-    background: var(--bg-white);
+    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
     box-shadow: var(--shadow-lg);
-    border-right: 1px solid var(--border);
+    border-right: 1px solid rgba(212, 175, 55, 0.2);
     position: fixed;
     left: 0;
     top: 0;
@@ -169,7 +172,7 @@ button.save-property-btn:not(.listing-card-image-container button) {
 }
 
 .search-title i {
-    color: var(--primary);
+    color: var(--accent);
 }
 
 .search-grid {
@@ -205,8 +208,8 @@ button.save-property-btn:not(.listing-card-image-container button) {
 
 .search-input:focus, .search-select:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(11, 46, 82, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
 }
 
 .search-actions {
@@ -235,7 +238,7 @@ button.save-property-btn:not(.listing-card-image-container button) {
 .search-button:hover {
     background: var(--primary-dark);
     transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 6px 20px rgba(11, 46, 82, 0.35);
 }
 
 .reset-button {
@@ -273,7 +276,7 @@ button.save-property-btn:not(.listing-card-image-container button) {
 }
 
 .section-title i {
-    color: var(--primary);
+    color: var(--accent);
 }
 
 .categories-grid {
@@ -298,19 +301,19 @@ button.save-property-btn:not(.listing-card-image-container button) {
 .category-card:hover {
     transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
-    border-color: var(--primary);
+    border-color: var(--accent);
 }
 
 .category-card.active {
     background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: white;
-    border-color: var(--primary);
+    border-color: var(--accent);
 }
 
 .category-icon {
     font-size: 40px;
     margin-bottom: 15px;
-    color: var(--primary);
+    color: var(--accent);
 }
 
 .category-card.active .category-icon {
@@ -626,7 +629,7 @@ button.save-property-btn:not(.listing-card-image-container button) {
 .save-property-btn:hover {
     transform: scale(1.1);
     box-shadow: var(--shadow-lg);
-    border-color: var(--primary);
+    border-color: var(--accent);
     background: var(--bg-white);
 }
 
@@ -1126,7 +1129,7 @@ button.save-property-btn:not(.listing-card-image-container button) {
 }
 
 .modal-thumbnail.active {
-    border-color: var(--primary);
+    border-color: var(--accent);
 }
 
 .modal-thumbnail img {
@@ -1338,21 +1341,21 @@ button.save-property-btn:not(.listing-card-image-container button) {
 }
 
 .contact-btn:hover {
-    background: #1565c0;
+    background: var(--accent-dark);
     transform: translateY(-2px);
-    border-color: #1565c0;
+    border-color: var(--accent-dark);
 }
 
 .calculator-btn {
-    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%) !important;
     color: white !important;
-    border: 2px solid #d97706 !important;
+    border: 2px solid var(--accent-dark) !important;
 }
 
 .calculator-btn:hover {
-    background: linear-gradient(135deg, #d97706, #b45309) !important;
+    background: linear-gradient(135deg, var(--accent-dark) 0%, #9a7309 100%) !important;
     transform: translateY(-2px);
-    border-color: #b45309 !important;
+    border-color: #9a7309 !important;
 }
 
 .save-btn {
@@ -1364,13 +1367,13 @@ button.save-property-btn:not(.listing-card-image-container button) {
 .save-btn:hover {
     background: var(--border-light);
     transform: translateY(-2px);
-    border-color: var(--primary);
+    border-color: var(--accent);
 }
 
 .save-btn.saved {
     background: var(--primary);
     color: white;
-    border-color: var(--primary);
+    border-color: var(--accent);
 }
 
 .close-btn {
@@ -1498,8 +1501,8 @@ button.save-property-btn:not(.listing-card-image-container button) {
 
 .calculator-input:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(11, 46, 82, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
 }
 
 .calculator-input-group .input-with-icon {
@@ -1566,7 +1569,7 @@ button.save-property-btn:not(.listing-card-image-container button) {
 .downpayment-btn:hover {
     background: var(--primary);
     color: white;
-    border-color: var(--primary);
+    border-color: var(--accent);
 }
 
 .calculator-results {
@@ -1624,7 +1627,7 @@ button.save-property-btn:not(.listing-card-image-container button) {
 .calculator-action-buttons .calculate-btn {
     background: var(--primary);
     color: white;
-    border-color: var(--primary);
+    border-color: var(--accent);
 }
 
 .calculator-action-buttons .calculate-btn:hover {
@@ -1642,7 +1645,7 @@ button.save-property-btn:not(.listing-card-image-container button) {
 .calculator-action-buttons .reset-btn:hover {
     background: var(--border-light);
     transform: translateY(-2px);
-    border-color: var(--primary);
+    border-color: var(--accent);
 }
 
 /* ==== ANIMATIONS === */
@@ -1676,7 +1679,7 @@ button.save-property-btn:not(.listing-card-image-container button) {
     background: var(--bg-light);
     transform: translateY(-1px);
     box-shadow: var(--shadow);
-    border-color: var(--primary);
+    border-color: var(--accent);
 }
 
 /* --- PROPERTY DETAILS PAGE STYLES --- */
@@ -1750,7 +1753,7 @@ button.save-property-btn:not(.listing-card-image-container button) {
 }
 
 .image-thumbnails .thumbnail.active {
-    border-color: var(--primary);
+    border-color: var(--accent);
 }
 
 .image-thumbnails .thumbnail img {
@@ -1791,7 +1794,7 @@ button.save-property-btn:not(.listing-card-image-container button) {
     background: white;
     transform: scale(1.1);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    border-color: var(--primary);
+    border-color: var(--accent);
 }
 
 .image-nav-btn:disabled {
@@ -2055,8 +2058,8 @@ button.save-property-btn:not(.listing-card-image-container button) {
 }
 
 .map-button.directions:hover {
-    background: #1565c0;
-    border-color: #1565c0;
+    background: var(--accent-dark);
+    border-color: var(--accent-dark);
 }
 
 /* Action Buttons */
@@ -2090,13 +2093,13 @@ button.save-property-btn:not(.listing-card-image-container button) {
 }
 
 .contact-btn:hover {
-    background: #1565c0;
+    background: var(--accent-dark);
     transform: translateY(-2px);
-    border-color: #1565c0;
+    border-color: var(--accent-dark);
 }
 
 .calculator-btn {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
     border-color: #d97706;
 }
 
@@ -2115,13 +2118,13 @@ button.save-property-btn:not(.listing-card-image-container button) {
 .save-btn-large:hover, .save-btn:hover {
     background: var(--border-light);
     transform: translateY(-2px);
-    border-color: var(--primary);
+    border-color: var(--accent);
 }
 
 .save-btn-large.saved, .save-btn.saved {
     background: var(--primary);
     color: white;
-    border-color: var(--primary);
+    border-color: var(--accent);
 }
 
 /* Listing Title Link */
@@ -2358,7 +2361,7 @@ button.save-property-btn:not(.listing-card-image-container button) {
     background: white;
     transform: scale(1.1);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    border-color: var(--primary);
+    border-color: var(--accent);
 }
 
 .modal-image-nav-btn:disabled {
@@ -2658,8 +2661,8 @@ button.save-property-btn:not(.listing-card-image-container button) {
 
     .message-textarea:focus {
         outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(11, 46, 82, 0.1);
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     }
 
     .message-actions {
@@ -2744,8 +2747,8 @@ button.save-property-btn:not(.listing-card-image-container button) {
 
     .call-btn {
         background: #e3f2fd;
-        color: #1565c0;
-        border: 1px solid #bbdefb;
+        color: var(--accent-dark);
+        border: 1px solid rgba(212, 175, 55, 0.3);
     }
 
     .call-btn:hover {
@@ -2847,7 +2850,7 @@ button.save-property-btn:not(.listing-card-image-container button) {
 }
 
 .message.user .avatar {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
 }
 
 .message .content {
@@ -2884,8 +2887,8 @@ button.save-property-btn:not(.listing-card-image-container button) {
 
 .chat-input input:focus {
   outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(11, 46, 82, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
 }
 
 .chat-input button {
