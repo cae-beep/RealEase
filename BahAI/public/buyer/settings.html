@@ -3,22 +3,28 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Settings - BahAI Real Estate</title>
+<title>Profile - BahAI Real Estate</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
 <style>
     :root {
       --primary: #0b2e52;
-      --primary-dark: #001F3F;
-      --primary-light: #002f3f;
-      --secondary: #1976d2;
-      --accent: #ff9800;
+      --primary-dark: #071e38;
+      --primary-light: #1e3a5f;
+      --secondary: #d4af37;
+      --accent: #d4af37;
+      --accent-dark: #b8860b;
       --text-dark: #1a202c;
       --text-light: #718096;
-      --bg-light: #f8fafc;
+      --bg-light: #f1f5f9;
       --bg-white: #ffffff;
       --border: #e2e8f0;
+      --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
       --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --border-radius: 16px;
+      --border-radius-sm: 12px;
       --danger: #dc2626;
       --warning: #d97706;
       --success: #059669;
@@ -32,54 +38,87 @@
 
     body {
       font-family: 'Inter', Arial, sans-serif;
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
       color: var(--text-dark);
       display: flex;
       min-height: 100vh;
     }
 
-    /* Main wrapper */
+    .mobile-menu-toggle {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: var(--border-radius-sm);
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: var(--shadow-lg);
+    }
+    @media (max-width: 1024px) {
+      .mobile-menu-toggle { display: flex; align-items: center; justify-content: center; }
+    }
+
     .container {
       flex: 1;
       margin-left: 280px;
       padding: 30px;
+      transition: margin-left 0.3s ease;
+    }
+    @media (max-width: 1024px) {
+      .container { margin-left: 0; }
     }
 
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
+    /* Hero Section - matches buyer dashboard */
+    .hero-section {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      border-radius: var(--border-radius);
+      padding: 50px 40px;
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
     }
-
-    .page-header h1 {
-      font-size: 28px;
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="white"/></svg>');
+      background-size: cover;
+      opacity: 0.1;
+    }
+    .hero-section h1 {
+      font-size: 2.8rem;
       font-weight: 700;
-      color: var(--text-dark);
-      margin-bottom: 8px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      margin-bottom: 15px;
+      line-height: 1.2;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-section p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-bottom: 0;
+      position: relative;
+      z-index: 1;
     }
 
-    .page-header p {
-      color: var(--text-light);
-      font-size: 16px;
-    }
-
-    /* Settings Layout */
+    /* Profile Layout */
     .settings-grid {
       display: grid;
       grid-template-columns: 250px 1fr;
       gap: 30px;
     }
 
-    /* Settings Sidebar */
     .settings-sidebar {
       background: var(--bg-white);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
       border: 1px solid var(--border);
       padding: 20px 0;
       height: fit-content;
@@ -102,7 +141,7 @@
       text-decoration: none;
       color: var(--text-dark);
       font-weight: 500;
-      border-radius: 10px;
+      border-radius: var(--border-radius-sm);
       transition: all 0.3s ease;
       border: none;
       background: none;
@@ -114,13 +153,17 @@
     }
 
     .settings-nav-link:hover {
-      background: var(--bg-light);
+      background: rgba(212, 175, 55, 0.1);
     }
 
     .settings-nav-link.active {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
       color: white;
       font-weight: 600;
+    }
+
+    .settings-nav-link.active i {
+      color: white;
     }
 
     .settings-nav-link i {
@@ -128,13 +171,13 @@
       font-size: 16px;
       width: 20px;
       text-align: center;
+      color: var(--accent);
     }
 
-    /* Settings Content */
     .settings-content {
       background: var(--bg-white);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
       border: 1px solid var(--border);
       padding: 30px;
     }
@@ -156,6 +199,9 @@
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+    .section-header h2 i {
+      color: var(--accent);
     }
 
     .section-header p {
@@ -197,7 +243,7 @@
       width: 100%;
       padding: 12px 16px;
       border: 2px solid var(--border);
-      border-radius: 10px;
+      border-radius: var(--border-radius-sm);
       font-size: 14px;
       font-family: 'Inter', sans-serif;
       transition: all 0.3s ease;
@@ -206,8 +252,8 @@
 
     input:focus, select:focus, textarea:focus {
       outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(11, 46, 82, 0.1);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     }
 
     textarea {
@@ -231,7 +277,7 @@
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -255,7 +301,7 @@
     .btn {
       padding: 12px 24px;
       border: none;
-      border-radius: 10px;
+      border-radius: var(--border-radius-sm);
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
@@ -267,14 +313,14 @@
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
       color: white;
       box-shadow: var(--shadow);
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
+      box-shadow: 0 8px 20px rgba(11, 46, 82, 0.35);
     }
 
     .btn-secondary {
@@ -285,15 +331,15 @@
 
     .btn-secondary:hover {
       background: var(--border);
+      border-color: var(--accent);
     }
 
-    /* Success Message */
     .success-message {
-      background: #d1fae5;
-      border: 1px solid #a7f3d0;
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      border: 1px solid rgba(5, 150, 105, 0.3);
       color: #065f46;
       padding: 15px 20px;
-      border-radius: 10px;
+      border-radius: var(--border-radius-sm);
       margin-bottom: 20px;
       display: none;
       align-items: center;
@@ -349,42 +395,37 @@
 </head>
 
 <body>
-<!-- Include Sidebar -->
+<button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+  <i class="fas fa-bars"></i>
+</button>
 <div id="sidebar-container"></div>
 
-<!-- Main -->
 <div class="container">
-  <div class="topbar">
-    <div class="page-header">
-      <h1>Profile Settings</h1>
-      <p>Manage your personal information and account details</p>
-    </div>
-  </div>
+  <section class="hero-section">
+    <h1><i class="fas fa-user"></i> Profile</h1>
+    <p>Manage your personal information and account details</p>
+  </section>
 
-  <!-- Success Message -->
   <div class="success-message" id="successMessage">
-    <span>✓</span>
+    <i class="fas fa-check-circle"></i>
     <span id="successText">Profile updated successfully!</span>
   </div>
 
   <div class="settings-grid">
-    <!-- Settings Sidebar - Only Profile -->
     <div class="settings-sidebar">
       <ul class="settings-nav">
         <li class="settings-nav-item">
-          <button class="settings-nav-link active">
-            <i>👤</i> Profile
+          <button class="settings-nav-link active" type="button">
+            <i class="fas fa-user"></i> Profile
           </button>
         </li>
       </ul>
     </div>
 
-    <!-- Settings Content -->
     <div class="settings-content">
-      <!-- Profile Section -->
       <div class="settings-section active" id="profile-section">
         <div class="section-header">
-          <h2>👤 Profile Settings</h2>
+          <h2><i class="fas fa-user"></i> Profile</h2>
           <p>Manage your personal information and account details</p>
         </div>
 
@@ -427,10 +468,10 @@
           
           <div style="display: flex; gap: 15px; margin-top: 30px;">
             <button type="submit" class="btn btn-primary">
-              💾 Save Changes
+              <i class="fas fa-save"></i> Save Changes
             </button>
             <button type="button" class="btn btn-secondary" onclick="resetProfileForm()">
-              🔄 Reset
+              <i class="fas fa-undo"></i> Reset
             </button>
           </div>
         </form>
@@ -439,22 +480,42 @@
   </div>
 </div>
 
-<!-- Sidebar Loader -->
 <script>
-// Load sidebar
+document.getElementById('mobileMenuToggle').addEventListener('click', function() {
+  var sidebar = document.querySelector('.sidebar');
+  if (sidebar) sidebar.classList.toggle('active');
+});
+document.addEventListener('click', function(e) {
+  if (window.innerWidth <= 1024 && e.target.closest('.sidebar-link')) {
+    var sidebar = document.querySelector('.sidebar');
+    if (sidebar) sidebar.classList.remove('active');
+  }
+});
+window.addEventListener('resize', function() {
+  var sidebar = document.querySelector('.sidebar');
+  if (window.innerWidth > 1024 && sidebar) sidebar.classList.remove('active');
+});
+
 fetch('sidebar.html')
-  .then(response => response.text())
-  .then(html => {
+  .then(function(r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+  .then(function(html) {
     document.getElementById('sidebar-container').innerHTML = html;
-    // Set active state for current page
-    const links = document.querySelectorAll('.sidebar-link');
-    links.forEach(link => {
-      if (link.getAttribute('href') === 'settings.html') {
-        link.classList.add('active');
-      }
+    var links = document.querySelectorAll('.sidebar-link');
+    links.forEach(function(link) {
+      if (link.getAttribute('href') === 'settings.html') link.classList.add('active');
     });
+    var logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      var newBtn = logoutBtn.cloneNode(true);
+      logoutBtn.parentNode.replaceChild(newBtn, logoutBtn);
+      newBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (confirm('Are you sure you want to log out?')) window.location.href = '../login.html';
+      });
+    }
   })
-  .catch(error => console.error('Error loading sidebar:', error));
+  .catch(function(err) { console.error('Sidebar load error:', err); });
 </script>
 
 <!-- Firebase Script -->
