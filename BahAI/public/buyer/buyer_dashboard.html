@@ -370,6 +370,7 @@
     }
     
     .listing-card {
+        position: relative;
         background: white;
         border-radius: var(--border-radius);
         overflow: hidden;
@@ -381,6 +382,17 @@
     
     .listing-card:hover {
         box-shadow: var(--card-hover-shadow);
+    }
+    
+    .card-link-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        opacity: 0;
+        cursor: pointer;
     }
     
     .listing-card-image-container {
@@ -398,50 +410,6 @@
     
     .listing-card:hover .listing-image {
         transform: scale(1.05);
-    }
-    
-    .listing-type-badge {
-        position: absolute;
-        top: 15px;
-        left: 15px;
-        background: white;
-        color: var(--text-dark);
-        padding: 6px 15px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-    
-    .save-property-btn {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background: white;
-        border: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-    
-    .save-property-btn:hover {
-        background: var(--primary-light);
-        transform: scale(1.1);
-    }
-    
-    .save-property-btn:hover .save-icon {
-        color: white;
-    }
-    
-    .save-icon {
-        font-size: 1.2rem;
-        transition: all 0.3s ease;
     }
     
     .listing-content {
@@ -2850,82 +2818,56 @@ async function displayListings(listings) {
     const brokerName = userInfo.displayName;
     const truncatedBrokerName = brokerName.length > 20 ? brokerName.substring(0, 20) + '...' : brokerName;
     
-    // REMOVED: View Details button - only show Contact button
+    // Match broker dashboard: card-link-overlay for click, no type badge, no save/contact buttons
+    const locationDisplay = listing.location || listing.address || 'Location not specified';
+    const listingTypeLabel = listingType === 'rent' ? 'For Rent' : listingType === 'lease' ? 'For Lease' : 'For Sale';
+    let statusText = listing.status || 'available';
+    let statusClass = 'status-active';
+    let showStatus = true;
+    if (statusText.toLowerCase() === 'active' || statusText.toLowerCase() === 'available' || statusText.toLowerCase() === 'published') {
+      statusText = '';
+      statusClass = '';
+      showStatus = false;
+    } else if (statusText.toLowerCase() === 'pending') {
+      statusClass = 'status-pending';
+    }
     return `
 <div class="listing-card-wrapper">
-    <a href="property_details.html?id=${listing.id}" class="listing-card-link">
-        <div class="listing-card">
-            <div class="listing-card-image-container">
-                <img src="${mainPhoto}" alt="${listing.title}" class="listing-image">
-                <div class="listing-type-badge ${typeBadgeClass}">${typeBadgeText}</div>
-                
-                <!-- Save Button - Heart icon for saving properties -->
-                <button class="save-property-btn"
-                    data-property-id="${listing.id}"
-                    data-is-saved="${isSaved}"
-                    aria-label="${isSaved ? 'Remove from saved' : 'Save property'}">
-                    <span class="save-icon">${isSaved ? '❤️' : '🤍'}</span>
-                </button>
-            </div>
-            <div class="listing-content">
-                <div class="listing-header">
-                    <div>
-                        <h3 class="listing-title" title="${title}">${truncatedTitle}</h3>
-                        <div class="listing-location">
-                            <span class="location-icon">📍</span>
-                            <span class="location-text" title="${address}">${truncatedAddress}</span>
-                        </div>
-                    </div>
-                    <div class="listing-price">${displayPrice}</div>
-                </div>
-
-                <div class="listing-details">
-                    <div class="detail">
-                        <span class="detail-icon">🛏️</span>
-                        <span class="detail-text">${bedrooms} ${bedrooms === 'Studio' ? '' : 'beds'}</span>
-                    </div>
-                    <div class="detail">
-                        <span class="detail-icon">🚿</span>
-                        <span class="detail-text">${bathrooms} baths</span>
-                    </div>
-                    <div class="detail">
-                        <span class="detail-icon">📐</span>
-                        <span class="detail-text">${area} sqm</span>
-                    </div>
-                    ${listingType === 'rent' && listing.securityDeposit ? `
-                    <div class="detail">
-                        <span class="detail-icon">💰</span>
-                        <span class="detail-text">Deposit: ₱${listing.securityDeposit.toLocaleString()}</span>
-                    </div>` : ''}
-                </div>
-
-                <div class="listing-broker">
-                    <div class="broker-avatar" aria-label="Broker avatar">${userInitials}</div>
-                    <div class="broker-info">
-                        <div class="broker-name" title="${brokerName}">${truncatedBrokerName}</div>
-                        <div class="broker-contact">
-                            ${getRoleDisplayText(userInfo.role)} • ${listing.propertyType || 'Property'}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Green background for available/active status -->
-                <div class="listing-status status-${listing.status || 'available'}">
-                    ${listing.status || 'available'}
-                </div>
-
-                <div class="listing-actions">
-                    <button class="action-btn contact-btn" 
-                            data-user-id="${listing.userId}"
-                            aria-label="Contact ${userInfo.role === 'landlord' ? 'owner' : 'broker'}">
-                        <span class="contact-icon">📞</span>
-                        Contact ${userInfo.role === 'landlord' ? 'Owner' : 'Broker'}
-                    </button>
-                    <!-- REMOVED: View Details button -->
-                </div>
-            </div>
+    <div class="listing-card" data-listing-id="${listing.id}">
+        <a href="property_details.html?id=${listing.id}" class="card-link-overlay" aria-label="View ${title}"></a>
+        <div class="listing-card-image-container">
+            <img src="${mainPhoto}" alt="${listing.title}" class="listing-image">
         </div>
-    </a>
+        <div class="listing-content">
+            <div class="listing-header">
+                <div style="flex: 1; min-width: 0;">
+                    <h3 class="listing-title" title="${title}">${truncatedTitle}</h3>
+                </div>
+                <div class="listing-price">${displayPrice}</div>
+            </div>
+            <div class="listing-location">
+                <i class="fas fa-map-marker-alt" style="flex-shrink: 0;"></i>
+                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${locationDisplay}">${truncatedAddress}</span>
+                <span> · ${listingTypeLabel}</span>
+            </div>
+            <div class="listing-details">
+                <div class="detail"><i class="fas fa-bed"></i> ${bedrooms} ${bedrooms === 'Studio' ? '' : 'beds'}</div>
+                <div class="detail"><i class="fas fa-bath"></i> ${bathrooms} baths</div>
+                <div class="detail"><i class="fas fa-ruler-combined"></i> ${area} sqm</div>
+                ${listingType === 'rent' && listing.securityDeposit ? `<div class="detail"><i class="fas fa-coins"></i> Deposit: ₱${listing.securityDeposit.toLocaleString()}</div>` : ''}
+            </div>
+            <div class="listing-broker">
+                <div class="broker-avatar" aria-label="Broker avatar">${userInitials}</div>
+                <div class="broker-info">
+                    <div class="broker-name" title="${brokerName}">${truncatedBrokerName}</div>
+                    <div class="broker-contact">
+                        ${getRoleDisplayText(userInfo.role)} · ${listing.propertyType || 'Property'}
+                    </div>
+                </div>
+            </div>
+            ${showStatus ? `<div class="listing-status ${statusClass}">${statusText}</div>` : ''}
+        </div>
+    </div>
 </div>
     `;
   }).join('');
@@ -3627,7 +3569,7 @@ function displayRecommendedListingsPython(recommendations, type = 'personalized'
             const brokerName = userInfo.displayName;
             const truncatedBrokerName = brokerName.length > 20 ? brokerName.substring(0, 20) + '...' : brokerName;
             
-            // Add different badge for AI vs Recent vs Partial
+            // Optional recommendation label (AI Pick / RECENT / SAVE MORE) - no type badge or buttons to match broker card
             let recommendationBadge = "";
             if (type === 'personalized') {
                 recommendationBadge = '<div class="listing-ai-badge">✨ AI Pick</div>';
@@ -3636,90 +3578,55 @@ function displayRecommendedListingsPython(recommendations, type = 'personalized'
             } else {
                 recommendationBadge = '<div class="listing-recent-badge" style="position: absolute; top: 10px; right: 10px; background: #6b7280; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; z-index: 2;">RECENT</div>';
             }
-            
-            // REMOVED: View Details button - only show Contact button
+            const listingTypeLabel = listingType === 'rent' ? 'For Rent' : listingType === 'lease' ? 'For Lease' : 'For Sale';
+            let recStatusText = property.status || 'available';
+            let recStatusClass = 'status-active';
+            let showRecStatus = true;
+            if (recStatusText.toLowerCase() === 'active' || recStatusText.toLowerCase() === 'available' || recStatusText.toLowerCase() === 'published') {
+                recStatusText = '';
+                recStatusClass = '';
+                showRecStatus = false;
+            } else if (recStatusText.toLowerCase() === 'pending') {
+                recStatusClass = 'status-pending';
+            }
             return `
                 <div class="listing-card-wrapper">
-                    <a href="property_details.html?id=${property.id}" class="listing-card-link">
-                        <div class="listing-card">
-                            <div class="listing-card-image-container" style="position: relative;">
-                                <img src="${photo}" alt="${property.title || 'Property'}" class="listing-image">
-                                ${matchScore && matchScore > 50 ? `
-                                    <div class="listing-match-badge">
-                                        ${matchScore}% Match
-                                    </div>
-                                ` : ''}
-                                ${recommendationBadge}
-                                <div class="listing-type-badge ${typeBadgeClass}">${typeBadgeText}</div>
-                                
-                                <!-- Save Button - Heart icon for saving properties -->
-                                <button class="save-property-btn"
-                                    data-property-id="${property.id}"
-                                    data-is-saved="${isSaved}"
-                                    aria-label="${isSaved ? 'Remove from saved' : 'Save property'}">
-                                    <span class="save-icon">${isSaved ? '❤️' : '🤍'}</span>
-                                </button>
-                            </div>
-                            <div class="listing-content">
-                                <div class="listing-header">
-                                    <div>
-                                        <h3 class="listing-title" title="${title}">${truncatedTitle}</h3>
-                                        <div class="listing-location">
-                                            <span class="location-icon">📍</span>
-                                            <span class="location-text" title="${address}">${truncatedAddress}</span>
-                                        </div>
-                                    </div>
-                                    <div class="listing-price">${displayPrice}</div>
-                                </div>
-                                
-                                <div class="listing-details">
-                                    ${bedrooms ? `
-                                        <div class="detail">
-                                            <span class="detail-icon">🛏️</span>
-                                            <span class="detail-text">${bedrooms} ${bedrooms === 'Studio' ? '' : 'beds'}</span>
-                                        </div>
-                                    ` : ''}
-                                    ${bathrooms ? `
-                                        <div class="detail">
-                                            <span class="detail-icon">🚿</span>
-                                            <span class="detail-text">${bathrooms} baths</span>
-                                        </div>
-                                    ` : ''}
-                                    ${area && area !== 'N/A' ? `
-                                        <div class="detail">
-                                            <span class="detail-icon">📐</span>
-                                            <span class="detail-text">${area} sqm</span>
-                                        </div>
-                                    ` : ''}
-                                </div>
-                                
-                                <div class="listing-broker">
-                                    <div class="broker-avatar" aria-label="Broker avatar">${userInitials}</div>
-                                    <div class="broker-info">
-                                        <div class="broker-name" title="${brokerName}">${truncatedBrokerName}</div>
-                                        <div class="broker-contact">
-                                            ${getRoleDisplayText(userInfo.role)} • ${property.propertyType || 'Property'}
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Green background for available/active status -->
-                                <div class="listing-status status-${property.status || 'available'}">
-                                    ${property.status || 'available'}
-                                </div>
-                                
-                                <div class="listing-actions">
-                                    <button class="action-btn contact-btn" 
-                                            data-user-id="${property.userId}"
-                                            aria-label="Contact ${userInfo.role === 'landlord' ? 'owner' : 'broker'}">
-                                        <span class="contact-icon">📞</span>
-                                        Contact ${userInfo.role === 'landlord' ? 'Owner' : 'Broker'}
-                                    </button>
-                                    <!-- REMOVED: View Details button -->
-                                </div>
-                            </div>
+                    <div class="listing-card" data-listing-id="${property.id}">
+                        <a href="property_details.html?id=${property.id}" class="card-link-overlay" aria-label="View ${title}"></a>
+                        <div class="listing-card-image-container" style="position: relative;">
+                            <img src="${photo}" alt="${property.title || 'Property'}" class="listing-image">
+                            ${matchScore && matchScore > 50 ? `<div class="listing-match-badge">${matchScore}% Match</div>` : ''}
+                            ${recommendationBadge}
                         </div>
-                    </a>
+                        <div class="listing-content">
+                            <div class="listing-header">
+                                <div style="flex: 1; min-width: 0;">
+                                    <h3 class="listing-title" title="${title}">${truncatedTitle}</h3>
+                                </div>
+                                <div class="listing-price">${displayPrice}</div>
+                            </div>
+                            <div class="listing-location">
+                                <i class="fas fa-map-marker-alt" style="flex-shrink: 0;"></i>
+                                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${address}">${truncatedAddress}</span>
+                                <span> · ${listingTypeLabel}</span>
+                            </div>
+                            <div class="listing-details">
+                                ${bedrooms ? `<div class="detail"><i class="fas fa-bed"></i> ${bedrooms} ${bedrooms === 'Studio' ? '' : 'beds'}</div>` : ''}
+                                ${bathrooms ? `<div class="detail"><i class="fas fa-bath"></i> ${bathrooms} baths</div>` : ''}
+                                ${area && area !== 'N/A' ? `<div class="detail"><i class="fas fa-ruler-combined"></i> ${area} sqm</div>` : ''}
+                            </div>
+                            <div class="listing-broker">
+                                <div class="broker-avatar" aria-label="Broker avatar">${userInitials}</div>
+                                <div class="broker-info">
+                                    <div class="broker-name" title="${brokerName}">${truncatedBrokerName}</div>
+                                    <div class="broker-contact">
+                                        ${getRoleDisplayText(userInfo.role)} · ${property.propertyType || 'Property'}
+                                    </div>
+                                </div>
+                            </div>
+                            ${showRecStatus ? `<div class="listing-status ${recStatusClass}">${recStatusText}</div>` : ''}
+                        </div>
+                    </div>
                 </div>
             `;
         }).join('');
