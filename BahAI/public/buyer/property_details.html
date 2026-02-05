@@ -1129,6 +1129,351 @@
         flex-direction: column;
       }
     }
+
+    /* Messaging Modal Styles (from search_results.html) */
+    .message-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        padding: 20px;
+    }
+    
+    .message-modal.show {
+        display: flex;
+        opacity: 1;
+    }
+    
+    .message-modal-content {
+        width: 90%;
+        max-width: 700px;
+        max-height: 85vh;
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-hover-shadow);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: modalSlideIn 0.3s ease;
+    }
+    
+    .message-header {
+        padding: 25px 30px;
+        background: var(--primary-gradient);
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .message-header h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .message-subtitle {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        margin-top: 5px;
+    }
+    
+    .message-close {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+        margin-left: 15px;
+    }
+    
+    .message-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: rotate(90deg);
+    }
+    
+    .message-broker-card {
+        padding: 20px 30px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .message-broker-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+    
+    .message-broker-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .message-broker-name {
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    .message-broker-role {
+        font-size: 0.85rem;
+        color: var(--text-light);
+    }
+    
+    .messages-container {
+        flex: 1;
+        padding: 25px 30px;
+        overflow-y: auto;
+        min-height: 300px;
+        max-height: 400px;
+        background: #f9fafb;
+    }
+    
+    .message-bubble {
+        margin-bottom: 20px;
+        max-width: 80%;
+    }
+    
+    .message-bubble.sent {
+        margin-left: auto;
+    }
+    
+    .message-bubble.received {
+        margin-right: auto;
+    }
+    
+    .message-bubble-content {
+        background: white;
+        padding: 15px 20px;
+        border-radius: 18px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+    
+    .message-bubble.sent .message-bubble-content {
+        background: var(--primary-gradient);
+        color: white;
+    }
+    
+    .message-time {
+        display: block;
+        font-size: 0.75rem;
+        opacity: 0.7;
+        margin-top: 8px;
+    }
+    
+    .message-bubble.sent .message-time {
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .loading-messages {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-light);
+    }
+    
+    .no-messages {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-light);
+    }
+    
+    .message-input-area {
+        padding: 25px 30px;
+        background: white;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    .message-textarea {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        resize: none;
+        min-height: 80px;
+        max-height: 150px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .message-textarea:focus {
+        outline: none;
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .message-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .contact-info {
+        flex: 1;
+        font-size: 0.85rem;
+        color: var(--text-light);
+        display: flex;
+        gap: 20px;
+        overflow: hidden;
+    }
+    
+    .contact-info span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .send-btn {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+    
+    .send-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .quick-contact-buttons {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .quick-contact-btn {
+        flex: 1;
+        padding: 12px;
+        border-radius: 12px;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .email-btn {
+        background: #f0f9ff;
+        color: #0ea5e9;
+        border: 1px solid #bae6fd;
+    }
+    
+    .email-btn:hover {
+        background: #0ea5e9;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .call-btn {
+        background: #f0fdf4;
+        color: #10b981;
+        border: 1px solid #bbf7d0;
+    }
+    
+    .call-btn:hover {
+        background: #10b981;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    @keyframes modalSlideIn {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Responsive adjustments for modal */
+    @media (max-width: 768px) {
+        .message-modal-content {
+            width: 95%;
+            max-height: 90vh;
+            margin: 10px;
+        }
+        
+        .message-header {
+            padding: 20px;
+        }
+        
+        .message-broker-card {
+            padding: 15px 20px;
+        }
+        
+        .messages-container {
+            padding: 20px;
+            max-height: 350px;
+        }
+        
+        .message-input-area {
+            padding: 20px;
+        }
+        
+        .message-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .contact-info {
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .quick-contact-buttons {
+            flex-direction: column;
+        }
+    }
 </style>
 </head>
 
@@ -1138,6 +1483,66 @@
 
 <!-- Include Sidebar -->
 <div id="sidebar-container"></div>
+
+<!-- Messaging Modal (Added from search_results.html) -->
+<div class="message-modal" id="messageModal">
+    <div class="message-modal-content">
+        <div class="message-header">
+            <h2 id="messageBrokerName">Contact Broker</h2>
+            <div class="message-subtitle" id="messageBrokerRole"></div>
+            <button class="message-close" id="closeMessageModal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="message-broker-card">
+            <div class="message-broker-avatar" id="messageBrokerAvatar">B</div>
+            <div class="message-broker-info">
+                <div class="message-broker-name" id="messageBrokerFullName">Loading...</div>
+                <div class="message-broker-role">
+                    <span id="messageBrokerType">Broker</span> • 
+                    <span id="messageBrokerContact">Contact info loading...</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="messages-container" id="messagesContainer">
+            <div class="loading-messages">
+                <div class="spinner"></div>
+                <p>Loading messages...</p>
+            </div>
+        </div>
+        
+        <div class="message-input-area">
+            <textarea class="message-textarea" 
+                    id="messageInput" 
+                    placeholder="Type your message here..." 
+                    rows="3"></textarea>
+            
+            <div class="message-actions">
+                <div class="contact-info">
+                    <span id="brokerEmailInfo">📧 Email: Loading...</span>
+                    <span id="brokerPhoneInfo">📞 Phone: Loading...</span>
+                </div>
+                <button class="send-btn" id="sendMessageBtn">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Send Message</span>
+                </button>
+            </div>
+            
+            <div class="quick-contact-buttons">
+                <a href="#" class="quick-contact-btn email-btn" id="quickEmailBtn">
+                    <i class="fas fa-envelope"></i>
+                    Send Email
+                </a>
+                <a href="#" class="quick-contact-btn call-btn" id="quickCallBtn">
+                    <i class="fas fa-phone"></i>
+                    Make Call
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Main Content -->
 <div class="container">
@@ -1282,7 +1687,11 @@ import {
     getDoc,
     doc,
     addDoc,
-    deleteDoc
+    deleteDoc,
+    orderBy,
+    serverTimestamp,
+    setDoc,
+    onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
 // Firebase Config
@@ -1323,6 +1732,8 @@ let currentMediaIndex = 0;
 let mediaUrls = [];
 let currentListing = null;
 let currentUserRole = null;
+let currentConversationId = null;
+let messageListener = null;
 
 // Property Type Mappings (from add_property.html)
 const salePropertyTypes = {
@@ -1564,6 +1975,459 @@ function isVideoFile(url) {
 function validateEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
+}
+
+// --- MESSAGING FUNCTIONS (from search_results.html) ---
+
+// Initialize messaging event listeners
+function initializeMessagingListeners() {
+    // Send message button
+    const sendBtn = document.getElementById('sendMessageBtn');
+    if (sendBtn) {
+        sendBtn.addEventListener('click', sendMessage);
+    }
+    
+    // Message input enter key support
+    const messageInput = document.getElementById('messageInput');
+    if (messageInput) {
+        messageInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        // Auto-resize textarea
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    }
+    
+    // Close message modal button
+    const closeMessageBtn = document.getElementById('closeMessageModal');
+    if (closeMessageBtn) {
+        closeMessageBtn.addEventListener('click', closeMessageModal);
+    }
+    
+    // Close modal when clicking outside
+    const messageModal = document.getElementById('messageModal');
+    if (messageModal) {
+        messageModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeMessageModal();
+            }
+        });
+    }
+}
+
+// Contact broker function
+window.contactBroker = async function(userId, propertyId = null) {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+        alert('Please log in to contact brokers');
+        return;
+    }
+
+    // Get user info
+    let userInfo = {};
+    try {
+        const userDoc = await getDoc(doc(db, "users", userId));
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            userInfo.displayName = userData.fullName || userData.email?.split('@')[0] || 'User ' + userId.substring(0, 8);
+            userInfo.email = userData.email || 'Email not available';
+            userInfo.phone = userData.phone || 'Phone not available';
+            userInfo.role = userData.role || 'user';
+        } else {
+            const brokerDoc = await getDoc(doc(db, "brokers", userId));
+            if (brokerDoc.exists()) {
+                const brokerData = brokerDoc.data();
+                userInfo.displayName = brokerData.fullName || 'Broker ' + userId.substring(0, 8);
+                userInfo.email = brokerData.email || 'Email not available';
+                userInfo.phone = brokerData.phone || 'Phone not available';
+                userInfo.role = 'broker';
+            } else {
+                userInfo.displayName = 'User ' + userId.substring(0, 8);
+                userInfo.email = 'Email not available';
+                userInfo.phone = 'Phone not available';
+                userInfo.role = 'user';
+            }
+        }
+    } catch (error) {
+        console.error("Error loading user data:", error);
+        userInfo.displayName = 'User ' + userId.substring(0, 8);
+        userInfo.email = 'Email not available';
+        userInfo.phone = 'Phone not available';
+        userInfo.role = 'user';
+    }
+
+    // Generate conversation ID (sorted combination of both user IDs)
+    currentConversationId = [currentUser.uid, userId].sort().join('_');
+    
+    // Get property info for context
+    const property = currentListing;
+    
+    // Update messaging modal UI
+    updateMessagingModal(userInfo, property);
+    
+    // Show messaging modal
+    const messageModal = document.getElementById('messageModal');
+    messageModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    
+    // Load existing messages
+    loadMessages(currentConversationId, userId);
+    
+    // Focus on message input
+    setTimeout(() => {
+        document.getElementById('messageInput').focus();
+    }, 300);
+};
+
+// Update messaging modal with broker info
+function updateMessagingModal(userInfo, property) {
+    const brokerName = userInfo.displayName || 'Broker';
+    const brokerRole = userInfo.role === 'landlord' ? 'Property Owner' : 
+                     userInfo.role === 'broker' ? 'Licensed Broker' : 
+                     'Property Contact';
+    
+    // Set modal title and info
+    const modalTitle = document.getElementById('messageBrokerName');
+    modalTitle.textContent = `Message ${brokerName}`;
+    if (modalTitle.scrollWidth > modalTitle.clientWidth) {
+        modalTitle.title = brokerName;
+        modalTitle.textContent = `Message ${brokerName.length > 20 ? brokerName.substring(0, 20) + '...' : brokerName}`;
+    }
+    
+    document.getElementById('messageBrokerRole').textContent = brokerRole;
+    
+    // Set broker name with ellipsis if too long
+    const brokerNameElement = document.getElementById('messageBrokerFullName');
+    brokerNameElement.textContent = brokerName;
+    if (brokerNameElement.scrollWidth > brokerNameElement.clientWidth) {
+        brokerNameElement.title = brokerName;
+        brokerNameElement.textContent = brokerName.length > 25 ? brokerName.substring(0, 25) + '...' : brokerName;
+    }
+    
+    document.getElementById('messageBrokerType').textContent = brokerRole;
+    document.getElementById('messageBrokerContact').textContent = userInfo.email || 'Email not available';
+
+    // Set broker avatar initials
+    const initials = brokerName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'B';
+    document.getElementById('messageBrokerAvatar').textContent = initials;
+    
+    // Update contact info with ellipsis
+    const emailInfo = document.getElementById('brokerEmailInfo');
+    const phoneInfo = document.getElementById('brokerPhoneInfo');
+    
+    const emailText = `📧 ${userInfo.email || 'Email not available'}`;
+    emailInfo.textContent = emailText;
+    emailInfo.title = userInfo.email || 'Email not available';
+    
+    const phoneText = `📞 ${userInfo.phone || 'Phone not available'}`;
+    phoneInfo.textContent = phoneText;
+    phoneInfo.title = userInfo.phone || 'Phone not available';
+    
+    // Setup quick contact buttons
+    const quickEmailBtn = document.getElementById('quickEmailBtn');
+    const quickCallBtn = document.getElementById('quickCallBtn');
+    
+    if (userInfo.email) {
+        const subject = property ? `Inquiry about: ${property.title}` : 'Property Inquiry';
+        const body = property ? `Hello ${brokerName},\n\nI'm interested in your property: ${property.title}\n\nPlease send me more information.` : '';
+        quickEmailBtn.href = `mailto:${userInfo.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        quickEmailBtn.style.display = 'flex';
+    } else {
+        quickEmailBtn.style.display = 'none';
+    }
+    
+    if (userInfo.phone) {
+        quickCallBtn.href = `tel:${userInfo.phone}`;
+        quickCallBtn.style.display = 'flex';
+    } else {
+        quickCallBtn.style.display = 'none';
+    }
+    
+    // Set up message input placeholder with property context
+    const messageInput = document.getElementById('messageInput');
+    if (property) {
+        const propertyTitle = property.title || 'property';
+        const truncatedTitle = propertyTitle.length > 50 ? propertyTitle.substring(0, 50) + '...' : propertyTitle;
+        messageInput.placeholder = `Hi ${brokerName}, I'm interested in ${truncatedTitle}. Could you please provide more details about...`;
+    } else {
+        messageInput.placeholder = `Type your message here...`;
+    }
+}
+
+// Load messages for a conversation
+function loadMessages(conversationId, brokerId) {
+    const messagesContainer = document.getElementById('messagesContainer');
+    
+    // Clear any existing listener
+    if (messageListener) {
+        messageListener();
+        messageListener = null;
+    }
+    
+    // Show loading state
+    messagesContainer.innerHTML = `
+        <div class="loading-messages">
+            <div class="spinner"></div>
+            <p>Loading messages...</p>
+        </div>
+    `;
+    
+    console.log('🔍 Attempting to load messages for conversation:', conversationId);
+    
+    try {
+        // Query messages for this conversation
+        const messagesRef = collection(db, 'messages');
+        const messagesQuery = query(
+            messagesRef,
+            where('conversationId', '==', conversationId),
+            orderBy('timestamp', 'asc')
+        );
+        
+        console.log('📋 Query created, listening for messages...');
+        
+        // Listen for real-time updates
+        messageListener = onSnapshot(messagesQuery, 
+            (snapshot) => {
+                console.log('📨 Snapshot received, docs:', snapshot.size);
+                
+                messagesContainer.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    console.log('📭 No messages found in conversation');
+                    messagesContainer.innerHTML = `
+                        <div class="no-messages">
+                            <div style="font-size: 48px; margin-bottom: 16px;">💬</div>
+                            <h3>No messages yet</h3>
+                            <p>Start the conversation by sending a message below.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const currentUser = auth.currentUser;
+                
+                snapshot.forEach((doc) => {
+                    const message = doc.data();
+                    const isSent = message.senderId === currentUser.uid;
+                    
+                    const messageElement = document.createElement('div');
+                    messageElement.className = `message-bubble ${isSent ? 'sent' : 'received'}`;
+                    
+                    // Format timestamp
+                    let timestamp = 'Just now';
+                    if (message.timestamp) {
+                        const date = message.timestamp.toDate ? message.timestamp.toDate() : new Date();
+                        timestamp = formatMessageTime(date);
+                    }
+                    
+                    const messageContent = document.createElement('div');
+                    messageContent.className = 'message-bubble-content';
+                    
+                    let statusIndicator = '';
+                    if (isSent) {
+                        statusIndicator = `<span class="message-status" style="margin-left: 5px; font-size: 10px;">✓</span>`;
+                    }
+                    
+                    messageContent.innerHTML = `
+                        <div>${message.text}</div>
+                        <span class="message-time">${timestamp}${statusIndicator}</span>
+                    `;
+                    
+                    messageElement.appendChild(messageContent);
+                    messagesContainer.appendChild(messageElement);
+                });
+                
+                // Scroll to bottom
+                setTimeout(() => {
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }, 100);
+                
+            }, 
+            (error) => {
+                console.error('❌ Error in onSnapshot listener:', error);
+                
+                messagesContainer.innerHTML = `
+                    <div class="no-messages">
+                        <div style="font-size: 48px; margin-bottom: 16px;">💬</div>
+                        <h3>Start a conversation</h3>
+                        <p>Send a message to begin chatting with the broker.</p>
+                    </div>
+                `;
+            }
+        );
+        
+    } catch (error) {
+        console.error('💥 Error setting up message listener:', error);
+        messagesContainer.innerHTML = `
+            <div class="no-messages">
+                <div style="font-size: 48px; margin-bottom: 16px;">💬</div>
+                <h3>Ready to chat</h3>
+                <p>Send your first message below to start the conversation.</p>
+            </div>
+        `;
+    }
+}
+
+// Send message function
+async function sendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const messageText = messageInput.value.trim();
+    const sendBtn = document.getElementById('sendMessageBtn');
+    
+    if (!messageText) {
+        messageInput.focus();
+        return;
+    }
+    
+    if (!currentConversationId || !auth.currentUser) {
+        alert('Unable to send message. Please refresh and try again.');
+        return;
+    }
+    
+    // Get broker ID from conversation ID
+    const conversationParts = currentConversationId.split('_');
+    const brokerId = conversationParts.find(id => id !== auth.currentUser.uid);
+    
+    if (!brokerId) {
+        alert('Unable to identify recipient.');
+        return;
+    }
+    
+    // Disable send button and show loading
+    const originalText = sendBtn.innerHTML;
+    sendBtn.innerHTML = '<div class="spinner" style="border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; width: 16px; height: 16px;"></div>';
+    sendBtn.disabled = true;
+    messageInput.disabled = true;
+    
+    try {
+        // Get property ID for context
+        const propertyId = currentListing?.id;
+        
+        // Create conversation document if it doesn't exist
+        const conversationRef = doc(db, 'conversations', currentConversationId);
+        const conversationSnap = await getDoc(conversationRef);
+        
+        const conversationData = {
+            participants: [auth.currentUser.uid, brokerId],
+            lastMessage: messageText.substring(0, 100),
+            lastMessageTime: serverTimestamp(),
+            lastSenderId: auth.currentUser.uid,
+            unreadCount: {
+                [brokerId]: (conversationSnap.exists() ? 
+                    (conversationSnap.data().unreadCount?.[brokerId] || 0) + 1 : 1)
+            },
+            buyerId: auth.currentUser.uid,
+            brokerId: brokerId,
+            propertyId: propertyId || null,
+            propertyTitle: currentListing?.title || null,
+            buyerName: auth.currentUser.displayName || auth.currentUser.email,
+            createdAt: conversationSnap.exists() ? 
+                conversationSnap.data().createdAt : serverTimestamp(),
+            updatedAt: serverTimestamp()
+        };
+        
+        // Update or create conversation
+        await setDoc(conversationRef, conversationData, { merge: true });
+        
+        // Add message to messages collection
+        const messageData = {
+            conversationId: currentConversationId,
+            senderId: auth.currentUser.uid,
+            receiverId: brokerId,
+            text: messageText,
+            timestamp: serverTimestamp(),
+            read: false,
+            createdAt: serverTimestamp(),
+            type: 'text',
+            propertyId: propertyId || null,
+            senderName: auth.currentUser.displayName || auth.currentUser.email
+        };
+        
+        await addDoc(collection(db, 'messages'), messageData);
+        
+        console.log('✅ Message sent successfully');
+        
+        // Clear input and reset UI
+        messageInput.value = '';
+        messageInput.style.height = 'auto';
+        messageInput.disabled = false;
+        
+        // Show success feedback
+        sendBtn.innerHTML = '✓ Sent';
+        sendBtn.style.background = '#10b981';
+        
+        setTimeout(() => {
+            sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i><span>Send Message</span>';
+            sendBtn.style.background = '';
+            sendBtn.disabled = false;
+        }, 1500);
+        
+        // Scroll to bottom of messages
+        const messagesContainer = document.getElementById('messagesContainer');
+        setTimeout(() => {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }, 100);
+        
+    } catch (error) {
+        console.error('❌ Error sending message:', error);
+        
+        // Reset UI
+        sendBtn.innerHTML = originalText;
+        sendBtn.disabled = false;
+        messageInput.disabled = false;
+        
+        // Show user-friendly error
+        let errorMessage = 'Failed to send message. ';
+        if (error.code === 'permission-denied') {
+            errorMessage += 'You do not have permission to send messages.';
+        } else if (error.code === 'unavailable') {
+            errorMessage += 'Network error. Please check your connection.';
+        } else {
+            errorMessage += 'Please try again.';
+        }
+        
+        alert(errorMessage);
+    }
+}
+
+// Format message timestamp
+function formatMessageTime(date) {
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+}
+
+// Close messaging modal
+function closeMessageModal() {
+    const messageModal = document.getElementById('messageModal');
+    messageModal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+    
+    // Clean up message listener
+    if (messageListener) {
+        messageListener();
+        messageListener = null;
+    }
+    
+    currentConversationId = null;
+    
+    // Clear message input
+    document.getElementById('messageInput').value = '';
 }
 
 // --- PROPERTY TYPE DISPLAY FUNCTIONS ---
@@ -2682,7 +3546,7 @@ function displayPropertyDetails(listing, userInfo) {
             <div class="contact-card">
                 <h3 class="contact-header">
                     <i class="fas fa-user-circle"></i>
-                    Contact Agent
+                    Contact ${userInfo.role === 'landlord' ? 'Owner' : 'Broker'}
                 </h3>
                 <div class="contact-info">
                     <div class="contact-avatar">
@@ -2709,9 +3573,9 @@ function displayPropertyDetails(listing, userInfo) {
                         </div>
                     </div>
                 </div>
-                <button class="action-button" id="contactOwnerBtn">
+                <button class="action-button" id="contactOwnerBtn" data-user-id="${listing.userId}">
                     <i class="fas fa-comment"></i>
-                    Contact ${userInfo.role === 'landlord' ? 'Owner' : 'Broker'}
+                    Message ${userInfo.role === 'landlord' ? 'Owner' : 'Broker'}
                 </button>
             </div>
 
@@ -2875,8 +3739,8 @@ function displayPropertyDetails(listing, userInfo) {
 
     <!-- Action Buttons -->
     <div class="property-actions">
-        <button class="action-btn-large contact-btn" id="contactBtnBottom">
-            <i class="fas fa-phone"></i> Contact Agent
+        <button class="action-btn-large contact-btn" id="contactBtnBottom" data-user-id="${listing.userId}">
+            <i class="fas fa-comment"></i> Message Agent
         </button>
         <button class="action-btn-large save-btn" id="saveBtnBottom">
             <i class="far fa-heart"></i> Save Property
@@ -2890,6 +3754,7 @@ function displayPropertyDetails(listing, userInfo) {
     setupButtonEventListeners(listing, userInfo);
     updateSaveButtonState();
     initializePropertyCalculator(listing);
+    initializeMessagingListeners(); // Initialize messaging listeners
 
     // Preload video if first media is video
     if (isFirstVideo) {
@@ -2912,11 +3777,13 @@ function displayPropertyDetails(listing, userInfo) {
 }
 
 function setupButtonEventListeners(listing, userInfo) {
-    // Contact buttons
+    // Contact buttons - use chat modal instead of alert
     document.querySelectorAll('#contactOwnerBtn, #contactBtnBottom').forEach(btn => {
         btn.addEventListener('click', function() {
-            const userType = userInfo.role === 'landlord' ? 'Property Owner' : 'Broker';
-            alert(`Contact Information:\n\n${userType}: ${userInfo.displayName}\nEmail: ${userInfo.email}\nPhone: ${userInfo.phone}\n\nYou can contact this ${userType.toLowerCase()} for more information about the property.`);
+            const userId = this.getAttribute('data-user-id');
+            if (userId) {
+                window.contactBroker(userId, listing.id);
+            }
         });
     });
 
@@ -3111,6 +3978,7 @@ onAuthStateChanged(auth, async (user) => {
 // Export for global use if needed
 window.loadSidebarBasedOnRole = loadSidebarBasedOnRole;
 window.updateBackButton = updateBackButton;
+window.contactBroker = contactBroker; // Make contactBroker globally available
 </script>
 
 </body>
