@@ -1122,6 +1122,7 @@
 
 <body>
 <script src="../ai_chatbot.js" type="module"></script>
+<script src="../sidebar-user.js"></script>
 
 <!-- Mobile Menu Toggle -->
 <button class="mobile-menu-toggle" id="mobileMenuToggle">
@@ -1469,7 +1470,9 @@ fetch('sidebar.html')
     })
     .then(html => {
         document.getElementById('sidebar-container').innerHTML = html;
-        
+        if (typeof window.updateSidebarUserProfile === 'function') {
+            window.updateSidebarUserProfile();
+        }
         // Highlight active link
         const links = document.querySelectorAll('.sidebar-link');
         links.forEach(link => {
@@ -3817,6 +3820,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (userSnap.exists()) {
                 const userData = userSnap.data();
                 welcomeText.textContent = `Welcome back, ${userData.fullName || userData.email || 'User'}!`;
+                var fullName = userData.fullName || ((userData.firstName || '') + ' ' + (userData.lastName || '')).trim() || userData.email?.split('@')[0] || 'User';
+                var profileData = { fullName: fullName, email: userData.email, role: userData.role || 'user', firstName: userData.firstName, lastName: userData.lastName };
+                try { localStorage.setItem('userData', JSON.stringify(profileData)); } catch (e) {}
+                if (typeof window.updateSidebarUserProfile === 'function') { window.updateSidebarUserProfile(profileData); }
             } else {
                 welcomeText.textContent = "Welcome to BahAI Real Estate!";
             }

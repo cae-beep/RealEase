@@ -559,6 +559,7 @@
         </div>
     </div>
 
+    <script src="../sidebar-user.js"></script>
     <script>
         // Mobile menu functionality
         document.getElementById('mobileMenuToggle').addEventListener('click', function() {
@@ -574,20 +575,37 @@
             .then(response => response.text())
             .then(html => {
                 document.getElementById('sidebar-container').innerHTML = html;
+                if (typeof window.updateSidebarUserProfile === 'function') window.updateSidebarUserProfile();
                 const links = document.querySelectorAll('.sidebar-link');
                 links.forEach(link => {
                     if (link.getAttribute('href') === 'list_agent.html') {
                         link.classList.add('active');
                     }
                 });
+                setupLogoutButton();
             })
             .catch(error => console.error('Error loading sidebar:', error));
+
+        function setupLogoutButton() {
+            const logoutBtn = document.getElementById("logoutBtn");
+            if (!logoutBtn) { setTimeout(setupLogoutButton, 100); return; }
+            const newLogoutBtn = logoutBtn.cloneNode(true);
+            logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
+            newLogoutBtn.addEventListener("click", function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (confirm("Are you sure you want to log out?")) {
+                    if (typeof window.performLogout === 'function') window.performLogout();
+                    else window.location.href = "../login.html";
+                }
+            });
+        }
     </script>
 
     <!-- Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
         import { 
             getFirestore, 
             collection, 
@@ -642,12 +660,24 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                window.location.href = "login.html";
+                window.location.href = "../login.html";
             } else {
                 currentUser = user;
                 await loadAgents();
             }
         });
+
+        window.performLogout = async function() {
+            try {
+                await signOut(auth);
+                localStorage.removeItem('userData');
+                sessionStorage.removeItem('userData');
+                window.location.href = "../login.html";
+            } catch (e) {
+                console.error('Logout error:', e);
+                window.location.href = "../login.html";
+            }
+        };
 
         // 🔥 **CRITICAL FIX: Enhanced duplicate detection**
         async function findAndMergeDuplicates() {

@@ -371,47 +371,6 @@
             color: var(--text-light);
         }
 
-        .listing-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            text-decoration: none;
-        }
-
-        .contact-btn {
-            background: var(--secondary);
-            color: white;
-        }
-
-        .contact-btn:hover {
-            background: var(--accent-dark);
-            transform: translateY(-1px);
-        }
-
-        .view-btn {
-            background: var(--bg-light);
-            color: var(--text-dark);
-            border: 1px solid var(--border);
-        }
-
-        .view-btn:hover {
-            background: var(--border);
-            border-color: var(--accent);
-            transform: translateY(-1px);
-        }
-
         /* Empty State */
         .empty-state {
             text-align: center;
@@ -721,49 +680,6 @@
             margin-bottom: 25px;
         }
 
-        .modal-actions {
-            display: flex;
-            gap: 15px;
-            padding-top: 25px;
-            border-top: 1px solid var(--border);
-        }
-
-        .modal-action-btn {
-            flex: 1;
-            padding: 14px;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .modal-contact-btn {
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-            color: white;
-        }
-
-        .modal-contact-btn:hover {
-            background: linear-gradient(135deg, var(--accent-dark) 0%, #9a7309 100%);
-            transform: translateY(-2px);
-        }
-
-        .modal-close-btn {
-            background: var(--bg-light);
-            color: var(--text-dark);
-            border: 1px solid var(--border);
-        }
-
-        .modal-close-btn:hover {
-            background: var(--border);
-            transform: translateY(-2px);
-        }
-
         /* Toast Notification */
         .toast {
             position: fixed;
@@ -1062,6 +978,24 @@
             }
         }
 
+        // Toast notification function (Moved to global scope)
+        window.showToast = function(message, type = 'success') {
+            // Remove existing toast
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) existingToast.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        };
+
         // Authentication check
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
@@ -1073,7 +1007,7 @@
             await loadLikedProperties(user.uid);
         });
 
-        // Main function to load liked properties - FIXED VERSION
+        // Main function to load liked properties
         async function loadLikedProperties(userId) {
             const container = document.getElementById('likedPropertiesContainer');
             
@@ -1105,7 +1039,6 @@
                     return;
                 }
                 
-                // DEBUG: Check what we got from Firestore
                 console.log('Saved docs found:', savedSnapshot.docs.length);
                 savedSnapshot.forEach((doc, index) => {
                     console.log(`Doc ${index}:`, doc.id, doc.data());
@@ -1118,7 +1051,6 @@
                     const savedData = savedDoc.data();
                     console.log('Processing saved data:', savedData);
                     
-                    // FIX: Check if propertyId exists before adding to promises
                     if (savedData.propertyId) {
                         savedDocsMap.set(savedData.propertyId, savedDoc.id);
                         
@@ -1151,7 +1083,6 @@
                 
                 console.log('Property promises created:', propertyPromises.length);
                 
-                // FIX: Check if we have any promises to wait for
                 if (propertyPromises.length === 0) {
                     console.log('No valid property promises to process');
                     showEmptyState();
@@ -1159,7 +1090,6 @@
                     return;
                 }
                 
-                // Wait for all property fetches WITH ERROR HANDLING
                 let propertyResults;
                 try {
                     propertyResults = await Promise.all(propertyPromises);
@@ -1169,40 +1099,33 @@
                     propertyResults = [];
                 }
                 
-                // FIX: Safely filter and map the results
                 if (!propertyResults || !Array.isArray(propertyResults)) {
                     console.error('propertyResults is not an array:', propertyResults);
                     propertyResults = [];
                 }
                 
-                // Filter out null results (deleted properties or failed fetches)
                 userSavedProperties = propertyResults
                     .filter(result => result !== null && result.property !== null)
                     .map(result => result.property);
                 
                 console.log(`Found ${userSavedProperties.length} liked properties`);
                 
-                // If we used unordered query, sort manually
                 if (!savedQuery._query || !savedQuery._query.orderBy || savedQuery._query.orderBy.length === 0) {
                     userSavedProperties.sort((a, b) => {
                         const dateA = a.savedAt?.toDate ? a.savedAt.toDate() : new Date(a.savedAt);
                         const dateB = b.savedAt?.toDate ? b.savedAt.toDate() : new Date(b.savedAt);
-                        return dateB - dateA; // Descending order
+                        return dateB - dateA;
                     });
                 }
                 
-                // Load user data for brokers/owners
                 if (userSavedProperties.length > 0) {
                     const userIds = new Set(userSavedProperties.map(p => p.userId));
                     for (const userId of userIds) {
                         await loadUserData(userId);
                     }
                     
-                    // Display properties
                     displayLikedProperties(userSavedProperties);
                     updateStats(userSavedProperties);
-                    
-                    // Load similar properties
                     await loadSimilarProperties(userSavedProperties);
                 } else {
                     showEmptyState();
@@ -1212,7 +1135,6 @@
             } catch (error) {
                 console.error("Error loading liked properties:", error);
                 
-                // Show user-friendly error message
                 if (error.message && error.message.includes("requires an index")) {
                     container.innerHTML = `
                         <div class="empty-state">
@@ -1263,7 +1185,6 @@ ${error.stack || error.message}
                     return;
                 }
                 
-                // Try brokers collection as fallback
                 const brokerDoc = await getDoc(doc(db, "brokers", userId));
                 if (brokerDoc.exists()) {
                     const brokerData = brokerDoc.data();
@@ -1276,7 +1197,6 @@ ${error.stack || error.message}
                     return;
                 }
                 
-                // Default fallback
                 userMap.set(userId, {
                     displayName: `User ${userId.substring(0, 8)}`,
                     email: 'Email not available',
@@ -1319,7 +1239,6 @@ ${error.stack || error.message}
                 const typeBadgeClass = getTypeBadgeClass(property);
                 const typeBadgeText = getTypeBadgeText(property);
                 
-                // Get main photo
                 let mainPhoto;
                 if (property.photos && property.photos.length > 0) {
                     mainPhoto = property.photos[0];
@@ -1339,7 +1258,7 @@ ${error.stack || error.message}
                         <img src="${mainPhoto}" alt="${property.title}" class="listing-image">
                         <div class="listing-type-badge ${typeBadgeClass}">${typeBadgeText}</div>
                         <button class="remove-saved-btn" 
-                                onclick="event.stopPropagation(); removeFromLiked('${property.savedId}', '${property.id}')"
+                                onclick="event.stopPropagation(); window.removeFromLiked('${property.savedId}', '${property.id}')"
                                 title="Remove from liked">
                             <i class="fas fa-times"></i>
                         </button>
@@ -1379,17 +1298,6 @@ ${error.stack || error.message}
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="listing-actions">
-                            <button class="action-btn contact-btn" 
-                                    onclick="event.stopPropagation(); contactBroker('${property.userId}')">
-                                <i class="fas fa-phone"></i> Contact ${userInfo.role === 'landlord' ? 'Owner' : 'Broker'}
-                            </button>
-                            <button class="action-btn view-btn" 
-                                    onclick="event.stopPropagation(); window.showPropertyModal('${property.id}')">
-                                <i class="fas fa-eye"></i> View Details
-                            </button>
-                        </div>
                     </div>
                 </div>
                 `;
@@ -1397,84 +1305,74 @@ ${error.stack || error.message}
         }
 
         // Show property modal with full details
- window.showPropertyModal = async function(propertyId) {
-    console.log('Opening modal for property:', propertyId);
-    
-    // First check in user's liked properties
-    let property = userSavedProperties.find(p => p.id === propertyId);
-    
-    // If not found in liked properties, check in all properties (for similar properties)
-    if (!property) {
-        console.log('Property not in liked list, checking all properties...');
-        property = allProperties.find(p => p.id === propertyId);
-    }
-    
-    // If still not found, try to fetch directly from Firestore
-    if (!property) {
-        console.log('Property not in cache, fetching from Firestore...');
-        try {
-            const propertyDoc = await getDoc(doc(db, "properties", propertyId));
-            if (propertyDoc.exists()) {
-                property = {
-                    id: propertyDoc.id,
-                    ...propertyDoc.data()
-                };
-                
-                // Add to allProperties cache for future use
-                if (!allProperties.find(p => p.id === propertyId)) {
-                    allProperties.push(property);
-                }
-                
-                // Load user data if needed
-                if (property.userId && !userMap.has(property.userId)) {
-                    await loadUserData(property.userId);
+        window.showPropertyModal = async function(propertyId) {
+            console.log('Opening modal for property:', propertyId);
+            
+            let property = userSavedProperties.find(p => p.id === propertyId);
+            
+            if (!property) {
+                console.log('Property not in liked list, checking all properties...');
+                property = allProperties.find(p => p.id === propertyId);
+            }
+            
+            if (!property) {
+                console.log('Property not in cache, fetching from Firestore...');
+                try {
+                    const propertyDoc = await getDoc(doc(db, "properties", propertyId));
+                    if (propertyDoc.exists()) {
+                        property = {
+                            id: propertyDoc.id,
+                            ...propertyDoc.data()
+                        };
+                        
+                        if (!allProperties.find(p => p.id === propertyId)) {
+                            allProperties.push(property);
+                        }
+                        
+                        if (property.userId && !userMap.has(property.userId)) {
+                            await loadUserData(property.userId);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching property from Firestore:', error);
                 }
             }
-        } catch (error) {
-            console.error('Error fetching property from Firestore:', error);
-        }
-    }
-    
-    if (!property) {
-        console.error('Property not found:', propertyId);
-        showToast('Property not found or has been removed', 'error');
-        return;
-    }
-    
-    currentModalProperty = property;
-    const userInfo = userMap.get(property.userId) || {
-        displayName: `User ${property.userId ? property.userId.substring(0, 8) : 'Unknown'}`,
-        email: 'N/A',
-        phone: 'N/A',
-        role: 'user'
-    };
-    
-    // Rest of your modal code continues here...
-    const listingType = getListingType(property);
-    const displayPrice = getDisplayPrice(property);
-    const typeBadgeText = getTypeBadgeText(property);
-    
-    // Update modal header
-    document.getElementById('modalTitle').textContent = property.title || 'Untitled Property';
-    document.getElementById('modalLocation').textContent = property.location || 'Location not specified';
-    document.getElementById('modalPrice').textContent = displayPrice;
-    document.getElementById('modalStatus').textContent = typeBadgeText;
-    document.getElementById('modalStatus').style.background = 
-        listingType === 'rent' ? 'var(--rent-color)' : 
-        listingType === 'lease' ? 'var(--lease-color)' : 
-        'var(--sale-color)';
             
-            // Get photos
+            if (!property) {
+                console.error('Property not found:', propertyId);
+                showToast('Property not found or has been removed', 'error');
+                return;
+            }
+            
+            currentModalProperty = property;
+            const userInfo = userMap.get(property.userId) || {
+                displayName: `User ${property.userId ? property.userId.substring(0, 8) : 'Unknown'}`,
+                email: 'N/A',
+                phone: 'N/A',
+                role: 'user'
+            };
+            
+            const listingType = getListingType(property);
+            const displayPrice = getDisplayPrice(property);
+            const typeBadgeText = getTypeBadgeText(property);
+            
+            document.getElementById('modalTitle').textContent = property.title || 'Untitled Property';
+            document.getElementById('modalLocation').textContent = property.location || 'Location not specified';
+            document.getElementById('modalPrice').textContent = displayPrice;
+            document.getElementById('modalStatus').textContent = typeBadgeText;
+            document.getElementById('modalStatus').style.background = 
+                listingType === 'rent' ? 'var(--rent-color)' : 
+                listingType === 'lease' ? 'var(--lease-color)' : 
+                'var(--sale-color)';
+            
             const photos = property.photos || property.imageUrls || [];
             const mainPhoto = photos.length > 0 ? photos[0] : 
                             'https://via.placeholder.com/800x400/0b2e52/white?text=No+Image';
             
-            // Prepare details
             const bedrooms = property.bedrooms || (listingType === 'rent' && property.propertyType === 'studio' ? 'Studio' : 0);
             const bathrooms = property.bathrooms || 0;
             const squareFootage = property.floorArea || property.totalArea || property.squareFootage || 'N/A';
             
-            // Prepare pricing details
             let pricingDetails = '';
             if (listingType === 'rent') {
                 pricingDetails = `
@@ -1523,7 +1421,6 @@ ${error.stack || error.message}
                 `;
             }
             
-            // Prepare amenities
             let amenitiesHtml = '';
             if (property.amenities && property.amenities.length > 0) {
                 amenitiesHtml = `
@@ -1537,22 +1434,20 @@ ${error.stack || error.message}
                 amenitiesHtml = '<p style="color: var(--text-light); font-style: italic;">No amenities listed</p>';
             }
             
-            // Prepare thumbnail HTML if there are multiple photos
             let thumbnailsHtml = '';
             if (photos.length > 1) {
                 thumbnailsHtml = photos.map((photo, index) => `
                     <img src="${photo}" 
                          class="modal-thumbnail ${index === 0 ? 'active' : ''}" 
-                         onclick="changeModalImage('${photo}', this)"
+                         onclick="window.changeModalImage('${photo}', this)"
                          alt="Property image ${index + 1}">
                 `).join('');
             }
             
-            // Set modal body content
             document.getElementById('modalBody').innerHTML = `
                 <div class="modal-image-gallery">
                     <img src="${mainPhoto}" id="mainModalImage" class="main-modal-image" 
-                         onclick="openFullscreenImage('${mainPhoto}')">
+                         onclick="window.openFullscreenImage('${mainPhoto}')">
                     ${photos.length > 1 ? `
                     <div class="modal-thumbnails">
                         ${thumbnailsHtml}
@@ -1652,18 +1547,8 @@ ${error.stack || error.message}
                         <span class="detail-value">${userInfo.phone}</span>
                     </div>
                 </div>
-                
-                <div class="modal-actions">
-                    <button class="modal-action-btn modal-contact-btn" onclick="contactBroker('${property.userId}')">
-                        <i class="fas fa-phone"></i> Contact ${userInfo.role === 'landlord' ? 'Owner' : 'Broker'}
-                    </button>
-                    <button class="modal-action-btn modal-close-btn" onclick="window.closePropertyModal()">
-                        <i class="fas fa-times"></i> Close
-                    </button>
-                </div>
             `;
             
-            // Show modal
             document.getElementById('propertyModal').classList.add('show');
             document.body.style.overflow = 'hidden';
         };
@@ -1672,14 +1557,13 @@ ${error.stack || error.message}
         window.changeModalImage = function(imageSrc, thumbnailElement) {
             document.getElementById('mainModalImage').src = imageSrc;
             
-            // Update active thumbnail
             document.querySelectorAll('.modal-thumbnail').forEach(thumb => {
                 thumb.classList.remove('active');
             });
             thumbnailElement.classList.add('active');
         };
 
-        // Open fullscreen image (optional enhancement)
+        // Open fullscreen image
         window.openFullscreenImage = function(imageSrc) {
             const fullscreenDiv = document.createElement('div');
             fullscreenDiv.style.cssText = `
@@ -1722,21 +1606,17 @@ ${error.stack || error.message}
             try {
                 await deleteDoc(doc(db, "savedProperties", savedId));
                 
-                // Remove from local array
                 userSavedProperties = userSavedProperties.filter(p => p.id !== propertyId);
                 
-                // Update display
                 displayLikedProperties(userSavedProperties);
                 updateStats(userSavedProperties);
                 
                 showToast('Property removed from liked list', 'success');
                 
-                // If no properties left, show empty state
                 if (userSavedProperties.length === 0) {
                     showEmptyState();
                 }
                 
-                // Close modal if it's open for this property
                 if (currentModalProperty && currentModalProperty.id === propertyId) {
                     window.closePropertyModal();
                 }
@@ -1759,7 +1639,6 @@ ${error.stack || error.message}
                 </div>
             `;
             
-            // Hide similar properties section
             document.getElementById('similarSuggestions').style.display = 'none';
         }
 
@@ -1781,7 +1660,6 @@ ${error.stack || error.message}
                 (p.status === undefined && p.isActive !== false)
             ).length;
             
-            // Calculate average price
             let totalPrice = 0;
             let count = 0;
             properties.forEach(p => {
@@ -1793,7 +1671,6 @@ ${error.stack || error.message}
             });
             const average = count > 0 ? Math.round(totalPrice / count) : 0;
             
-            // Count saved this month
             const currentMonth = new Date().getMonth();
             const savedThisMonth = properties.filter(p => {
                 if (!p.savedAt) return false;
@@ -1815,14 +1692,12 @@ ${error.stack || error.message}
             }
             
             try {
-                // Get all active properties
                 const propertiesQuery = query(collection(db, "properties"));
                 const snapshot = await getDocs(propertiesQuery);
                 
                 allProperties = [];
                 snapshot.forEach(doc => {
                     const property = { id: doc.id, ...doc.data() };
-                    // Only include active properties not already saved
                     const isActive = property.status === 'active' || 
                                     property.status === 'available' || 
                                     property.status === 'Active' ||
@@ -1834,11 +1709,9 @@ ${error.stack || error.message}
                     }
                 });
                 
-                // Find similar properties based on saved preferences
                 const similarProperties = findSimilarProperties(savedProperties, allProperties);
                 
                 if (similarProperties.length > 0) {
-                    // Load user data for similar properties
                     const userIds = new Set(similarProperties.map(p => p.userId));
                     for (const userId of userIds) {
                         if (!userMap.has(userId)) {
@@ -1862,7 +1735,6 @@ ${error.stack || error.message}
         function findSimilarProperties(savedProperties, allProperties) {
             if (!savedProperties || savedProperties.length === 0 || !allProperties || allProperties.length === 0) return [];
             
-            // Extract user preferences from saved properties
             const preferences = {
                 propertyTypes: new Set(),
                 priceRanges: [],
@@ -1877,21 +1749,17 @@ ${error.stack || error.message}
                 if (price > 0) preferences.priceRanges.push(price);
             });
             
-            // Calculate average price preference
             const avgPrice = preferences.priceRanges.length > 0 
                 ? preferences.priceRanges.reduce((a, b) => a + b, 0) / preferences.priceRanges.length 
                 : 0;
             
-            // Score each property based on similarity
             const scoredProperties = allProperties.map(property => {
                 let score = 0;
                 
-                // Property type match (30 points)
                 if (property.propertyType && preferences.propertyTypes.has(property.propertyType)) {
                     score += 30;
                 }
                 
-                // Location match (40 points)
                 if (property.location) {
                     const locationMatch = Array.from(preferences.locations).some(loc => 
                         property.location.toLowerCase().includes(loc.toLowerCase())
@@ -1899,128 +1767,89 @@ ${error.stack || error.message}
                     if (locationMatch) score += 40;
                 }
                 
-                // Price similarity (30 points)
                 const propertyPrice = property.pricing || property.salePrice || property.monthlyRent || property.annualRent || 0;
                 if (avgPrice > 0 && propertyPrice > 0) {
                     const priceDiff = Math.abs(propertyPrice - avgPrice) / avgPrice;
-                    if (priceDiff < 0.3) score += 30 - (priceDiff * 100); // Up to 30 points based on closeness
+                    if (priceDiff < 0.3) score += 30 - (priceDiff * 100);
                 }
                 
                 return { property, score };
             });
             
-            // Sort by score and return top 6
             return scoredProperties
                 .sort((a, b) => b.score - a.score)
                 .slice(0, 6)
                 .map(item => item.property);
         }
 
- // Display similar properties
-function displaySimilarProperties(properties) {
-    const container = document.getElementById('similarPropertiesContainer');
-    
-    if (!properties || properties.length === 0) return;
-    
-    // Ensure these properties are added to allProperties for modal access
-    properties.forEach(property => {
-        if (!allProperties.find(p => p.id === property.id)) {
-            allProperties.push(property);
-        }
-    });
-    
-    container.innerHTML = properties.map(property => {
-        const userInfo = userMap.get(property.userId) || {
-            displayName: `User ${property.userId ? property.userId.substring(0, 8) : 'Unknown'}`,
-            email: 'N/A',
-            phone: 'N/A',
-            role: 'user'
-        };
-        
-        const userInitials = userInfo.displayName.split(' ').map(n => n[0]).join('').toUpperCase() || 'UU';
-        const listingType = getListingType(property);
-        const displayPrice = getDisplayPrice(property);
-        const priceClass = getPriceClass(property);
-        const typeBadgeClass = getTypeBadgeClass(property);
-        const typeBadgeText = getTypeBadgeText(property);
-        
-        // Get main photo
-        let mainPhoto;
-        if (property.photos && property.photos.length > 0) {
-            mainPhoto = property.photos[0];
-        } else if (property.imageUrls && property.imageUrls.length > 0) {
-            mainPhoto = property.imageUrls[0];
-        } else {
-            mainPhoto = 'https://via.placeholder.com/400x220/0b2e52/white?text=No+Image';
-        }
-        
-        const bedrooms = property.bedrooms || (listingType === 'rent' && property.propertyType === 'studio' ? 'Studio' : 0);
-        
-        return `
-        <div class="listing-card" onclick="window.showPropertyModal('${property.id}')">
-            <div class="listing-image-container">
-                <img src="${mainPhoto}" alt="${property.title}" class="listing-image">
-                <div class="listing-type-badge ${typeBadgeClass}">${typeBadgeText}</div>
-            </div>
+        // Display similar properties
+        function displaySimilarProperties(properties) {
+            const container = document.getElementById('similarPropertiesContainer');
             
-            <div class="listing-content">
-                <div class="listing-header">
-                    <div>
-                        <h3 class="listing-title">${property.title || 'Untitled Property'}</h3>
-                        <div class="listing-location">
-                            <i class="fas fa-map-marker-alt"></i> ${property.location || 'Location not specified'}
+            if (!properties || properties.length === 0) return;
+            
+            properties.forEach(property => {
+                if (!allProperties.find(p => p.id === property.id)) {
+                    allProperties.push(property);
+                }
+            });
+            
+            container.innerHTML = properties.map(property => {
+                const userInfo = userMap.get(property.userId) || {
+                    displayName: `User ${property.userId ? property.userId.substring(0, 8) : 'Unknown'}`,
+                    email: 'N/A',
+                    phone: 'N/A',
+                    role: 'user'
+                };
+                
+                const userInitials = userInfo.displayName.split(' ').map(n => n[0]).join('').toUpperCase() || 'UU';
+                const listingType = getListingType(property);
+                const displayPrice = getDisplayPrice(property);
+                const priceClass = getPriceClass(property);
+                const typeBadgeClass = getTypeBadgeClass(property);
+                const typeBadgeText = getTypeBadgeText(property);
+                
+                let mainPhoto;
+                if (property.photos && property.photos.length > 0) {
+                    mainPhoto = property.photos[0];
+                } else if (property.imageUrls && property.imageUrls.length > 0) {
+                    mainPhoto = property.imageUrls[0];
+                } else {
+                    mainPhoto = 'https://via.placeholder.com/400x220/0b2e52/white?text=No+Image';
+                }
+                
+                const bedrooms = property.bedrooms || (listingType === 'rent' && property.propertyType === 'studio' ? 'Studio' : 0);
+                
+                return `
+                <div class="listing-card" onclick="window.showPropertyModal('${property.id}')">
+                    <div class="listing-image-container">
+                        <img src="${mainPhoto}" alt="${property.title}" class="listing-image">
+                        <div class="listing-type-badge ${typeBadgeClass}">${typeBadgeText}</div>
+                    </div>
+                    
+                    <div class="listing-content">
+                        <div class="listing-header">
+                            <div>
+                                <h3 class="listing-title">${property.title || 'Untitled Property'}</h3>
+                                <div class="listing-location">
+                                    <i class="fas fa-map-marker-alt"></i> ${property.location || 'Location not specified'}
+                                </div>
+                            </div>
+                            <div class="listing-price ${priceClass}">${displayPrice}</div>
+                        </div>
+                        
+                        <div class="listing-details">
+                            <div class="detail">
+                                <i class="fas fa-bed"></i> ${bedrooms} ${bedrooms === 'Studio' ? '' : 'beds'}
+                            </div>
+                            <div class="detail">
+                                <i class="fas fa-bath"></i> ${property.bathrooms || 0} baths
+                            </div>
                         </div>
                     </div>
-                    <div class="listing-price ${priceClass}">${displayPrice}</div>
                 </div>
-                
-                <div class="listing-details">
-                    <div class="detail">
-                        <i class="fas fa-bed"></i> ${bedrooms} ${bedrooms === 'Studio' ? '' : 'beds'}
-                    </div>
-                    <div class="detail">
-                        <i class="fas fa-bath"></i> ${property.bathrooms || 0} baths
-                    </div>
-                </div>
-                
-                <div class="listing-actions">
-                    <button class="action-btn view-btn" 
-                            onclick="event.stopPropagation(); window.showPropertyModal('${property.id}')">
-                        <i class="fas fa-eye"></i> View Details
-                    </button>
-                </div>
-            </div>
-        </div>
-        `;
-    }).join('');
-}
-        // Contact broker function
-        window.contactBroker = function(userId) {
-            const userInfo = userMap.get(userId);
-            if (userInfo) {
-                const userType = userInfo.role === 'landlord' ? 'Property Owner' : 'Broker';
-                alert(`Contact Information:\n\n${userType}: ${userInfo.displayName}\nEmail: ${userInfo.email}\nPhone: ${userInfo.phone}\n\nYou can contact this ${userType.toLowerCase()} for more information about the property.`);
-            } else {
-                alert('Contact information not available.');
-            }
-        };
-
-        // Toast notification function
-        function showToast(message, type = 'success') {
-            // Remove existing toast
-            const existingToast = document.querySelector('.toast');
-            if (existingToast) existingToast.remove();
-            
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            
-            // Auto-remove after 3 seconds
-            setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+                `;
+            }).join('');
         }
 
         // Modal event listeners
@@ -2033,6 +1862,7 @@ function displaySimilarProperties(properties) {
         });
     </script>
 
+    <script src="../sidebar-user.js"></script>
     <script>
         // Mobile menu toggle
         document.getElementById('mobileMenuToggle').addEventListener('click', function() {
@@ -2055,6 +1885,7 @@ function displaySimilarProperties(properties) {
             .then(function(r) { if (!r.ok) throw new Error('Sidebar ' + r.status); return r.text(); })
             .then(function(html) {
                 document.getElementById('sidebar-container').innerHTML = html;
+                if (typeof window.updateSidebarUserProfile === 'function') window.updateSidebarUserProfile();
                 var links = document.querySelectorAll('.sidebar-link');
                 links.forEach(function(link) {
                     if (link.getAttribute('href') === 'liked_properties.html') link.classList.add('active');

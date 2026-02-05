@@ -1,3 +1,6 @@
 {
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "vscode-pets.theme": "beach",
+    "vscode-pets.position": "explorer",
+    "vscode-pets.petSize": "medium"
 }

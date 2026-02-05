@@ -630,22 +630,61 @@
 </style>
 
 <script>
-// User info loading and stats
-document.addEventListener('DOMContentLoaded', function() {
-  // Load user info
-  function loadUserInfo() {
-    try {
-      // Try to get user data from localStorage or session
-      const userData = JSON.parse(localStorage.getItem('userData')) || 
-                      JSON.parse(sessionStorage.getItem('userData'));
-      
-      if (userData) {
+// Import Firebase modules if not already imported
+async function initializeSidebar() {
+  // Wait for Firebase globals
+  if (!window.firebaseApp || !window.firebaseAuth || !window.firebaseDB) {
+    console.log('Firebase not available yet, waiting...');
+    setTimeout(initializeSidebar, 100);
+    return;
+  }
+
+  try {
+    // Import Firebase modules
+    const { getAuth, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js");
+    const { getFirestore, getDoc, doc, collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js");
+    
+    // Get the Firebase app instance from the main page
+    const app = window.firebaseApp;
+    if (!app) {
+      console.error('Firebase app not found');
+      return;
+    }
+    
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    // Load user info from Firebase
+    async function loadUserInfo() {
+      try {
+        const currentUser = auth.currentUser;
+        if (!currentUser) {
+          console.log('No user logged in');
+          return;
+        }
+        
         const userNameEl = document.getElementById('userName');
         const userRoleEl = document.getElementById('userRole');
         const userAvatarEl = document.getElementById('userAvatar');
         
+        // Default values
+        let userName = currentUser.displayName || currentUser.email || 'User';
+        let userRole = 'Buyer';
+        
+        // Try to get user data from Firestore
+        try {
+          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            userName = userData.fullName || userData.email || userName;
+            userRole = userData.role || userData.userType || userRole;
+          }
+        } catch (error) {
+          console.log('Could not load user from Firestore:', error);
+        }
+        
         if (userNameEl) {
-          userNameEl.textContent = userData.fullName || userData.email || 'User';
+          userNameEl.textContent = userName;
         }
         
         if (userRoleEl) {
@@ -654,66 +693,191 @@ document.addEventListener('DOMContentLoaded', function() {
             'broker': 'Licensed Broker',
             'seller': 'Property Seller',
             'admin': 'Administrator',
+            'agent': 'Property Agent',
             'user': 'Buyer'
           };
-          userRoleEl.textContent = roleMap[userData.role] || 'Buyer';
+          userRoleEl.textContent = roleMap[userRole] || 'Buyer';
         }
         
-        if (userAvatarEl && userData.fullName) {
-          const initials = userData.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+        if (userAvatarEl) {
+          const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'U';
           userAvatarEl.innerHTML = `<span style="font-weight: 600;">${initials}</span>`;
         }
+        
+      } catch (error) {
+        console.error('Error loading user info:', error);
       }
-    } catch (error) {
-      console.log('Could not load user info:', error);
     }
-  }
-  
-  // Load stats
-  function loadStats() {
-    try {
-      // Get saved properties count
-      const savedProperties = JSON.parse(localStorage.getItem('savedProperties') || '[]');
-      const savedCount = savedProperties.length;
-      
-      // Update saved count
-      const savedBadge = document.getElementById('savedBadge');
-      const savedStat = document.getElementById('savedPropertiesStat');
-      
-      if (savedBadge && savedCount > 0) {
-        savedBadge.textContent = savedCount;
-      }
-      
-      if (savedStat) {
-        savedStat.textContent = savedCount;
-      }
-      
-      // Get total properties count from global variable if available
-      if (typeof window.allListings !== 'undefined') {
-        const totalStat = document.getElementById('totalPropertiesStat');
-        if (totalStat) {
-          totalStat.textContent = window.allListings.length;
+    
+    // Load stats from Firebase
+    async function loadStats() {
+      try {
+        const currentUser = auth.currentUser;
+        if (!currentUser) {
+          console.log('No user logged in for stats');
+          return;
         }
+        
+        // Get saved properties count from Firestore
+        try {
+          const savedRef = collection(db, 'savedProperties');
+          const savedQuery = query(savedRef, where('userId', '==', currentUser.uid));
+          const savedSnapshot = await getDocs(savedQuery);
+          const savedCount = savedSnapshot.size;
+          
+          // Update saved count
+          const savedBadge = document.getElementById('savedBadge');
+          const savedStat = document.getElementById('savedPropertiesStat');
+          
+          if (savedBadge) {
+            if (savedCount > 0) {
+              savedBadge.textContent = savedCount;
+            } else {
+              savedBadge.textContent = '';
+            }
+          }
+          
+          if (savedStat) {
+            savedStat.textContent = savedCount;
+          }
+          
+        } catch (error) {
+          console.log('Could not load saved properties:', error);
+        }
+        
+        // Get total properties count
+        try {
+          const propertiesRef = collection(db, 'properties');
+          const activeQuery = query(propertiesRef, where('status', '==', 'active'));
+          const propertiesSnapshot = await getDocs(activeQuery);
+          const totalCount = propertiesSnapshot.size;
+          
+          const totalStat = document.getElementById('totalPropertiesStat');
+          if (totalStat) {
+            totalStat.textContent = totalCount;
+          }
+        } catch (error) {
+          console.log('Could not load total properties:', error);
+        }
+        
+        // Check for new messages (you would need to implement this)
+        // const messageCount = 0; // Implement message count logic
+        // const messageBadge = document.getElementById('messageBadge');
+        // if (messageBadge && messageCount > 0) {
+        //   messageBadge.textContent = messageCount;
+        // }
+        
+      } catch (error) {
+        console.error('Error loading stats:', error);
       }
-      
-      // Check for new messages (simulated)
-      const messageCount = Math.floor(Math.random() * 3); // Simulated
-      const messageBadge = document.getElementById('messageBadge');
-      if (messageBadge && messageCount > 0) {
-        messageBadge.textContent = messageCount;
-      }
-      
-    } catch (error) {
-      console.log('Could not load stats:', error);
     }
+    
+    // Initialize when auth state changes
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        await loadUserInfo();
+        await loadStats();
+      } else {
+        // User is signed out
+        console.log('User signed out');
+      }
+    });
+    
+    // Initialize now if user is already logged in
+    if (auth.currentUser) {
+      await loadUserInfo();
+      await loadStats();
+    }
+    
+    // Highlight current page
+    function highlightCurrentPage() {
+      const currentPath = window.location.pathname.split('/').pop() || 'buyer_dashboard.html';
+      const links = document.querySelectorAll('.sidebar-link');
+      
+      links.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === currentPath) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    }
+    
+    highlightCurrentPage();
+    
+    // Refresh stats periodically
+    setInterval(loadStats, 60000); // Every 60 seconds
+    
+  } catch (error) {
+    console.error('Error initializing sidebar:', error);
+    // Fallback to localStorage method
+    loadUserInfoFallback();
+    loadStatsFallback();
   }
-  
-  // Initialize
-  loadUserInfo();
-  loadStats();
-  
-  // Refresh stats periodically
-  setInterval(loadStats, 30000); // Every 30 seconds
+}
+
+// Fallback functions if Firebase fails
+function loadUserInfoFallback() {
+  try {
+    const userData = JSON.parse(localStorage.getItem('userData')) || 
+                    JSON.parse(sessionStorage.getItem('userData'));
+    
+    if (userData) {
+      const userNameEl = document.getElementById('userName');
+      const userRoleEl = document.getElementById('userRole');
+      const userAvatarEl = document.getElementById('userAvatar');
+      
+      if (userNameEl) {
+        userNameEl.textContent = userData.fullName || userData.email || 'User';
+      }
+      
+      if (userRoleEl) {
+        const roleMap = {
+          'landlord': 'Property Owner',
+          'broker': 'Licensed Broker',
+          'seller': 'Property Seller',
+          'admin': 'Administrator',
+          'user': 'Buyer'
+        };
+        userRoleEl.textContent = roleMap[userData.role] || 'Buyer';
+      }
+      
+      if (userAvatarEl && userData.fullName) {
+        const initials = userData.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+        userAvatarEl.innerHTML = `<span style="font-weight: 600;">${initials}</span>`;
+      }
+    }
+  } catch (error) {
+    console.log('Fallback: Could not load user info:', error);
+  }
+}
+
+function loadStatsFallback() {
+  try {
+    const savedProperties = JSON.parse(localStorage.getItem('savedProperties') || '[]');
+    const savedCount = savedProperties.length;
+    
+    const savedBadge = document.getElementById('savedBadge');
+    const savedStat = document.getElementById('savedPropertiesStat');
+    
+    if (savedBadge && savedCount > 0) {
+      savedBadge.textContent = savedCount;
+    }
+    
+    if (savedStat) {
+      savedStat.textContent = savedCount;
+    }
+    
+  } catch (error) {
+    console.log('Fallback: Could not load stats:', error);
+  }
+}
+
+// Initialize sidebar when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  // Start initialization
+  initializeSidebar();
   
   // Mobile menu functionality
   const overlay = document.getElementById('sidebarOverlay');
@@ -723,23 +887,6 @@ document.addEventListener('DOMContentLoaded', function() {
       sidebar.classList.remove('active');
     });
   }
-  
-  // Highlight current page
-  function highlightCurrentPage() {
-    const currentPath = window.location.pathname.split('/').pop() || 'buyer_dashboard.html';
-    const links = document.querySelectorAll('.sidebar-link');
-    
-    links.forEach(link => {
-      const href = link.getAttribute('href');
-      if (href === currentPath) {
-        link.classList.add('active');
-      } else {
-        link.classList.remove('active');
-      }
-    });
-  }
-  
-  highlightCurrentPage();
   
   // Close sidebar on link click (mobile)
   document.addEventListener('click', function(e) {
@@ -753,49 +900,54 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  // Listen for saved property updates
-  window.addEventListener('storage', function(e) {
-    if (e.key === 'savedProperties') {
-      loadStats();
+  // Make stats updater available globally
+  window.updateSidebarStats = async function() {
+    // Try to reload stats if Firebase is available
+    if (typeof window.firebase !== 'undefined') {
+      try {
+        // Re-import modules if needed
+        const { getAuth } = await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js");
+        const { getFirestore, collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js");
+        
+        
+        if (app) {const app = window.firebaseApp;
+          const auth = getAuth(app);
+          const db = getFirestore(app);
+          const currentUser = auth.currentUser;
+          
+          if (currentUser) {
+            const savedRef = collection(db, 'savedProperties');
+            const savedQuery = query(savedRef, where('userId', '==', currentUser.uid));
+            const savedSnapshot = await getDocs(savedQuery);
+            const savedCount = savedSnapshot.size;
+            
+            const savedBadge = document.getElementById('savedBadge');
+            const savedStat = document.getElementById('savedPropertiesStat');
+            
+            if (savedBadge) {
+              if (savedCount > 0) {
+                savedBadge.textContent = savedCount;
+              } else {
+                savedBadge.textContent = '';
+              }
+            }
+            
+            if (savedStat) {
+              savedStat.textContent = savedCount;
+            }
+          }
+        }
+      } catch (error) {
+        console.log('Could not update stats via Firebase:', error);
+        // Fallback to localStorage
+        loadStatsFallback();
+      }
+    } else {
+      loadStatsFallback();
     }
-  });
-  
-  // Update stats when properties are loaded
-  const originalLoadAllListings = window.loadAllListings;
-  if (originalLoadAllListings) {
-    window.loadAllListings = async function() {
-      await originalLoadAllListings();
-      loadStats();
-    };
-  }
+  };
 });
 
-// Make stats updater available globally
-window.updateSidebarStats = function() {
-  const savedProperties = JSON.parse(localStorage.getItem('savedProperties') || '[]');
-  const savedCount = savedProperties.length;
-  
-  const savedBadge = document.getElementById('savedBadge');
-  const savedStat = document.getElementById('savedPropertiesStat');
-  
-  if (savedBadge) {
-    if (savedCount > 0) {
-      savedBadge.textContent = savedCount;
-    } else {
-      savedBadge.textContent = '';
-    }
-  }
-  
-  if (savedStat) {
-    savedStat.textContent = savedCount;
-  }
-  
-  // Update total properties if available
-  if (typeof window.allListings !== 'undefined') {
-    const totalStat = document.getElementById('totalPropertiesStat');
-    if (totalStat) {
-      totalStat.textContent = window.allListings.length;
-    }
-  }
-};
+// Export initialization function for main pages to call
+window.initializeSidebar = initializeSidebar;
 </script>

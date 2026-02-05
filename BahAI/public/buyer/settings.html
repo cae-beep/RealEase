@@ -480,6 +480,7 @@
   </div>
 </div>
 
+<script src="../sidebar-user.js"></script>
 <script>
 document.getElementById('mobileMenuToggle').addEventListener('click', function() {
   var sidebar = document.querySelector('.sidebar');
@@ -500,6 +501,7 @@ fetch('sidebar.html')
   .then(function(r) { if (!r.ok) throw new Error(r.status); return r.text(); })
   .then(function(html) {
     document.getElementById('sidebar-container').innerHTML = html;
+    if (typeof window.updateSidebarUserProfile === 'function') window.updateSidebarUserProfile();
     var links = document.querySelectorAll('.sidebar-link');
     links.forEach(function(link) {
       if (link.getAttribute('href') === 'settings.html') link.classList.add('active');
@@ -560,6 +562,10 @@ async function loadUserData() {
     if (userDoc.exists()) {
       userData = userDoc.data();
       populateForm(userData);
+      var fullName = userData.fullName || ((userData.firstName || '') + ' ' + (userData.lastName || '')).trim() || userData.email?.split('@')[0] || 'User';
+      var profileData = { fullName: fullName, email: userData.email, role: userData.role || 'user', firstName: userData.firstName, lastName: userData.lastName };
+      try { localStorage.setItem('userData', JSON.stringify(profileData)); } catch (e) {}
+      if (typeof window.updateSidebarUserProfile === 'function') window.updateSidebarUserProfile(profileData);
     }
   } catch (error) {
     console.error("Error loading user data:", error);
@@ -618,7 +624,7 @@ function showSuccess(message) {
 // Require login and load user data
 onAuthStateChanged(auth, (user) => {
   if (!user) {
-    window.location.href = "login.html";
+    window.location.href = "../login.html";
   } else {
     loadUserData();
   }

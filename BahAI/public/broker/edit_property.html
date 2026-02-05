@@ -1930,7 +1930,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBwwAkIEixeUysaGrMb9BtTsMwz_C9Noxk&libraries=places" async defer></script>
-
+<script src="../sidebar-user.js"></script>
 <script>
   // ===== CONFIGURATION =====
   const firebaseConfig = {
@@ -1948,7 +1948,7 @@
       const response = await fetch('sidebar.html');
       const sidebarHtml = await response.text();
       document.getElementById('sidebar-container').innerHTML = sidebarHtml;
-      
+      if (typeof window.updateSidebarUserProfile === 'function') window.updateSidebarUserProfile();
       // Initialize sidebar after loading
       initializeSidebar();
     } catch (error) {
@@ -1991,13 +1991,23 @@
   }
 
   function initializeSidebar() {
-    // Setup logout button
-    const logoutBtn = document.getElementById('sidebarLogoutBtn');
+    // Setup logout button (sidebar.html uses logoutBtn, fallback uses sidebarLogoutBtn)
+    const logoutBtn = document.getElementById('logoutBtn') || document.getElementById('sidebarLogoutBtn');
     if (logoutBtn) {
-      logoutBtn.addEventListener('click', function() {
-        firebase.auth().signOut().then(() => {
-          window.location.href = "../login.html";
-        });
+      const newBtn = logoutBtn.cloneNode(true);
+      logoutBtn.parentNode.replaceChild(newBtn, logoutBtn);
+      newBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (confirm('Are you sure you want to log out?')) {
+          if (typeof window.performLogout === 'function') {
+            window.performLogout();
+          } else if (typeof firebase !== 'undefined' && firebase.auth) {
+            firebase.auth().signOut().then(() => { window.location.href = "../login.html"; });
+          } else {
+            window.location.href = "../login.html";
+          }
+        }
       });
     }
     
@@ -2050,6 +2060,18 @@
       await checkKYCStatus();
       await loadPropertyData();
     });
+    
+    window.performLogout = async function() {
+      try {
+        await firebase.auth().signOut();
+        localStorage.removeItem('userData');
+        sessionStorage.removeItem('userData');
+        window.location.href = "../login.html";
+      } catch (e) {
+        console.error('Logout error:', e);
+        window.location.href = "../login.html";
+      }
+    };
     
     // Setup mobile toggle
     document.getElementById('mobileToggle').addEventListener('click', toggleMobileSidebar);

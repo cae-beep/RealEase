@@ -1441,6 +1441,7 @@
 </div>
 
 <!-- Sidebar Loader -->
+<script src="../sidebar-user.js"></script>
 <script>
 // Mobile menu functionality
 document.getElementById('mobileMenuToggle').addEventListener('click', function() {
@@ -1468,6 +1469,7 @@ fetch('sidebar.html')
   .then(response => response.text())
   .then(html => {
     document.getElementById('sidebar-container').innerHTML = html;
+    if (typeof window.updateSidebarUserProfile === 'function') window.updateSidebarUserProfile();
     const links = document.querySelectorAll('.sidebar-link');
     links.forEach(link => {
       if (link.getAttribute('href') === 'messages.html') {

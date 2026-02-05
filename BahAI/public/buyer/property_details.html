@@ -1563,6 +1563,7 @@
 </div>
 
 <!-- Sidebar Loader Script -->
+<script src="../sidebar-user.js"></script>
 <script>
 // Mobile menu functionality
 document.getElementById('mobileMenuToggle').addEventListener('click', function() {
@@ -1605,7 +1606,7 @@ function setupLogoutButton() {
     console.log('Logout button initialized successfully');
 }
 
-// Function to load sidebar based on user role
+// In the loadSidebarBasedOnRole function, change it to this:
 async function loadSidebarBasedOnRole(userRole) {
     let sidebarFile = 'sidebar.html'; // Default
     
@@ -1623,49 +1624,95 @@ async function loadSidebarBasedOnRole(userRole) {
         }
         const html = await response.text();
         document.getElementById('sidebar-container').innerHTML = html;
-        
-        // Setup logout button
-        setupLogoutButton();
+        if (typeof window.updateSidebarUserProfile === 'function') window.updateSidebarUserProfile();
+        // The sidebar will initialize itself via its own script
+        // No need to call initializeSidebar() anymore
         
         console.log(`✅ Loaded sidebar: ${sidebarFile} for role: ${userRole}`);
+        
     } catch (error) {
         console.error('Error loading sidebar:', error);
-        // Fallback to default sidebar
-        try {
-            const fallbackResponse = await fetch('sidebar.html');
-            const fallbackHtml = await fallbackResponse.text();
-            document.getElementById('sidebar-container').innerHTML = fallbackHtml;
-            setupLogoutButton();
-        } catch (fallbackError) {
-            console.error('Failed to load fallback sidebar:', fallbackError);
-            document.getElementById('sidebar-container').innerHTML = 
-                '<div class="sidebar" style="padding: 20px; background: var(--bg-light); color: #ef4444;">' +
-                '<p>Unable to load navigation. Please refresh the page.</p>' +
-                '</div>';
-        }
+        // Simple fallback
+        document.getElementById('sidebar-container').innerHTML = 
+            '<div class="sidebar" style="padding: 20px; background: var(--bg-light); color: var(--text-dark);">' +
+            '<p>Navigation loaded. User info may not display correctly.</p>' +
+            '</div>';
     }
 }
 
-// Function to update back button based on user role
+// Function to update back button based on user role and source parameter
 function updateBackButton(userRole) {
     const backButton = document.getElementById('backButton');
+    const urlParams = new URLSearchParams(window.location.search);
+    const source = urlParams.get('source');
     
-    if (userRole === 'agent') {
-        backButton.href = '../agent/agent_dashboard.html';
-        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Agent Dashboard';
-    } else if (userRole === 'broker') {
-        backButton.href = '../broker/broker_dashboard.html';
-        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Broker Dashboard';
-    } else if (userRole === 'landlord') {
-        backButton.href = '../landlord/landlord_dashboard.html';
-        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Landlord Dashboard';
-    } else if (userRole === 'admin') {
-        backButton.href = '../admin/admin_dashboard.html';
-        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Admin Dashboard';
-    } else {
-        // Default for other roles
-        backButton.href = '../index.html';
-        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Home';
+    // Determine where to go back based on source parameter
+    switch(source) {
+        case 'search':
+            backButton.href = 'search_results.html';
+            backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Search Results';
+            break;
+        case 'favorites':
+            backButton.href = 'favorites.html';
+            backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Favorites';
+            break;
+        case 'profile':
+            backButton.href = 'profile.html';
+            backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Profile';
+            break;
+        case 'saved':
+            backButton.href = 'saved_properties.html';
+            backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Saved Properties';
+            break;
+        case 'dashboard':
+            // Go to appropriate dashboard based on role
+            if (userRole === 'agent') {
+                backButton.href = '../agent/agent_dashboard.html';
+                backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Agent Dashboard';
+            } else if (userRole === 'broker') {
+                backButton.href = '../broker/broker_dashboard.html';
+                backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Broker Dashboard';
+            } else if (userRole === 'landlord') {
+                backButton.href = '../landlord/landlord_dashboard.html';
+                backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Landlord Dashboard';
+            } else if (userRole === 'admin') {
+                backButton.href = '../admin/admin_dashboard.html';
+                backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Admin Dashboard';
+            } else {
+                backButton.href = '../index.html';
+                backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Home';
+            }
+            break;
+        default:
+            // Default to browser back or appropriate dashboard
+            if (window.history.length > 1) {
+                // Use JavaScript to go back
+                backButton.onclick = function(e) {
+                    e.preventDefault();
+                    window.history.back();
+                };
+                backButton.href = '#';
+                backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back';
+            } else {
+                // If no history, go to appropriate dashboard
+                if (userRole === 'agent') {
+                    backButton.href = '../agent/agent_dashboard.html';
+                    backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Agent Dashboard';
+                } else if (userRole === 'broker') {
+                    backButton.href = '../broker/broker_dashboard.html';
+                    backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Broker Dashboard';
+                } else if (userRole === 'landlord') {
+                    backButton.href = '../landlord/landlord_dashboard.html';
+                    backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Landlord Dashboard';
+                } else if (userRole === 'admin') {
+                    backButton.href = '../admin/admin_dashboard.html';
+                    backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Admin Dashboard';
+                } else {
+                    backButton.href = '../index.html';
+                    backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Home';
+                }
+            }
+            break;
     }
 }
 </script>
@@ -1708,6 +1755,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+// ⭐ ADD THIS LINE - Make Firebase available globally for sidebar
+window.firebaseApp = app;
+window.firebaseAuth = auth;
+window.firebaseDB = db;
+
+console.log("✅ Firebase initialized and made available globally");
 
 // Google Maps API Key
 const GOOGLE_MAPS_API_KEY = "AIzaSyBwwAkIEixeUysaGrMb9BtTsMwz_C9Noxk";
