@@ -336,24 +336,10 @@
     <p>Manage your property listings and track their performance</p>
     <div class="hero-stats">
       <div class="hero-stat-item">
-        <div class="hero-stat-icon"><i class="fas fa-list"></i></div>
-        <div>
-          <div class="hero-stat-value" id="totalListings">0</div>
-          <div class="hero-stat-label">Total Listings</div>
-        </div>
-      </div>
-      <div class="hero-stat-item">
         <div class="hero-stat-icon"><i class="fas fa-check-circle"></i></div>
         <div>
           <div class="hero-stat-value" id="activeListings">0</div>
           <div class="hero-stat-label">Active</div>
-        </div>
-      </div>
-      <div class="hero-stat-item">
-        <div class="hero-stat-icon"><i class="fas fa-clock"></i></div>
-        <div>
-          <div class="hero-stat-value" id="pendingListings">0</div>
-          <div class="hero-stat-label">Pending</div>
         </div>
       </div>
       <div class="hero-stat-item">
@@ -363,11 +349,6 @@
           <div class="hero-stat-label">Sold</div>
         </div>
       </div>
-    </div>
-    <div class="hero-actions">
-      <a href="add_property.html" class="add-button">
-        <i class="fas fa-plus"></i> Add New Property
-      </a>
     </div>
   </div>
 
@@ -625,12 +606,9 @@ function updatePropertiesCount(count) {
 function updateStats(listings) {
   const total = listings.length;
   const active = listings.filter(l => (l.status || '').toLowerCase() === 'active').length;
-  const pending = listings.filter(l => (l.status || '').toLowerCase() === 'pending').length;
   const sold = listings.filter(l => (l.status || '').toLowerCase() === 'sold').length;
 
-  document.getElementById('totalListings').textContent = total;
   document.getElementById('activeListings').textContent = active;
-  document.getElementById('pendingListings').textContent = pending;
   document.getElementById('soldListings').textContent = sold;
   updatePropertiesCount(total);
 }

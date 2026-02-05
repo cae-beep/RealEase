@@ -9,10 +9,11 @@
 <style>
     :root {
       --primary: #0b2e52;
-      --primary-dark: #001F3F;
-      --primary-light: #002f3f;
+      --primary-dark: #764ba2;
+      --primary-light: #667eea;
+      --primary-gradient: linear-gradient(135deg, #0b2e52 0%, #667eea 100%);
       --secondary: #1976d2;
-      --accent: #ff9800;
+      --accent: #f59e0b;
       --text-dark: #1a202c;
       --text-light: #718096;
       --bg-light: #f8fafc;
@@ -69,7 +70,7 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      background: var(--primary-gradient);
       color: white;
       border: none;
       padding: 14px 28px;
@@ -86,7 +87,7 @@
     .back-button:hover {
       transform: translateY(-2px);
       box-shadow: var(--shadow-lg);
-      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      background: linear-gradient(135deg, #001a33, var(--primary));
     }
 
     /* Property Header */
@@ -115,18 +116,18 @@
     }
 
     .badge-sale {
-      background: #d1fae5;
-      color: #065f46;
+      background: #3b82f6;
+      color: white;
     }
 
     .badge-rent {
-      background: #fef3c7;
-      color: #92400e;
+      background: #10b981;
+      color: white;
     }
 
     .badge-lease {
-      background: #dbeafe;
-      color: #1e40af;
+      background: #10b981;
+      color: white;
     }
 
     .badge-active {
@@ -195,7 +196,7 @@
     }
 
     .price-section {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      background: var(--primary-gradient);
       color: white;
       padding: 25px;
       border-radius: 16px;
@@ -793,12 +794,6 @@
     .calculator-btn {
       background: linear-gradient(135deg, #f59e0b, #d97706);
       color: white;
-    }
-
-    .save-btn {
-      background: var(--bg-white);
-      color: var(--text-dark);
-      border: 1px solid var(--border);
     }
 
     /* Loading State */
@@ -2175,9 +2170,6 @@ function displayPropertyDetails(listing, userInfo) {
         <div class="price-section">
             <div class="price-label">Price</div>
             <div class="price-value">${displayPrice}</div>
-            <button id="savePropertyBtn" class="action-button">
-                <i class="far fa-heart"></i> Save Property
-            </button>
         </div>
     </div>
 
@@ -2479,9 +2471,6 @@ function displayPropertyDetails(listing, userInfo) {
         <button class="action-btn-large contact-btn" id="contactBtnBottom">
             <i class="fas fa-phone"></i> Contact Agent
         </button>
-        <button class="action-btn-large save-btn" id="saveBtnBottom">
-            <i class="far fa-heart"></i> Save Property
-        </button>
     </div>`;
     
     container.innerHTML = html;
@@ -2489,7 +2478,6 @@ function displayPropertyDetails(listing, userInfo) {
     // Initialize components
     initializeMediaNavigation(allMedia);
     setupButtonEventListeners(listing, userInfo);
-    updateSaveButtonState();
     initializePropertyCalculator(listing);
 
     // Preload video if first media is video
@@ -2521,116 +2509,6 @@ function setupButtonEventListeners(listing, userInfo) {
         });
     });
 
-    // Save buttons
-    document.querySelectorAll('#savePropertyBtn, #saveBtnBottom').forEach(btn => {
-        btn.addEventListener('click', function() {
-            toggleSaveProperty();
-        });
-    });
-}
-
-async function updateSaveButtonState() {
-    if (!propertyId) return;
-
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-        updateSaveButtonText('Login to Save');
-        return;
-    }
-    
-    try {
-        const savedRef = collection(db, 'savedProperties');
-        const q = query(savedRef,
-            where('userId', '==', currentUser.uid),
-            where('propertyId', '==', propertyId)
-        );
-        const snapshot = await getDocs(q);
-        const isSaved = !snapshot.empty;
-        updateSaveButtonText(isSaved ? 'Saved' : 'Save Property', isSaved);
-    } catch (error) {
-        console.error('Error checking saved status:', error);
-        updateSaveButtonText('Error');
-    }
-}
-
-function updateSaveButtonText(text, isSaved = false) {
-    document.querySelectorAll('#savePropertyBtn, #saveBtnBottom').forEach(btn => {
-        if (isSaved) {
-            btn.innerHTML = '<i class="fas fa-heart"></i> Saved';
-            btn.style.background = 'var(--success)';
-            btn.style.color = 'white';
-        } else {
-            if (text === 'Login to Save') {
-                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login to Save';
-            } else {
-                btn.innerHTML = '<i class="far fa-heart"></i> ' + text;
-            }
-            btn.style.background = '';
-            btn.style.color = '';
-        }
-    });
-}
-
-async function toggleSaveProperty() {
-    if (!propertyId) return;
-
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-        alert('Please login to save properties');
-        return;
-    }
-
-    try {
-        const savedRef = collection(db, 'savedProperties');
-        const q = query(savedRef,
-            where('userId', '==', currentUser.uid),
-            where('propertyId', '==', propertyId)
-        );
-        const snapshot = await getDocs(q);
-
-        if (!snapshot.empty) {
-            await deleteDoc(snapshot.docs[0].ref);
-            showSaveToast('Removed from saved', false);
-            updateSaveButtonText('Save Property', false);
-        } else {
-            await addDoc(collection(db, 'savedProperties'), {
-                userId: currentUser.uid,
-                propertyId: propertyId,
-                savedAt: new Date(),
-                createdAt: new Date()
-            });
-            showSaveToast('Property saved!', false);
-            updateSaveButtonText('Saved', true);
-        }
-    } catch (error) {
-        console.error('Error toggling save:', error);
-        showSaveToast('Error saving property', true);
-    }
-}
-
-function showSaveToast(message, isError = false) {
-    const toast = document.createElement('div');
-    toast.textContent = message;
-    toast.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: ${isError ? 'var(--danger)' : 'var(--success)'};
-        color: white;
-        padding: 12px 24px;
-        border-radius: 8px;
-        z-index: 9999;
-        font-weight: 500;
-        box-shadow: var(--shadow-lg);
-        animation: slideIn 0.3s ease;
-    `;
-
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
 }
 
 function displayError(message) {

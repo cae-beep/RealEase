@@ -519,9 +519,10 @@ button.save-property-btn:not(.listing-card-image-container button) {
     align-self: flex-start;
 }
 
-.status-active {
-    background: #d1fae5;
-    color: #065f46;
+.status-active,
+.status-available {
+    background: #10b981 !important;
+    color: white !important;
 }
 
 .status-pending {
@@ -530,8 +531,8 @@ button.save-property-btn:not(.listing-card-image-container button) {
 }
 
 .status-sold, .status-leased {
-    background: #e5e7eb;
-    color: #374151;
+    background: #ef4444 !important;
+    color: white !important;
 }
 
 .status-inactive {

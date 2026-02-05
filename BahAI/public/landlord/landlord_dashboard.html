@@ -424,15 +424,20 @@
       align-self: flex-start; /* Align to start of flex container */
     }
 
-    /* Update the status-active class to have green background */
-    .status-active {
-      background: #10b981; /* Green background */
-      color: white; /* White text for better contrast */
+    .status-active,
+    .status-available {
+      background: #10b981 !important;
+      color: white !important;
     }
 
     .status-pending {
       background: #fef3c7;
       color: #92400e;
+    }
+
+    .status-sold {
+      background: #ef4444 !important;
+      color: white !important;
     }
 
     .empty-state {

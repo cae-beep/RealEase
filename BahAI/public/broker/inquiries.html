@@ -1372,22 +1372,16 @@
 
 <!-- Main - same layout as broker dashboard -->
 <div class="container">
-  <!-- Hero Section - same design as broker dashboard -->
-  <div class="hero-section">
-    <h1>Inquiries</h1>
-    <p>View and respond to messages from potential buyers</p>
-    <div class="hero-actions">
-      <button class="refresh-btn" id="refreshBtn">
-        <i class="fas fa-sync-alt"></i> Refresh
-      </button>
-    </div>
-  </div>
-
   <div class="inquiries-container">
     <!-- Conversations Sidebar -->
     <div class="conversations-sidebar">
       <div class="conversations-header">
-        <h2><i class="fas fa-comments"></i> Conversations</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h2 style="margin: 0;"><i class="fas fa-comments"></i> Conversations</h2>
+          <button class="refresh-btn" id="refreshBtn">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+        </div>
         
         <div class="index-notice" id="indexNotice">
           <i class="fas fa-info-circle"></i> 

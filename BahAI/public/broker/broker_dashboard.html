@@ -222,6 +222,21 @@
         transition: transform 0.5s ease;
     }
     .listing-card:hover .listing-image { transform: scale(1.05); }
+    .listing-type-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: white;
+        z-index: 2;
+    }
+    .listing-type-badge.rent { background: #10b981; }
+    .listing-type-badge.lease { background: #10b981; }
+    .listing-type-badge.sale { background: #3b82f6; }
     .listing-content { padding: 25px; }
     .listing-header {
         display: flex;
@@ -322,12 +337,18 @@
         font-weight: 600;
         margin-bottom: 20px;
     }
-    .status-active, .listing-status.status-active {
-        background: var(--secondary-gradient) !important;
+    .status-active, .listing-status.status-active,
+    .status-available, .listing-status.status-available {
+        background: #10b981 !important;
         color: white !important;
     }
     .status-pending, .listing-status.status-pending {
         background: var(--accent-gradient) !important;
+        color: white !important;
+    }
+    .status-sold, .listing-status.status-sold,
+    .status-rented, .listing-status.status-rented {
+        background: #ef4444 !important;
         color: white !important;
     }
     .card-link-overlay {
@@ -806,6 +827,8 @@ function displayListings(listings) {
     // Get price information
     const priceInfo = getPriceInfo(listing);
     const listingType = getListingTypeDisplay(listing);
+    const rawType = (listing.type || listing.listingType || 'rent').toLowerCase();
+    const badgeClass = (rawType === 'sale') ? 'sale' : (rawType === 'rent' || rawType === 'lease') ? 'rent' : 'sale';
     
     // Get property image
     let imageUrl = 'https://via.placeholder.com/400x200/0b2e52/white?text=No+Image';
@@ -842,6 +865,7 @@ function displayListings(listings) {
       <div class="listing-card" data-listing-id="${listing.id}">
         <a href="property_details.html?id=${listing.id}" class="card-link-overlay" aria-label="View ${listing.title}"></a>
         <div class="listing-card-image-container">
+          <span class="listing-type-badge ${badgeClass}">${listingType}</span>
           <img src="${imageUrl}" alt="${listing.title}" class="listing-image">
         </div>
         <div class="listing-content">
