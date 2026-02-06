@@ -735,12 +735,11 @@ document.getElementById('mobileMenuToggle').addEventListener('click', function()
   }
 });
 
-// Load sidebar
+// Load sidebar (profile updated by loadAgentProfile in Firebase module - don't use localStorage here)
 fetch('agent_sidebar.html')
   .then(response => response.text())
   .then(html => {
     document.getElementById('sidebar-container').innerHTML = html;
-    if (typeof window.updateSidebarUserProfile === 'function') window.updateSidebarUserProfile();
     const links = document.querySelectorAll('.sidebar-link');
     links.forEach(link => {
       if (link.getAttribute('href') === 'agent_dashboard.html') link.classList.add('active');
@@ -1251,12 +1250,65 @@ document.getElementById('resetFilters').addEventListener('click', function() {
   displayListings(allListings);
 });
 
+// Load agent profile for sidebar (agents collection first, then users)
+async function loadAgentProfile(user) {
+  try {
+    const agentDoc = await getDoc(doc(db, "agents", user.uid));
+    if (agentDoc.exists()) {
+      const d = agentDoc.data();
+      const sidebarData = {
+        fullName: d.fullName || d.name || d.displayName,
+        displayName: d.fullName || d.name || d.displayName,
+        email: user.email || d.email,
+        role: d.userType || d.role || 'agent'
+      };
+      if (typeof window.updateSidebarUserProfile === 'function') {
+        window.updateSidebarUserProfile(sidebarData);
+      }
+      return;
+    }
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    if (userDoc.exists()) {
+      const d = userDoc.data();
+      const sidebarData = {
+        fullName: d.fullName || d.name || d.displayName,
+        displayName: d.fullName || d.name || d.displayName,
+        email: user.email || d.email,
+        role: d.userType || d.role || 'agent'
+      };
+      if (typeof window.updateSidebarUserProfile === 'function') {
+        window.updateSidebarUserProfile(sidebarData);
+      }
+      return;
+    }
+    // Fallback to auth data
+    if (typeof window.updateSidebarUserProfile === 'function') {
+      window.updateSidebarUserProfile({
+        fullName: user.displayName,
+        displayName: user.displayName,
+        email: user.email,
+        role: 'agent'
+      });
+    }
+  } catch (e) {
+    console.warn('Could not load agent profile:', e);
+    if (user && typeof window.updateSidebarUserProfile === 'function') {
+      window.updateSidebarUserProfile({
+        fullName: user.displayName,
+        email: user.email,
+        role: 'agent'
+      });
+    }
+  }
+}
+
 // Initialize on page load
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "login.html";
   } else {
     console.log('👤 User authenticated:', user.uid);
+    loadAgentProfile(user);
     loadAllListings();
   }
 });

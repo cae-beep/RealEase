@@ -8,12 +8,15 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
     :root {
+      /* Matches broker dashboard - navy + gold */
       --primary: #0b2e52;
-      --primary-dark: #764ba2;
-      --primary-light: #667eea;
-      --primary-gradient: linear-gradient(135deg, #0b2e52 0%, #667eea 100%);
-      --secondary: #1976d2;
-      --accent: #f59e0b;
+      --primary-dark: #071e38;
+      --primary-light: #1e3a5f;
+      --primary-gradient: linear-gradient(135deg, #0b2e52 0%, #1e3a5f 100%);
+      --secondary: #d4af37;
+      --secondary-gradient: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+      --accent: #d4af37;
+      --accent-gradient: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
       --text-dark: #1a202c;
       --text-light: #718096;
       --bg-light: #f8fafc;
@@ -1965,21 +1968,6 @@ function displayPropertyDetails(listing, userInfo) {
                 </div>
             </div>`;
         }
-        
-        // Commission details
-        if (listing.commissionType && listing.commissionValue) {
-            propertyDetailsHTML += `
-            <div class="details-grid" style="margin-top: 20px;">
-                <div class="detail-item">
-                    <span class="detail-label">Broker Commission Type:</span>
-                    <span class="detail-value">${listing.commissionType === 'percentage' ? 'Percentage' : 'Fixed Amount'}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Commission Value:</span>
-                    <span class="detail-value">${listing.commissionType === 'percentage' ? listing.commissionValue + '%' : '₱' + listing.commissionValue.toLocaleString()}</span>
-                </div>
-            </div>`;
-        }
     } else if (listingType === 'lease') {
         // LEASE PROPERTY DETAILS
         propertyDetailsHTML = `
@@ -2052,21 +2040,6 @@ function displayPropertyDetails(listing, userInfo) {
                     <span class="detail-value">${listing.topography.charAt(0).toUpperCase() + listing.topography.slice(1)}</span>
                 </div>
                 ` : ''}
-            </div>`;
-        }
-        
-        // Commission details
-        if (listing.commissionType && listing.commissionValue) {
-            propertyDetailsHTML += `
-            <div class="details-grid" style="margin-top: 20px;">
-                <div class="detail-item">
-                    <span class="detail-label">Broker Commission Type:</span>
-                    <span class="detail-value">${listing.commissionType === 'percentage' ? 'Percentage' : 'Fixed Amount'}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Commission Value:</span>
-                    <span class="detail-value">${listing.commissionType === 'percentage' ? listing.commissionValue + '%' : '₱' + listing.commissionValue.toLocaleString()}</span>
-                </div>
             </div>`;
         }
     }
@@ -2321,10 +2294,6 @@ function displayPropertyDetails(listing, userInfo) {
                         </div>
                     </div>
                 </div>
-                <button class="action-button" id="contactOwnerBtn">
-                    <i class="fas fa-comment"></i>
-                    Contact ${userInfo.role === 'landlord' ? 'Owner' : 'Broker'}
-                </button>
             </div>
 
             <!-- Pricing Card -->
@@ -2464,14 +2433,7 @@ function displayPropertyDetails(listing, userInfo) {
         </h3>
         <div id="propertyMap"></div>
     </div>
-    ` : ''}
-
-    <!-- Action Buttons -->
-    <div class="property-actions">
-        <button class="action-btn-large contact-btn" id="contactBtnBottom">
-            <i class="fas fa-phone"></i> Contact Agent
-        </button>
-    </div>`;
+    ` : ''}`;
     
     container.innerHTML = html;
     
@@ -2501,14 +2463,7 @@ function displayPropertyDetails(listing, userInfo) {
 }
 
 function setupButtonEventListeners(listing, userInfo) {
-    // Contact buttons
-    document.querySelectorAll('#contactOwnerBtn, #contactBtnBottom').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const userType = userInfo.role === 'landlord' ? 'Property Owner' : 'Broker';
-            alert(`Contact Information:\n\n${userType}: ${userInfo.displayName}\nEmail: ${userInfo.email}\nPhone: ${userInfo.phone}\n\nYou can contact this ${userType.toLowerCase()} for more information about the property.`);
-        });
-    });
-
+    // Contact buttons removed
 }
 
 function displayError(message) {

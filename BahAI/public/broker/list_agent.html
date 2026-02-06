@@ -213,6 +213,24 @@
             font-weight: 600;
             font-size: 16px;
             flex-shrink: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .agent-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .agent-avatar .avatar-fallback {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
         }
         .agent-info { flex: 1; min-width: 0; }
         .agent-name {
@@ -860,9 +878,14 @@
             pageAgents.forEach(agent => {
                 const row = document.createElement('tr');
                 
-                // Get initials for avatar
+                // Get initials for avatar (fallback when no photo)
                 const displayName = agent.fullName || 'Agent';
                 const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'AA';
+                const photoURL = agent.photoURL || agent.profilePhoto || agent.profileImage || agent.imageURL || '';
+                const escapedUrl = photoURL ? photoURL.replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '';
+                const avatarHtml = photoURL 
+                    ? `<img src="${escapedUrl}" alt="${(displayName || '').replace(/"/g, '&quot;')}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><span class="avatar-fallback" style="display:none">${initials}</span>`
+                    : initials;
                 
                 // Format date
                 const joinedDate = agent.profileCompletedAt || agent.createdAt || agent.updatedAt;
@@ -904,7 +927,7 @@
                 row.innerHTML = `
                     <td>
                         <div class="agent-cell">
-                            <div class="agent-avatar">${initials}</div>
+                            <div class="agent-avatar">${avatarHtml}</div>
                             <div class="agent-info">
                                 <div class="agent-name">${displayName}</div>
                                 <div class="agent-title">${agent.title || 'Real Estate Agent'}</div>

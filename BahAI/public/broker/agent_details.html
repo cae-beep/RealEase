@@ -1232,10 +1232,6 @@
                             <div class="contact-label">Languages Spoken</div>
                             <div class="contact-value" id="languagesSpoken">Not specified</div>
                         </div>
-                        <div style="margin-bottom: 15px;">
-                            <div class="contact-label">Commission Preference</div>
-                            <div class="contact-value" id="commissionPreference">Not specified</div>
-                        </div>
                         <div>
                             <div class="contact-label">Member Since</div>
                             <div class="contact-value" id="memberSince">N/A</div>
@@ -1576,7 +1572,6 @@ function displayAgentProfile(agent) {
   const languages = agent.languages || agent.spokenLanguages || 'Not specified';
   const availability = agent.availability || 'Not specified';
   const workingHours = agent.workingHours || agent.preferredHours || 'Not specified';
-  const commissions = agent.commissions || agent.commissionStructure || 'Not specified';
   const website = agent.website || (agent.socialMedia && agent.socialMedia.website) || '';
   
   // Status
@@ -1619,8 +1614,6 @@ function displayAgentProfile(agent) {
   document.getElementById('workingHours').textContent = workingHours;
   document.getElementById('agentId').textContent = agentId;
   document.getElementById('languagesSpoken').textContent = languages;
-  document.getElementById('commissionPreference').textContent = commissions;
-  
   // Setup contact buttons
   setupContactButtons(email, phone, agent.socialMedia);
   

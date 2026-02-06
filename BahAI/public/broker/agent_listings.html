@@ -444,7 +444,6 @@ fetch('agent_sidebar.html')
       }
     });
     
-    if (typeof window.updateSidebarUserProfile === 'function') window.updateSidebarUserProfile();
     setupLogoutButton();
   })
   .catch(error => {
@@ -858,12 +857,64 @@ function showNoAgentError() {
   `;
 }
 
+// Load agent profile for sidebar (agents collection first, then users)
+async function loadAgentProfile(user) {
+  try {
+    const agentDoc = await getDoc(doc(db, "agents", user.uid));
+    if (agentDoc.exists()) {
+      const d = agentDoc.data();
+      const sidebarData = {
+        fullName: d.fullName || d.name || d.displayName,
+        displayName: d.fullName || d.name || d.displayName,
+        email: user.email || d.email,
+        role: d.userType || d.role || 'agent'
+      };
+      if (typeof window.updateSidebarUserProfile === 'function') {
+        window.updateSidebarUserProfile(sidebarData);
+      }
+      return;
+    }
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    if (userDoc.exists()) {
+      const d = userDoc.data();
+      const sidebarData = {
+        fullName: d.fullName || d.name || d.displayName,
+        displayName: d.fullName || d.name || d.displayName,
+        email: user.email || d.email,
+        role: d.userType || d.role || 'agent'
+      };
+      if (typeof window.updateSidebarUserProfile === 'function') {
+        window.updateSidebarUserProfile(sidebarData);
+      }
+      return;
+    }
+    if (typeof window.updateSidebarUserProfile === 'function') {
+      window.updateSidebarUserProfile({
+        fullName: user.displayName,
+        displayName: user.displayName,
+        email: user.email,
+        role: 'agent'
+      });
+    }
+  } catch (e) {
+    console.warn('Could not load agent profile:', e);
+    if (user && typeof window.updateSidebarUserProfile === 'function') {
+      window.updateSidebarUserProfile({
+        fullName: user.displayName,
+        email: user.email,
+        role: 'agent'
+      });
+    }
+  }
+}
+
 // Require login and load listings
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "../auth/login.html";
   } else {
     console.log('👤 Agent authenticated:', user.email, 'UID:', user.uid);
+    loadAgentProfile(user);
     const agent = await loadAgentData(user);
     if (agent) {
       await loadListings(agent);

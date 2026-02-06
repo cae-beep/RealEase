@@ -942,26 +942,6 @@
       margin-bottom: 10px;
     }
 
-    /* Commission Rate */
-    .commission-rate {
-      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-      border: 1px solid rgba(139, 69, 19, 0.2);
-      border-radius: var(--border-radius-sm);
-      padding: 20px;
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    .commission-rate h3 {
-      color: var(--premium);
-      margin-bottom: 10px;
-    }
-
-    .commission-amount {
-      font-size: 32px;
-      font-weight: 700;
-      color: var(--premium);
-    }
 </style>
 </head>
 <body>
@@ -1247,13 +1227,6 @@
               <div class="contact-value" id="memberSince">N/A</div>
             </div>
           </div>
-        </div>
-
-        <!-- Commission Rate -->
-        <div class="commission-rate" id="commissionSection" style="display: none;">
-          <h3>Commission Rate</h3>
-          <div class="commission-amount" id="commissionRate">5%</div>
-          <p style="color: var(--text-light); font-size: 14px;">Standard commission rate for my services</p>
         </div>
 
         <!-- Social Media -->
@@ -1589,8 +1562,6 @@ function displayProfile(profile) {
   const languages = profile.languages || profile.spokenLanguages || 'Not specified';
   const availability = profile.availability || profile.officeHours || 'Not specified';
   const website = profile.website || (profile.socialMedia && profile.socialMedia.website) || '';
-  const commissionRate = profile.commissionRate || profile.commission || '5%';
-  
   // Photos
   const photoURL = profile.photoURL || profile.profilePhoto || profile.profileImage || profile.imageURL || '';
   
@@ -1628,12 +1599,6 @@ function displayProfile(profile) {
   document.getElementById('licenseNumber').textContent = licenseNumber;
   document.getElementById('agencyName').textContent = agencyName;
   document.getElementById('languagesSpoken').textContent = languages;
-  
-  // Update commission rate
-  if (commissionRate) {
-    document.getElementById('commissionRate').textContent = commissionRate;
-    document.getElementById('commissionSection').style.display = 'block';
-  }
   
   // Update specializations with broker-specific tags
   updateTagsSection('propertyTypes', profile.propertyTypes, true);

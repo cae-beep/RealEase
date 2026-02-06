@@ -8,14 +8,14 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="../buyer/style.css">
 <style>
-    /* Same design tokens as broker dashboard */
+    /* Matches broker dashboard - navy + gold */
     :root {
       --primary: #0b2e52;
-      --primary-gradient: linear-gradient(135deg, #0b2e52 0%, #667eea 100%);
-      --primary-light: #667eea;
-      --primary-dark: #764ba2;
-      --secondary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      --primary-gradient: linear-gradient(135deg, #0b2e52 0%, #1e3a5f 100%);
+      --primary-light: #1e3a5f;
+      --primary-dark: #071e38;
+      --secondary-gradient: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+      --accent-gradient: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
       --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
       --card-hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
       --border-radius: 16px;
@@ -28,8 +28,8 @@
       --border: #e2e8f0;
       --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-      --unread-bg: rgba(102, 126, 234, 0.08);
-      --unread-border: rgba(102, 126, 234, 0.3);
+      --unread-bg: rgba(212, 175, 55, 0.08);
+      --unread-border: rgba(212, 175, 55, 0.3);
       --message-sent: #e3f2fd;
       --message-received: #f5f5f5;
       --success: #10b981;
@@ -55,6 +55,10 @@
       margin-left: 280px;
       padding: 30px;
       transition: margin-left 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
     }
 
     /* Hero Section - same as broker dashboard */
@@ -140,7 +144,7 @@
 
     .refresh-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
     }
 
     .refresh-btn.refreshing {
@@ -153,8 +157,9 @@
       display: grid;
       grid-template-columns: 350px 1fr;
       gap: 25px;
-      height: calc(100vh - 180px);
-      min-height: 600px;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
     }
 
     /* Conversations List - same card style as broker dashboard */
@@ -194,7 +199,7 @@
     }
 
     .index-notice a {
-      color: var(--primary-light);
+      color: #d4af37;
       font-weight: 600;
       text-decoration: underline;
     }
@@ -215,7 +220,7 @@
 
     .stat-value {
       font-weight: 700;
-      color: var(--primary-light);
+      color: #d4af37;
       font-size: 20px;
     }
 
@@ -249,7 +254,7 @@
 
     .filter-btn:hover {
       background: #f9fafb;
-      border-color: var(--primary-light);
+      border-color: #d4af37;
       transform: translateY(-2px);
     }
 
@@ -275,8 +280,8 @@
 
     .conversations-search input:focus {
       outline: none;
-      border-color: var(--primary-light);
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: #d4af37;
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     }
 
     .conversations-search i {
@@ -309,7 +314,7 @@
 
     .conversation-item.active {
       background: var(--unread-bg);
-      border-left: 4px solid var(--primary-light);
+      border-left: 4px solid #d4af37;
     }
 
     .conversation-item.unread {
@@ -386,8 +391,8 @@
       align-items: center;
       gap: 6px;
       font-size: 12px;
-      color: var(--primary-light);
-      background: rgba(102, 126, 234, 0.08);
+      color: #d4af37;
+      background: rgba(212, 175, 55, 0.08);
       padding: 4px 8px;
       border-radius: 6px;
       width: fit-content;
@@ -556,7 +561,7 @@
     .chat-property-price {
       font-size: 16px;
       font-weight: 700;
-      color: var(--primary-light);
+      color: #d4af37;
     }
 
     .messages-container {
@@ -773,7 +778,7 @@
 
     .schedule-action-btn.primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
     }
 
     .schedule-action-btn.secondary {
@@ -784,7 +789,7 @@
 
     .schedule-action-btn.secondary:hover {
       background: #f9fafb;
-      border-color: var(--primary-light);
+      border-color: #d4af37;
       transform: translateY(-2px);
     }
 
@@ -881,8 +886,8 @@
 
     .chat-input:focus {
       outline: none;
-      border-color: var(--primary-light);
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: #d4af37;
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     }
 
     .send-button {
@@ -902,7 +907,7 @@
 
     .send-button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
     }
 
     .send-button:disabled {
@@ -944,8 +949,8 @@
     }
 
     .spinner {
-      border: 4px solid rgba(102, 126, 234, 0.2);
-      border-top: 4px solid var(--primary-light);
+      border: 4px solid rgba(212, 175, 55, 0.2);
+      border-top: 4px solid #d4af37;
       border-radius: 50%;
       width: 50px;
       height: 50px;
@@ -1028,7 +1033,7 @@
     .property-quick-price {
       font-size: 16px;
       font-weight: 700;
-      color: var(--primary-light);
+      color: #d4af37;
     }
 
     /* Toast Notifications */
@@ -1100,7 +1105,7 @@
 
     .action-btn.primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
     }
 
     /* Delete Conversation Modal */
@@ -1231,8 +1236,7 @@
       
       .inquiries-container {
         grid-template-columns: 1fr;
-        height: auto;
-        min-height: calc(100vh - 180px);
+        min-height: 400px;
       }
       
       .conversations-sidebar {
@@ -1385,7 +1389,7 @@
         
         <div class="index-notice" id="indexNotice">
           <i class="fas fa-info-circle"></i> 
-          <span id="noticeText">No conversations found. Click "Fix Data" button below.</span>
+          <span id="noticeText">No conversations found. Start a conversation by inquiring about a property.</span>
         </div>
         
         <div class="stats-row" id="conversationStats">
@@ -1412,9 +1416,6 @@
           </button>
           <button class="filter-btn" id="filterToday">
             <i class="fas fa-calendar-day"></i> Today
-          </button>
-          <button class="filter-btn" id="fixDataBtn" style="background: var(--accent-gradient); color: white; border: none;">
-            <i class="fas fa-wrench"></i> Fix Data
           </button>
         </div>
         
@@ -1699,13 +1700,6 @@ async function loadCurrentUserData() {
 function setupEventListeners() {
   // Refresh button
   document.getElementById('refreshBtn').addEventListener('click', refreshConversations);
-  
-  // Fix Data button
-  document.getElementById('fixDataBtn').addEventListener('click', async function() {
-    if (confirm('This will create conversation documents from your existing messages. Continue?')) {
-      await createConversationsFromMessages();
-    }
-  });
   
   // Filter buttons
   document.getElementById('filterAll').addEventListener('click', () => setFilter('all'));
@@ -3717,9 +3711,12 @@ window.createConversationsFromMessages = async function() {
   try {
     debugLog('🔄 Creating conversations from existing messages...');
     
-    // Show loading
-    document.getElementById('fixDataBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fixing...';
-    document.getElementById('fixDataBtn').disabled = true;
+    // Show loading (button removed from UI)
+    const fixBtn = document.getElementById('fixDataBtn');
+    if (fixBtn) {
+      fixBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fixing...';
+      fixBtn.disabled = true;
+    }
     
     const messagesRef = collection(db, 'messages');
     const messagesSnapshot = await getDocs(messagesRef);
@@ -3813,9 +3810,11 @@ window.createConversationsFromMessages = async function() {
       }
     }
     
-    // Reset button
-    document.getElementById('fixDataBtn').innerHTML = '<i class="fas fa-wrench"></i> Fix Data';
-    document.getElementById('fixDataBtn').disabled = false;
+    // Reset button (if exists)
+    if (fixBtn) {
+      fixBtn.innerHTML = '<i class="fas fa-wrench"></i> Fix Data';
+      fixBtn.disabled = false;
+    }
     
     showToast(`Created ${createdCount} conversations from ${messagesSnapshot.size} messages`);
     debugLog(`✅ Created ${createdCount} conversations, ${errorCount} errors`);
@@ -3828,9 +3827,12 @@ window.createConversationsFromMessages = async function() {
   } catch (error) {
     console.error('❌ Error creating conversations from messages:', error);
     
-    // Reset button
-    document.getElementById('fixDataBtn').innerHTML = '<i class="fas fa-wrench"></i> Fix Data';
-    document.getElementById('fixDataBtn').disabled = false;
+    // Reset button (if exists)
+    const fixBtn = document.getElementById('fixDataBtn');
+    if (fixBtn) {
+      fixBtn.innerHTML = '<i class="fas fa-wrench"></i> Fix Data';
+      fixBtn.disabled = false;
+    }
     
     showError('Failed to create conversations: ' + error.message);
   }

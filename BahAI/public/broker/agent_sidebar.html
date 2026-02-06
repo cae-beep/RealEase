@@ -684,13 +684,20 @@ async function initializeSidebar() {
         let userName = currentUser.displayName || currentUser.email || 'User';
         let userRole = 'Agent';
         
-        // Try to get user data from Firestore
+        // Try agents collection first (agent profile), then users
         try {
-          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            userName = userData.fullName || userData.email || userName;
-            userRole = userData.role || userData.userType || userRole;
+          const agentDoc = await getDoc(doc(db, "agents", currentUser.uid));
+          if (agentDoc.exists()) {
+            const agentData = agentDoc.data();
+            userName = agentData.fullName || agentData.name || agentData.displayName || agentData.email || userName;
+            userRole = agentData.userType || agentData.role || userRole;
+          } else {
+            const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+            if (userDoc.exists()) {
+              const userData = userDoc.data();
+              userName = userData.fullName || userData.name || userData.displayName || userData.email || userName;
+              userRole = userData.userType || userData.role || userRole;
+            }
           }
         } catch (error) {
           console.log('Could not load user from Firestore:', error);
@@ -835,7 +842,7 @@ function loadUserInfoFallback() {
       const userAvatarEl = document.getElementById('userAvatar');
       
       if (userNameEl) {
-        userNameEl.textContent = userData.fullName || userData.email || 'User';
+        userNameEl.textContent = userData.fullName || userData.name || userData.displayName || userData.email || 'User';
       }
       
       if (userRoleEl) {
@@ -847,11 +854,13 @@ function loadUserInfoFallback() {
           'agent': 'Property Agent',
           'user': 'Buyer'
         };
-        userRoleEl.textContent = roleMap[userData.role] || 'Property Agent';
+        const role = userData.userType || userData.role;
+        userRoleEl.textContent = roleMap[role] || 'Property Agent';
       }
       
-      if (userAvatarEl && userData.fullName) {
-        const initials = userData.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+      const nameForInitials = userData.fullName || userData.name || userData.displayName || userData.email || 'U';
+      if (userAvatarEl && nameForInitials) {
+        const initials = nameForInitials.split(' ').map(n => n ? n[0] : '').join('').toUpperCase().substring(0, 2) || 'U';
         userAvatarEl.innerHTML = `<span style="font-weight: 600;">${initials}</span>`;
       }
     }
@@ -974,11 +983,18 @@ document.addEventListener('DOMContentLoaded', function() {
             let userRole = 'Agent';
             
             try {
-              const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-              if (userDoc.exists()) {
-                const userData = userDoc.data();
-                userName = userData.fullName || userData.email || userName;
-                userRole = userData.role || userData.userType || userRole;
+              const agentDoc = await getDoc(doc(db, "agents", currentUser.uid));
+              if (agentDoc.exists()) {
+                const agentData = agentDoc.data();
+                userName = agentData.fullName || agentData.name || agentData.displayName || agentData.email || userName;
+                userRole = agentData.userType || agentData.role || userRole;
+              } else {
+                const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+                if (userDoc.exists()) {
+                  const userData = userDoc.data();
+                  userName = userData.fullName || userData.name || userData.displayName || userData.email || userName;
+                  userRole = userData.userType || userData.role || userRole;
+                }
               }
             } catch (error) {
               console.log('Could not load user from Firestore:', error);

@@ -3202,24 +3202,7 @@ function renderSalePropertyDetails(listing) {
         <h4><i class="bi bi-bank"></i> Bank Financing Options</h4>
         ${renderBankFinancing(listing.financingOptions || [])}
     </div>
-    ` : ''}
-    
-    <div class="detail-section">
-        <h4><i class="bi bi-briefcase"></i> Broker Commission</h4>
-        <div class="detail-row">
-            <span class="detail-label">Commission Type:</span>
-            <span class="detail-value">${listing.commissionType === 'percentage' ? 'Percentage of Sale Price' : 'Fixed Amount'}</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-label">Commission Value:</span>
-            <span class="detail-value">
-                ${listing.commissionType === 'percentage' ? 
-                    `${listing.commissionValue || 0}%` : 
-                    `₱${(listing.commissionValue || 0).toLocaleString()}`
-                }
-            </span>
-        </div>
-    </div>`;
+    ` : ''}`;
 }
 
 function renderLeasePropertyDetails(listing) {
@@ -3257,23 +3240,6 @@ function renderLeasePropertyDetails(listing) {
         <div class="detail-row">
             <span class="detail-label">Advance Payment:</span>
             <span class="detail-value">${listing.advancePayment || 1} month(s)</span>
-        </div>
-    </div>
-    
-    <div class="detail-section">
-        <h4><i class="bi bi-briefcase"></i> Broker Commission</h4>
-        <div class="detail-row">
-            <span class="detail-label">Commission Type:</span>
-            <span class="detail-value">${listing.commissionType === 'percentage' ? 'Percentage of Annual Rent' : 'Fixed Amount'}</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-label">Commission Value:</span>
-            <span class="detail-value">
-                ${listing.commissionType === 'percentage' ? 
-                    `${listing.commissionValue || 0}%` : 
-                    `₱${(listing.commissionValue || 0).toLocaleString()}`
-                }
-            </span>
         </div>
     </div>
     

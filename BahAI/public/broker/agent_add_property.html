@@ -26,6 +26,11 @@
       --border: #e2e8f0;
       --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      --card-hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+      --border-radius: 16px;
+      --border-radius-sm: 12px;
+      --border-radius-lg: 24px;
     }
     
     * { 
@@ -1117,53 +1122,6 @@
           <input type="hidden" id="saleTypeInput" name="saleType" required>
         </div>
       </div>
-      
-      <!-- Commission Information -->
-      <h3 class="section-title"><i class="bi bi-briefcase"></i> Commission Information</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="brokerCommissionType" class="required">Broker Commission Type</label>
-          <select id="brokerCommissionType" required>
-            <option value="">-- Select --</option>
-            <option value="percentage">Percentage of Sale Price</option>
-            <option value="fixed">Fixed Amount</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="brokerCommissionValue" class="required">Broker Commission Value</label>
-          <div class="input-with-icon">
-            <i class="bi bi-percent"></i>
-            <input type="number" id="brokerCommissionValue" placeholder="e.g., 3 or 50000" min="0" step="0.1" required>
-          </div>
-          <small style="color: var(--text-light); display: block; margin-top: 5px;">
-            Enter percentage (e.g., 3 for 3%) or fixed amount in ₱
-          </small>
-        </div>
-      </div>
-
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="agentCommissionType">Your Commission Type (Optional)</label>
-          <select id="agentCommissionType">
-            <option value="">-- Select --</option>
-            <option value="percentage">Percentage of Sale Price</option>
-            <option value="percentage_of_broker">Percentage of Broker's Commission</option>
-            <option value="fixed">Fixed Amount</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="agentCommissionValue">Your Commission Value</label>
-          <div class="input-with-icon">
-            <i class="bi bi-percent"></i>
-            <input type="number" id="agentCommissionValue" placeholder="e.g., 1 or 10000" min="0" step="0.1">
-          </div>
-          <small style="color: var(--text-light); display: block; margin-top: 5px;">
-            Commission arrangement with your broker
-          </small>
-        </div>
-      </div>
 
       <!-- Location -->
       <h3 class="section-title"><i class="bi bi-geo-alt"></i> Location Details</h3>
@@ -1350,49 +1308,45 @@
 
       <!-- Lease Terms -->
       <h3 class="section-title"><i class="bi bi-calendar-check"></i> Lease Terms</h3>
+      <div class="form-group">
+        <label for="leaseType" class="required">Lease Type</label>
+        <div class="lease-term-grid">
+          <div class="lease-option" onclick="selectLeaseType('gross')">
+            <h4>Gross Lease</h4>
+            <p style="font-size: 13px; color: var(--text-light);">Rent includes all operating expenses</p>
+          </div>
+          <div class="lease-option" onclick="selectLeaseType('net')">
+            <h4>Net Lease</h4>
+            <p style="font-size: 13px; color: var(--text-light);">Tenant pays rent + some expenses</p>
+          </div>
+          <div class="lease-option" onclick="selectLeaseType('triple-net')">
+            <h4>Triple Net (NNN)</h4>
+            <p style="font-size: 13px; color: var(--text-light);">Tenant pays all expenses</p>
+          </div>
+        </div>
+        <input type="hidden" id="leaseTypeInput" name="leaseType" required>
+      </div>
       <div class="form-grid">
         <div class="form-group">
-          <label for="leaseType" class="required">Lease Type</label>
-          <div class="lease-term-grid">
-            <div class="lease-option" onclick="selectLeaseType('gross')">
-              <h4>Gross Lease</h4>
-              <p style="font-size: 13px; color: var(--text-light);">Rent includes all operating expenses</p>
-            </div>
-            <div class="lease-option" onclick="selectLeaseType('net')">
-              <h4>Net Lease</h4>
-              <p style="font-size: 13px; color: var(--text-light);">Tenant pays rent + some expenses</p>
-            </div>
-            <div class="lease-option" onclick="selectLeaseType('triple-net')">
-              <h4>Triple Net (NNN)</h4>
-              <p style="font-size: 13px; color: var(--text-light);">Tenant pays all expenses</p>
-            </div>
-          </div>
-          <input type="hidden" id="leaseTypeInput" name="leaseType" required>
+          <label for="leaseDuration" class="required">Lease Duration</label>
+          <select id="leaseDuration" required>
+            <option value="">-- Select Duration --</option>
+            <option value="1">1 Year</option>
+            <option value="2">2 Years</option>
+            <option value="3">3 Years</option>
+            <option value="5">5 Years</option>
+            <option value="10">10 Years</option>
+            <option value="15">15+ Years</option>
+          </select>
         </div>
-        
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="leaseDuration" class="required">Lease Duration</label>
-            <select id="leaseDuration" required>
-              <option value="">-- Select Duration --</option>
-              <option value="1">1 Year</option>
-              <option value="2">2 Years</option>
-              <option value="3">3 Years</option>
-              <option value="5">5 Years</option>
-              <option value="10">10 Years</option>
-              <option value="15">15+ Years</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="renewalOption">Renewal Option</label>
-            <select id="renewalOption">
-              <option value="">-- Select Option --</option>
-              <option value="automatic">Automatic Renewal</option>
-              <option value="negotiable">Negotiable</option>
-              <option value="none">No Renewal Option</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label for="renewalOption">Renewal Option</label>
+          <select id="renewalOption">
+            <option value="">-- Select Option --</option>
+            <option value="automatic">Automatic Renewal</option>
+            <option value="negotiable">Negotiable</option>
+            <option value="none">No Renewal Option</option>
+          </select>
         </div>
       </div>
 
@@ -1435,53 +1389,6 @@
         </div>
       </div>
       
-      <!-- Commission Information -->
-      <h3 class="section-title"><i class="bi bi-briefcase"></i> Commission Information</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="leaseBrokerCommissionType" class="required">Broker Commission Type</label>
-          <select id="leaseBrokerCommissionType" required>
-            <option value="">-- Select --</option>
-            <option value="percentage">Percentage of Annual Rent</option>
-            <option value="fixed">Fixed Amount</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="leaseBrokerCommissionValue" class="required">Broker Commission Value</label>
-          <div class="input-with-icon">
-            <i class="bi bi-percent"></i>
-            <input type="number" id="leaseBrokerCommissionValue" placeholder="e.g., 10 or 50000" min="0" step="0.1" required>
-          </div>
-          <small style="color: var(--text-light); display: block; margin-top: 5px;">
-            Enter percentage (e.g., 10 for 10%) or fixed amount in ₱
-          </small>
-        </div>
-      </div>
-
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="leaseAgentCommissionType">Your Commission Type (Optional)</label>
-          <select id="leaseAgentCommissionType">
-            <option value="">-- Select --</option>
-            <option value="percentage">Percentage of Annual Rent</option>
-            <option value="percentage_of_broker">Percentage of Broker's Commission</option>
-            <option value="fixed">Fixed Amount</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="leaseAgentCommissionValue">Your Commission Value</label>
-          <div class="input-with-icon">
-            <i class="bi bi-percent"></i>
-            <input type="number" id="leaseAgentCommissionValue" placeholder="e.g., 2 or 20000" min="0" step="0.1">
-          </div>
-          <small style="color: var(--text-light); display: block; margin-top: 5px;">
-            Commission arrangement with your broker
-          </small>
-        </div>
-      </div>
-
       <!-- Location Details -->
       <h3 class="section-title"><i class="bi bi-geo-alt"></i> Location Details</h3>
       <div class="form-grid">
@@ -1611,19 +1518,20 @@
 
       <!-- Restrictions & Conditions -->
       <h3 class="section-title"><i class="bi bi-file-earmark-lock"></i> Restrictions & Conditions</h3>
-      <div class="form-group">
-        <label for="restrictions">Use Restrictions</label>
-        <textarea id="restrictions" placeholder="Describe any use restrictions, zoning limitations, or special conditions..." rows="4"></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label for="maintenance">Maintenance Responsibility</label>
-        <select id="maintenance">
-          <option value="">-- Select Responsibility --</option>
-          <option value="landlord">Landlord</option>
-          <option value="tenant">Tenant</option>
-          <option value="shared">Shared</option>
-        </select>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="restrictions">Use Restrictions</label>
+          <textarea id="restrictions" placeholder="Describe any use restrictions, zoning limitations, or special conditions..." rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="maintenance">Maintenance Responsibility</label>
+          <select id="maintenance">
+            <option value="">-- Select Responsibility --</option>
+            <option value="landlord">Landlord</option>
+            <option value="tenant">Tenant</option>
+            <option value="shared">Shared</option>
+          </select>
+        </div>
       </div>
 
       <!-- Property Description -->
@@ -1684,6 +1592,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+<script src="../sidebar-user.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBwwAkIEixeUysaGrMb9BtTsMwz_C9Noxk&libraries=places" async defer></script>
 
 <script>
@@ -1713,7 +1622,6 @@
       .then(response => response.text())
       .then(html => {
         document.getElementById('sidebar-container').innerHTML = html;
-        if (typeof window.updateSidebarUserProfile === 'function') window.updateSidebarUserProfile();
         const links = document.querySelectorAll('.sidebar-link');
         links.forEach(link => {
           if (link.getAttribute('href') === 'agent_add_property.html') link.classList.add('active');
@@ -1814,27 +1722,54 @@
   let selectedSaleType = null;
   let selectedLeaseType = null;
 
-  // ===== USER PROFILE =====
+  // ===== USER PROFILE (agents collection first, then users) =====
   async function loadUserProfile() {
     try {
+      const agentDoc = await firebase.firestore().collection('agents').doc(currentUser.uid).get();
+      if (agentDoc.exists) {
+        const d = agentDoc.data();
+        const sidebarData = {
+          fullName: d.fullName || d.name || d.displayName,
+          displayName: d.fullName || d.name || d.displayName,
+          email: currentUser.email || d.email,
+          role: d.userType || d.role || 'agent'
+        };
+        if (typeof window.updateSidebarUserProfile === 'function') {
+          window.updateSidebarUserProfile(sidebarData);
+        }
+        return;
+      }
       const userDoc = await firebase.firestore().collection('users').doc(currentUser.uid).get();
       if (userDoc.exists) {
-        const userData = userDoc.data();
-        // Update sidebar user info if elements exist
-        const userNameEl = document.getElementById('userName');
-        const userEmailEl = document.getElementById('userEmail');
-        const userAvatarEl = document.getElementById('userAvatar');
-        
-        if (userNameEl) userNameEl.textContent = userData.name || 'Agent';
-        if (userEmailEl) userEmailEl.textContent = currentUser.email;
-        
-        // Set avatar initial
-        if (userAvatarEl && userData.name) {
-          userAvatarEl.textContent = userData.name.charAt(0).toUpperCase();
+        const d = userDoc.data();
+        const sidebarData = {
+          fullName: d.fullName || d.name || d.displayName,
+          displayName: d.fullName || d.name || d.displayName,
+          email: currentUser.email || d.email,
+          role: d.userType || d.role || 'agent'
+        };
+        if (typeof window.updateSidebarUserProfile === 'function') {
+          window.updateSidebarUserProfile(sidebarData);
         }
+        return;
+      }
+      if (typeof window.updateSidebarUserProfile === 'function') {
+        window.updateSidebarUserProfile({
+          fullName: currentUser.displayName,
+          displayName: currentUser.displayName,
+          email: currentUser.email,
+          role: 'agent'
+        });
       }
     } catch (error) {
       console.error('Error loading user profile:', error);
+      if (typeof window.updateSidebarUserProfile === 'function') {
+        window.updateSidebarUserProfile({
+          fullName: currentUser.displayName,
+          email: currentUser.email,
+          role: 'agent'
+        });
+      }
     }
   }
 
@@ -2749,7 +2684,7 @@
     const requiredFields = [
       'saleTitle', 'salePropertyCategory', 'salePropertyType', 'saleBedrooms', 'saleBathrooms',
       'saleFloorArea', 'salePrice', 'saleAddress', 'saleCity', 'saleProvince',
-      'brokerCommissionType', 'brokerCommissionValue', 'saleDescription'
+      'saleDescription'
     ];
     
     for (const fieldId of requiredFields) {
@@ -2782,7 +2717,7 @@
   function validateLeaseForm() {
     const requiredFields = [
       'leaseTitle', 'leasePropertyCategory', 'leasePropertyType', 'totalArea',
-      'leaseDuration', 'annualRent', 'leaseBrokerCommissionType', 'leaseBrokerCommissionValue',
+      'leaseDuration', 'annualRent',
       'leaseAddress', 'leaseCity', 'leaseProvince', 'leaseDescription'
     ];
     
@@ -2828,12 +2763,6 @@
       });
     }
     
-    const brokerCommissionType = document.getElementById('brokerCommissionType').value;
-    const brokerCommissionValue = parseFloat(document.getElementById('brokerCommissionValue').value);
-    const agentCommissionType = document.getElementById('agentCommissionType').value;
-    const agentCommissionValue = document.getElementById('agentCommissionValue').value ? 
-      parseFloat(document.getElementById('agentCommissionValue').value) : null;
-    
     return {
       title: document.getElementById('saleTitle').value,
       propertyCategory: document.getElementById('salePropertyCategory').value,
@@ -2849,10 +2778,6 @@
       salePrice: parseFloat(document.getElementById('salePrice').value),
       priceNegotiable: document.getElementById('priceNegotiable').value,
       saleType: document.getElementById('saleTypeInput').value,
-      brokerCommissionType: brokerCommissionType,
-      brokerCommissionValue: brokerCommissionValue,
-      agentCommissionType: agentCommissionType || null,
-      agentCommissionValue: agentCommissionValue,
       address: document.getElementById('saleAddress').value,
       location: document.getElementById('saleAddress').value,
       city: document.getElementById('saleCity').value,
@@ -2887,12 +2812,6 @@
       });
     }
     
-    const brokerCommissionType = document.getElementById('leaseBrokerCommissionType').value;
-    const brokerCommissionValue = parseFloat(document.getElementById('leaseBrokerCommissionValue').value);
-    const agentCommissionType = document.getElementById('leaseAgentCommissionType').value;
-    const agentCommissionValue = document.getElementById('leaseAgentCommissionValue').value ? 
-      parseFloat(document.getElementById('leaseAgentCommissionValue').value) : null;
-    
     return {
       title: document.getElementById('leaseTitle').value,
       propertyCategory: document.getElementById('leasePropertyCategory').value,
@@ -2910,10 +2829,6 @@
         parseFloat(document.getElementById('securityBond').value) : null,
       advancePayment: document.getElementById('advancePayment').value ? 
         parseInt(document.getElementById('advancePayment').value) : 1,
-      brokerCommissionType: brokerCommissionType,
-      brokerCommissionValue: brokerCommissionValue,
-      agentCommissionType: agentCommissionType || null,
-      agentCommissionValue: agentCommissionValue,
       address: document.getElementById('leaseAddress').value,
       location: document.getElementById('leaseAddress').value,
       city: document.getElementById('leaseCity').value,
