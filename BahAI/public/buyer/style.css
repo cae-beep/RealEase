@@ -1014,6 +1014,8 @@ button.save-property-btn:not(.listing-card-image-container button) {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
     animation: fadeIn 0.3s ease;
 }
 
@@ -1031,13 +1033,14 @@ button.save-property-btn:not(.listing-card-image-container button) {
     position: relative;
     background: var(--bg-white);
     border-radius: var(--card-radius);
-    width: 90%;
-    max-width: 1000px;
+    width: 100%;
+    max-width: 900px;
     max-height: 90vh;
     overflow-y: auto;
     box-shadow: var(--shadow-lg);
     animation: slideUp 0.3s ease;
     border: 2px solid var(--border);
+    box-sizing: border-box;
 }
 
 @keyframes slideUp {

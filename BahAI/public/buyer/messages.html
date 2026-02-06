@@ -161,8 +161,8 @@
       display: grid;
       grid-template-columns: 350px 1fr;
       gap: 25px;
-      height: calc(100vh - 180px);
-      min-height: 600px;
+      height: calc(100vh - 60px);
+      min-height: 500px;
     }
 
     /* Conversations List - same card style as dashboard */
@@ -1186,7 +1186,7 @@
       .messages-container {
         grid-template-columns: 1fr;
         height: auto;
-        min-height: calc(100vh - 180px);
+        min-height: calc(100vh - 60px);
       }
       
       .conversations-sidebar {
@@ -1304,22 +1304,16 @@
 
 <!-- Main - same layout as buyer dashboard -->
 <div class="container">
-  <!-- Hero Section - same design as buyer dashboard -->
-  <div class="hero-section">
-    <h1>My Messages</h1>
-    <p>View and manage your conversations with brokers and property owners</p>
-    <div class="hero-actions">
-      <button class="refresh-btn" id="refreshBtn">
-        <i class="fas fa-sync-alt"></i> Refresh
-      </button>
-    </div>
-  </div>
-
   <div class="messages-container">
     <!-- Conversations Sidebar -->
     <div class="conversations-sidebar">
       <div class="conversations-header">
-        <h2><i class="fas fa-comments"></i> Conversations</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h2 style="margin: 0;"><i class="fas fa-comments"></i> Conversations</h2>
+          <button class="refresh-btn" id="refreshBtn">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+        </div>
         
         <div class="index-notice" id="indexNotice">
           <i class="fas fa-info-circle"></i> 

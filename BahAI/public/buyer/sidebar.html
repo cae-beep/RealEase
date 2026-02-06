@@ -74,11 +74,11 @@
       </ul>
     </nav>
 
-    <!-- Stats Section -->
+    <!-- Quick Stats - clickable navigation -->
     <div class="sidebar-stats">
       <div class="stats-title">Quick Stats</div>
       <div class="stats-grid">
-        <div class="stat-item">
+        <a href="search_results.html" class="stat-item stat-link" title="Browse Properties">
           <div class="stat-icon">
             <i class="fas fa-building"></i>
           </div>
@@ -86,8 +86,8 @@
             <div class="stat-value" id="totalPropertiesStat">0</div>
             <div class="stat-label">Properties</div>
           </div>
-        </div>
-        <div class="stat-item">
+        </a>
+        <a href="liked_properties.html" class="stat-item stat-link" title="Saved Properties">
           <div class="stat-icon">
             <i class="fas fa-heart"></i>
           </div>
@@ -95,7 +95,7 @@
             <div class="stat-value" id="savedPropertiesStat">0</div>
             <div class="stat-label">Saved</div>
           </div>
-        </div>
+        </a>
       </div>
     </div>
 
@@ -420,6 +420,19 @@
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.stat-link {
+  text-decoration: none;
+  color: inherit;
+  padding: 8px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.stat-link:hover {
+  background: var(--sidebar-hover);
+  transform: translateY(-2px);
 }
 
 .stat-icon {

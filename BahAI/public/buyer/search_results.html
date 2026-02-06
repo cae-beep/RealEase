@@ -531,17 +531,17 @@
         color: #ef4444;
     }
 
-    /* Badge styling for property types - dashboard gradients */
+    /* Badge styling for property types - For Sale blue, For Rent/Lease green */
     .type-sale {
-        background: var(--primary-gradient);
+        background: #3b82f6;
         color: white;
     }
     .type-rent {
-        background: var(--secondary-gradient);
+        background: #10b981;
         color: white;
     }
     .type-lease {
-        background: var(--accent-gradient);
+        background: #10b981;
         color: white;
     }
     /* Price styling - same as dashboard */
@@ -1050,15 +1050,6 @@
 
 <!-- Main -->
 <div class="container">
-<!-- Hero Section -->
-<div class="hero-section">
-    <h1>Search Results</h1>
-    <p>Properties matching your search criteria</p>
-    <div id="searchSummary">
-        <i class="fas fa-spinner fa-spin"></i> Loading results...
-    </div>
-</div>
-
 <!-- Search Section -->
 <div class="search-section">
     <div class="search-title">
@@ -2508,7 +2499,6 @@ function displayFilteredListings() {
     }
 
     // Update search summary
-    const searchSummary = document.getElementById('searchSummary');
     const resultsCount = document.getElementById('resultsCount');
     const resultsTitle = document.getElementById('resultsTitle');
     const resultsBadge = document.getElementById('resultsBadge');
@@ -2528,7 +2518,6 @@ function displayFilteredListings() {
             summaryText += ` matching ${filterParts.join(', ')}`;
         }
 
-        searchSummary.innerHTML = `<i class="fas fa-check-circle" style="color: #10b981; margin-right: 8px;"></i> ${summaryText}`;
         resultsCount.textContent = summaryText;
         resultsTitle.innerHTML = `<i class="fas fa-search"></i> Search Results (${filtered.length})`;
         
@@ -2536,7 +2525,6 @@ function displayFilteredListings() {
         resultsNumber.textContent = filtered.length;
         resultsBadge.style.display = 'inline-flex';
     } else {
-        searchSummary.innerHTML = `<i class="fas fa-building" style="margin-right: 8px;"></i> Showing ${filtered.length} properties in Batangas`;
         resultsCount.textContent = `Showing ${filtered.length} properties in Batangas`;
         resultsTitle.innerHTML = `<i class="fas fa-building"></i> All Properties in Batangas (${filtered.length})`;
         

@@ -412,6 +412,22 @@
         transform: scale(1.05);
     }
     
+    .listing-type-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: white;
+        z-index: 2;
+    }
+    .listing-type-badge.rent { background: #10b981; }
+    .listing-type-badge.lease { background: #10b981; }
+    .listing-type-badge.sale { background: #3b82f6; }
+    
     .listing-content {
         padding: 25px;
     }
@@ -2821,9 +2837,10 @@ async function displayListings(listings) {
     const brokerName = userInfo.displayName;
     const truncatedBrokerName = brokerName.length > 20 ? brokerName.substring(0, 20) + '...' : brokerName;
     
-    // Match broker dashboard: card-link-overlay for click, no type badge, no save/contact buttons
+    // Match broker dashboard: card-link-overlay for click, type badge on image
     const locationDisplay = listing.location || listing.address || 'Location not specified';
     const listingTypeLabel = listingType === 'rent' ? 'For Rent' : listingType === 'lease' ? 'For Lease' : 'For Sale';
+    const badgeClass = listingType === 'sale' ? 'sale' : 'rent';
     let statusText = listing.status || 'available';
     let statusClass = 'status-active';
     let showStatus = true;
@@ -2839,6 +2856,7 @@ async function displayListings(listings) {
     <div class="listing-card" data-listing-id="${listing.id}">
         <a href="property_details.html?id=${listing.id}" class="card-link-overlay" aria-label="View ${title}"></a>
         <div class="listing-card-image-container">
+            <span class="listing-type-badge ${badgeClass}">${listingTypeLabel}</span>
             <img src="${mainPhoto}" alt="${listing.title}" class="listing-image">
         </div>
         <div class="listing-content">
@@ -3582,6 +3600,7 @@ function displayRecommendedListingsPython(recommendations, type = 'personalized'
                 recommendationBadge = '<div class="listing-recent-badge" style="position: absolute; top: 10px; right: 10px; background: #6b7280; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; z-index: 2;">RECENT</div>';
             }
             const listingTypeLabel = listingType === 'rent' ? 'For Rent' : listingType === 'lease' ? 'For Lease' : 'For Sale';
+            const badgeClass = listingType === 'sale' ? 'sale' : 'rent';
             let recStatusText = property.status || 'available';
             let recStatusClass = 'status-active';
             let showRecStatus = true;
@@ -3597,6 +3616,7 @@ function displayRecommendedListingsPython(recommendations, type = 'personalized'
                     <div class="listing-card" data-listing-id="${property.id}">
                         <a href="property_details.html?id=${property.id}" class="card-link-overlay" aria-label="View ${title}"></a>
                         <div class="listing-card-image-container" style="position: relative;">
+                            <span class="listing-type-badge ${badgeClass}">${listingTypeLabel}</span>
                             <img src="${photo}" alt="${property.title || 'Property'}" class="listing-image">
                             ${matchScore && matchScore > 50 ? `<div class="listing-match-badge">${matchScore}% Match</div>` : ''}
                             ${recommendationBadge}
@@ -3766,7 +3786,6 @@ function addDemoPrompts() {
     }
 }
 
-// Function to show chatbot error state
 function showChatbotError() {
     const chatbotSection = document.querySelector('.ai-chatbot-section');
     if (chatbotSection) {

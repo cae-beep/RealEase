@@ -25,9 +25,9 @@
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --border-radius: 16px;
             --border-radius-sm: 12px;
-            --rent-color: #059669;
-            --sale-color: #0b2e52;
-            --lease-color: #b8860b;
+            --rent-color: #10b981;
+            --sale-color: #3b82f6;
+            --lease-color: #10b981;
             --danger: #ef4444;
             --success: #059669;
         }
@@ -479,6 +479,7 @@
             justify-content: center;
             backdrop-filter: blur(5px);
             padding: 20px;
+            box-sizing: border-box;
         }
 
         .modal-overlay.show {
@@ -494,6 +495,7 @@
             overflow-y: auto;
             box-shadow: var(--shadow-lg);
             animation: modalSlideIn 0.3s ease;
+            box-sizing: border-box;
         }
 
         @keyframes modalSlideIn {
@@ -745,6 +747,7 @@
             
             .modal-content {
                 max-width: 95%;
+                max-height: 90vh;
                 margin: 10px;
             }
             
@@ -806,6 +809,18 @@
             .listing-content {
                 padding: 15px;
             }
+            
+            .modal-content {
+                width: 100%;
+                max-width: 100%;
+                max-height: 100vh;
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .modal-overlay {
+                padding: 0;
+            }
         }
     </style>
 </head>
@@ -819,36 +834,6 @@
     <div id="sidebar-container"></div>
 
     <div class="container">
-        <!-- Hero Section -->
-        <section class="hero-section">
-            <h1><i class="fas fa-heart"></i> Your Liked Properties</h1>
-            <p>Properties you've saved for later viewing</p>
-            <div class="recommendation-note">
-                <strong><i class="fas fa-robot"></i> AI Insight:</strong>
-                <span>The more properties you like, the better our recommendations become!</span>
-            </div>
-        </section>
-
-        <!-- Stats Section -->
-        <div class="liked-stats">
-            <div class="stat-card">
-                <div class="stat-value" id="totalSaved">0</div>
-                <div class="stat-label">Total Saved Properties</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="activeListings">0</div>
-                <div class="stat-label">Currently Active</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="averagePrice">₱0</div>
-                <div class="stat-label">Average Price</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="savedThisMonth">0</div>
-                <div class="stat-label">Saved This Month</div>
-            </div>
-        </div>
-
         <!-- Saved Properties Grid -->
         <div class="listings-grid" id="likedPropertiesContainer">
             <div class="loading-state">
@@ -1642,46 +1627,9 @@ ${error.stack || error.message}
             document.getElementById('similarSuggestions').style.display = 'none';
         }
 
-        // Update statistics
+        // Update statistics (analytics removed)
         function updateStats(properties) {
-            if (!properties || properties.length === 0) {
-                document.getElementById('totalSaved').textContent = 0;
-                document.getElementById('activeListings').textContent = 0;
-                document.getElementById('averagePrice').textContent = '₱0';
-                document.getElementById('savedThisMonth').textContent = 0;
-                return;
-            }
-            
-            const total = properties.length;
-            const active = properties.filter(p => 
-                p.status === 'active' || 
-                p.status === 'available' || 
-                p.status === 'Active' ||
-                (p.status === undefined && p.isActive !== false)
-            ).length;
-            
-            let totalPrice = 0;
-            let count = 0;
-            properties.forEach(p => {
-                const price = p.pricing || p.salePrice || p.monthlyRent || p.annualRent || 0;
-                if (price > 0) {
-                    totalPrice += price;
-                    count++;
-                }
-            });
-            const average = count > 0 ? Math.round(totalPrice / count) : 0;
-            
-            const currentMonth = new Date().getMonth();
-            const savedThisMonth = properties.filter(p => {
-                if (!p.savedAt) return false;
-                const savedDate = p.savedAt.toDate ? p.savedAt.toDate() : new Date(p.savedAt);
-                return savedDate.getMonth() === currentMonth;
-            }).length;
-            
-            document.getElementById('totalSaved').textContent = total;
-            document.getElementById('activeListings').textContent = active;
-            document.getElementById('averagePrice').textContent = `₱${average.toLocaleString()}`;
-            document.getElementById('savedThisMonth').textContent = savedThisMonth;
+            // Stats display removed
         }
 
         // Load similar properties based on user's saved properties
