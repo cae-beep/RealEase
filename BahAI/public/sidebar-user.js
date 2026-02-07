@@ -32,7 +32,7 @@ window.updateSidebarUserProfile = function(userData) {
     userRoleEl.textContent = roleMap[userData.role] || (userData.role === 'agent' ? 'Property Agent' : 'User');
   }
   if (userAvatarEl) {
-    var photoURL = userData.photoURL || userData.profilePhotoURL;
+    var photoURL = userData.photoURL || userData.profilePhotoURL || userData.profilePhoto || userData.profileImage || userData.imageURL;
     if (photoURL) {
       userAvatarEl.innerHTML = '<img src="' + photoURL + '" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
     } else {

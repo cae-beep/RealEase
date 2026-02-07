@@ -313,6 +313,7 @@
     .broker-avatar {
         width: 40px;
         height: 40px;
+        min-width: 40px;
         border-radius: 50%;
         background: var(--primary-gradient);
         color: white;
@@ -321,6 +322,13 @@
         justify-content: center;
         font-weight: 600;
         font-size: 0.9rem;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+    .broker-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
     .broker-info { flex: 1; }
     .broker-name {
@@ -806,7 +814,7 @@ function getListingTypeDisplay(listing) {
 
 // Function to redirect to property details page
 function showListingDetails(id) {
-  window.location.href = `property_details.html?id=${id}`;
+  window.location.href = `../buyer/new_property_details.html?id=${id}`;
 }
 
 // Main function to load all listings
@@ -877,23 +885,37 @@ async function loadUserData(userIds) {
   
   const userPromises = userIds.map(async (userId) => {
     try {
-      const userDoc = await getDoc(doc(db, "users", userId));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
+      let userData = null;
+      const brokerDoc = await getDoc(doc(db, "brokers", userId));
+      if (brokerDoc.exists()) {
+        userData = brokerDoc.data();
         userMap.set(userId, {
-          displayName: userData.fullName || userData.displayName || userData.name || `User ${userId.substring(0, 8)}`,
+          displayName: userData.fullName || userData.name || userData.displayName || `User ${userId.substring(0, 8)}`,
           email: userData.email || 'Email not available',
           phone: userData.phone || userData.phoneNumber || 'Phone not available',
-          role: userData.role || userData.userType || 'user'
+          role: userData.role || 'broker',
+          photoURL: userData.photoURL || userData.profilePhoto || userData.profileImage || userData.imageURL || null
         });
       } else {
-        // Fallback if user document doesn't exist
-        userMap.set(userId, {
-          displayName: `User ${userId.substring(0, 8)}`,
-          email: 'Email not available',
-          phone: 'Phone not available',
-          role: 'user'
-        });
+        const userDoc = await getDoc(doc(db, "users", userId));
+        if (userDoc.exists()) {
+          userData = userDoc.data();
+          userMap.set(userId, {
+            displayName: userData.fullName || userData.displayName || userData.name || `User ${userId.substring(0, 8)}`,
+            email: userData.email || 'Email not available',
+            phone: userData.phone || userData.phoneNumber || 'Phone not available',
+            role: userData.role || userData.userType || 'user',
+            photoURL: userData.photoURL || userData.profilePhotoURL || null
+          });
+        } else {
+          userMap.set(userId, {
+            displayName: `User ${userId.substring(0, 8)}`,
+            email: 'Email not available',
+            phone: 'Phone not available',
+            role: 'user',
+            photoURL: null
+          });
+        }
       }
     } catch (error) {
       console.error(`Error loading user ${userId}:`, error);
@@ -901,7 +923,8 @@ async function loadUserData(userIds) {
         displayName: `User ${userId.substring(0, 8)}`,
         email: 'Email not available',
         phone: 'Phone not available',
-        role: 'user'
+        role: 'user',
+        photoURL: null
       });
     }
   });
@@ -926,7 +949,8 @@ function displayListings(listings) {
       displayName: `User ${userId.substring(0, 8)}`,
       email: 'N/A',
       phone: 'N/A',
-      role: 'user'
+      role: 'user',
+      photoURL: null
     };
     
     // Get price information
@@ -945,8 +969,11 @@ function displayListings(listings) {
       imageUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${listing.latitude},${listing.longitude}&zoom=15&size=400x200&markers=color:red%7C${listing.latitude},${listing.longitude}&key=${GOOGLE_MAPS_API_KEY}`;
     }
     
-    // Get user initials for avatar
+    // Get user avatar (photo or initials)
     const initials = userInfo.displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'UU';
+    const avatarHtml = (userInfo.photoURL)
+      ? `<img src="${(userInfo.photoURL || '').replace(/"/g, '&quot;')}" alt="${(userInfo.displayName || '').replace(/"/g, '&quot;')}" onerror="this.parentElement.innerHTML='${initials}'">`
+      : initials;
     
     // Normalize status text
     let statusText = listing.status || 'active';
@@ -968,7 +995,7 @@ function displayListings(listings) {
     return `
     <div class="listing-card-wrapper">
       <div class="listing-card" data-listing-id="${listing.id}">
-        <a href="property_details.html?id=${listing.id}" class="card-link-overlay" aria-label="View ${listing.title}"></a>
+        <a href="../buyer/new_property_details.html?id=${listing.id}" class="card-link-overlay" aria-label="View ${listing.title}"></a>
         <div class="listing-card-image-container">
           <span class="listing-type-badge ${badgeClass}">${listingType}</span>
           <img src="${imageUrl}" alt="${listing.title}" class="listing-image">
@@ -990,7 +1017,7 @@ function displayListings(listings) {
             <div class="detail"><i class="fas fa-ruler-combined"></i> ${listing.floorArea || listing.totalArea || listing.squareFootage || 'N/A'} ${typeof (listing.floorArea || listing.totalArea) === 'number' ? 'sqm' : ''}</div>
           </div>
           <div class="listing-broker">
-            <div class="broker-avatar">${initials}</div>
+            <div class="broker-avatar">${avatarHtml}</div>
             <div class="broker-info">
               <div class="broker-name">${userInfo.displayName}</div>
               <div class="broker-contact">
@@ -1157,15 +1184,36 @@ onAuthStateChanged(auth, async (user) => {
   } else {
     console.log('👤 User authenticated:', user.uid);
     try {
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
-      if (userSnap.exists()) {
-        const userData = userSnap.data();
-        var fullName = userData.fullName || userData.displayName || userData.name || ((userData.firstName || '') + ' ' + (userData.lastName || '')).trim() || userData.email?.split('@')[0] || 'User';
-        var profileData = { fullName: fullName, email: userData.email, role: userData.role || userData.userType || 'broker', firstName: userData.firstName, lastName: userData.lastName };
-        try { localStorage.setItem('userData', JSON.stringify(profileData)); } catch (e) {}
-        if (typeof window.updateSidebarUserProfile === 'function') { window.updateSidebarUserProfile(profileData); }
+      let profileData = {};
+      const brokerRef = doc(db, "brokers", user.uid);
+      const brokerSnap = await getDoc(brokerRef);
+      if (brokerSnap.exists()) {
+        const brokerData = brokerSnap.data();
+        profileData = {
+          fullName: brokerData.fullName || brokerData.name || brokerData.displayName || ((brokerData.firstName || '') + ' ' + (brokerData.lastName || '')).trim() || user.email?.split('@')[0] || 'Broker',
+          email: brokerData.email || user.email,
+          role: brokerData.role || 'broker',
+          photoURL: brokerData.photoURL || brokerData.profilePhoto || brokerData.profileImage || brokerData.imageURL || user.photoURL
+        };
       }
+      if (!profileData.fullName) {
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          profileData = {
+            fullName: userData.fullName || userData.displayName || userData.name || ((userData.firstName || '') + ' ' + (userData.lastName || '')).trim() || user.email?.split('@')[0] || 'User',
+            email: userData.email || user.email,
+            role: userData.role || userData.userType || 'broker',
+            photoURL: userData.photoURL || userData.profilePhotoURL || user.photoURL
+          };
+        }
+      }
+      if (!profileData.fullName) {
+        profileData = { fullName: user.displayName || user.email?.split('@')[0] || 'Broker', email: user.email, role: 'broker', photoURL: user.photoURL };
+      }
+      try { localStorage.setItem('userData', JSON.stringify(profileData)); } catch (e) {}
+      if (typeof window.updateSidebarUserProfile === 'function') { window.updateSidebarUserProfile(profileData); }
     } catch (e) { console.warn('Could not load user profile:', e); }
     loadAllListings();
   }

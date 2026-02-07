@@ -10,11 +10,11 @@
 
 <style>
     :root {
-        --primary-gradient: linear-gradient(135deg, #0b2e52 0%, #667eea 100%);
-        --primary-light: #667eea;
-        --primary-dark: #764ba2;
-        --secondary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        --primary-gradient: linear-gradient(135deg, #0b2e52 0%, #1e3a5f 100%);
+        --primary-light: #1e3a5f;
+        --primary-dark: #071e38;
+        --secondary-gradient: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+        --accent-gradient: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
         --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         --card-hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
         --border-radius: 16px;
@@ -22,6 +22,10 @@
         --border-radius-lg: 24px;
         --text-dark: #1a202c;
         --text-light: #718096;
+    }
+
+    body {
+        background: #f1f5f9;
     }
 
     /* Hero Section - same as buyer dashboard */
@@ -93,7 +97,7 @@
     }
     
     .search-title i {
-        color: var(--primary-light);
+        color: #d4af37;
         font-size: 1.2rem;
     }
     
@@ -131,7 +135,7 @@
     .search-select:focus, .search-input:focus {
         outline: none;
         border-color: var(--primary-light);
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        box-shadow: 0 0 0 3px rgba(11, 46, 82, 0.15);
     }
     
     .search-actions {
@@ -160,7 +164,7 @@
     }
     .search-button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 8px 20px rgba(212, 175, 55, 0.35);
     }
     
     .reset-button {
@@ -221,7 +225,7 @@
     }
     
     .section-title i {
-        color: var(--primary-light);
+        color: #d4af37;
         font-size: 1.3rem;
     }
     
@@ -241,7 +245,7 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
     }
     
     .filter-tags {
@@ -302,6 +306,7 @@
     }
     
     .listing-card {
+        position: relative;
         background: white;
         border-radius: var(--border-radius);
         overflow: hidden;
@@ -332,17 +337,26 @@
         transform: scale(1.05);
     }
     
+    .card-link-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        opacity: 0;
+        cursor: pointer;
+    }
     .listing-type-badge {
         position: absolute;
-        top: 15px;
-        left: 15px;
-        background: white;
-        color: var(--text-dark);
-        padding: 6px 15px;
+        top: 12px;
+        left: 12px;
+        padding: 6px 14px;
         border-radius: 20px;
-        font-size: 0.8rem;
+        font-size: 12px;
         font-weight: 600;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        text-transform: uppercase;
+        color: white;
         z-index: 2;
     }
     
@@ -457,7 +471,7 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
     }
     
     .broker-avatar {
@@ -473,6 +487,7 @@
         font-weight: 600;
         font-size: 0.9rem;
         overflow: hidden;
+        flex-shrink: 0;
     }
     .broker-avatar img {
         width: 100%;
@@ -513,7 +528,7 @@
     }
     
     .spinner {
-        border: 4px solid rgba(102, 126, 234, 0.2);
+        border: 4px solid rgba(11, 46, 82, 0.2);
         border-top: 4px solid var(--primary-light);
         border-radius: 50%;
         width: 50px;
@@ -538,19 +553,10 @@
         color: #ef4444;
     }
 
-    /* Badge styling for property types - For Sale blue, For Rent/Lease green */
-    .type-sale {
-        background: #3b82f6;
-        color: white;
-    }
-    .type-rent {
-        background: #10b981;
-        color: white;
-    }
-    .type-lease {
-        background: #10b981;
-        color: white;
-    }
+    /* Badge styling for property types - same as broker dashboard */
+    .listing-type-badge.sale { background: #3b82f6; }
+    .listing-type-badge.rent { background: #10b981; }
+    .listing-type-badge.lease { background: #10b981; }
     /* Price styling - same as dashboard */
     .listing-price, .price-sale, .price-rent, .price-lease { color: var(--primary-dark); }
 
@@ -761,7 +767,7 @@
     .message-textarea:focus {
         outline: none;
         border-color: var(--primary-light);
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        box-shadow: 0 0 0 3px rgba(11, 46, 82, 0.15);
     }
     
     .message-actions {
@@ -806,7 +812,7 @@
     
     .send-btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 8px 20px rgba(212, 175, 55, 0.35);
     }
     
     .quick-contact-buttons {
@@ -1794,29 +1800,31 @@ function getPriceClass(listing) {
 
 function getTypeBadgeClass(listing) {
     const type = getListingType(listing);
-
     switch (type) {
-        case 'rent':
-            return 'type-rent';
-        case 'lease':
-            return 'type-lease';
+        case 'rent': return 'rent';
+        case 'lease': return 'lease';
         case 'sale':
-        default:
-            return 'type-sale';
+        default: return 'sale';
     }
 }
 
 function getTypeBadgeText(listing) {
     const type = getListingType(listing);
-
     switch (type) {
-        case 'rent':
-            return 'FOR RENT';
-        case 'lease':
-            return 'FOR LEASE';
+        case 'rent': return 'For Rent';
+        case 'lease': return 'For Lease';
         case 'sale':
-        default:
-            return 'FOR SALE';
+        default: return 'For Sale';
+    }
+}
+
+function getListingTypeDisplay(listing) {
+    const type = getListingType(listing);
+    switch (type) {
+        case 'rent': return 'For Rent';
+        case 'lease': return 'For Lease';
+        case 'sale':
+        default: return 'For Sale';
     }
 }
 
@@ -2567,79 +2575,53 @@ async function displayListings(listings) {
         const brokerName = userInfo.displayName;
         const truncatedBrokerName = brokerName.length > 20 ? brokerName.substring(0, 20) + '...' : brokerName;
 
+        const listingTypeDisplay = getListingTypeDisplay(listing);
+        const areaSuffix = (typeof area === 'number') ? ' sqm' : '';
+
         return `
         <div class="listing-card-wrapper">
-            <a href="property_details.html?id=${listing.id}&source=search" class="listing-card-link">
-                <div class="listing-card">
-                    <div class="listing-card-image-container">
-                        <img src="${mainPhoto}" alt="${title}" class="listing-image">
-                        <div class="listing-type-badge ${typeBadgeClass}">${typeBadgeText}</div>
-                        
-                        <!-- Save Button - Only show if authenticated -->
-                        ${isUserAuthenticated ? `
-                        <button class="save-property-btn" 
-                                data-property-id="${listing.id}" 
-                                data-is-saved="${isSaved}"
-                                aria-label="${isSaved ? 'Remove from saved' : 'Save property'}">
-                            <span class="save-icon">${isSaved ? '❤️' : '🤍'}</span>
-                        </button>
-                        ` : ''}
+            <div class="listing-card" data-listing-id="${listing.id}">
+                <a href="new_property_details.html?id=${listing.id}&source=search" class="card-link-overlay" aria-label="View ${title}"></a>
+                <div class="listing-card-image-container">
+                    <span class="listing-type-badge ${typeBadgeClass}">${typeBadgeText}</span>
+                    <img src="${mainPhoto}" alt="${title}" class="listing-image">
+                    ${isUserAuthenticated ? `
+                    <button class="save-property-btn" 
+                            data-property-id="${listing.id}" 
+                            data-is-saved="${isSaved}"
+                            aria-label="${isSaved ? 'Remove from saved' : 'Save property'}">
+                        <span class="save-icon">${isSaved ? '❤️' : '🤍'}</span>
+                    </button>
+                    ` : ''}
+                </div>
+                <div class="listing-content">
+                    <div class="listing-header">
+                        <div style="flex: 1; min-width: 0;">
+                            <h3 class="listing-title" title="${title}">${truncatedTitle}</h3>
+                        </div>
+                        <div class="listing-price">${displayPrice}</div>
                     </div>
-                    
-                    <div class="listing-content">
-                        <div class="listing-header">
-                            <div>
-                                <h3 class="listing-title" title="${title}">${truncatedTitle}</h3>
-                                <div class="listing-location">
-                                    <i class="fas fa-map-marker-alt" style="flex-shrink: 0;"></i>
-                                    <span class="location-text" title="${completeAddress}">${truncatedAddress}</span>
-                                </div>
-                            </div>
-                            <div class="listing-price">${displayPrice}</div>
-                        </div>
-                        
-                        <div class="listing-details">
-                            ${bedrooms ? `
-                            <div class="detail">
-                                <span class="detail-icon">🛏</span>
-                                <span class="detail-text">${bedrooms} ${bedrooms === 'Studio' ? '' : 'beds'}</span>
-                            </div>
-                            ` : ''}
-                            
-                            ${bathrooms ? `
-                            <div class="detail">
-                                <span class="detail-icon">🚿</span>
-                                <span class="detail-text">${bathrooms} baths</span>
-                            </div>
-                            ` : ''}
-                            
-                            ${area && area !== 'N/A' ? `
-                            <div class="detail">
-                                <span class="detail-icon">📐</span>
-                                <span class="detail-text">${area} sqm</span>
-                            </div>
-                            ` : ''}
-                            
-                            ${listingType === 'rent' && listing.securityDeposit ? `
-                            <div class="detail">
-                                <span class="detail-icon">💰</span>
-                                <span class="detail-text">Deposit: ₱${listing.securityDeposit.toLocaleString()}</span>
-                            </div>
-                            ` : ''}
-                        </div>
-                        
-                        <div class="listing-broker">
-                            ${brokerAvatarWrapper}
-                            <div class="broker-info">
-                                <div class="broker-name" title="${brokerName}">${truncatedBrokerName}</div>
-                                <div class="broker-contact">
-                                    ${getRoleDisplayText(userInfo.role)} • ${listing.propertyType || 'Property'}
-                                </div>
+                    <div class="listing-location">
+                        <i class="fas fa-map-marker-alt" style="flex-shrink: 0;"></i>
+                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${completeAddress}">${truncatedAddress} · ${listingTypeDisplay}</span>
+                    </div>
+                    <div class="listing-details">
+                        <div class="detail"><i class="fas fa-bed"></i> ${bedrooms || 0} ${bedrooms === 'Studio' ? '' : 'beds'}</div>
+                        <div class="detail"><i class="fas fa-bath"></i> ${bathrooms || 0} baths</div>
+                        <div class="detail"><i class="fas fa-ruler-combined"></i> ${area}${areaSuffix}</div>
+                        ${listingType === 'rent' && listing.securityDeposit ? `<div class="detail"><i class="fas fa-coins"></i> Deposit: ₱${listing.securityDeposit.toLocaleString()}</div>` : ''}
+                    </div>
+                    <div class="listing-broker">
+                        ${brokerAvatarWrapper}
+                        <div class="broker-info">
+                            <div class="broker-name" title="${brokerName}">${truncatedBrokerName}</div>
+                            <div class="broker-contact">
+                                ${getRoleDisplayText(userInfo.role)} · ${listing.propertyType || 'Property'}
                             </div>
                         </div>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>`;
     }).join('');
     
