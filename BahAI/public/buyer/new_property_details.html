@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Property Details - BahAI Real Estate</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+:root {
+  --primary: #0b2e52;
+  --primary-gradient: linear-gradient(135deg, #0b2e52 0%, #1e3a5f 100%);
+  --accent: #d4af37;
+  --accent-gradient: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+  --text-dark: #1a202c;
+  --text-light: #64748b;
+  --bg-light: #f8fafc;
+  --bg-white: #ffffff;
+  --border: #e2e8f0;
+  --success: #10b981;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: var(--text-dark); min-height: 100vh; }
+
+.mobile-menu-toggle { display: none; position: fixed; top: 20px; left: 20px; z-index: 1001;
+  background: var(--primary-gradient); color: white; border: none; width: 50px; height: 50px;
+  border-radius: 12px; font-size: 24px; cursor: pointer; }
+.main { flex: 1; margin-left: 280px; padding: 24px; max-width: 1200px; margin-right: auto; }
+
+.back-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; margin-bottom: 24px;
+  background: white; border: 2px solid var(--border); border-radius: var(--radius); color: var(--text-dark);
+  font-weight: 600; text-decoration: none; transition: all 0.2s; }
+.back-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+/* Hero Gallery */
+.gallery-hero { position: relative; border-radius: var(--radius-lg); overflow: hidden; background: var(--primary); margin-bottom: 24px; }
+.gallery-hero img { width: 100%; height: 420px; object-fit: cover; display: block; }
+.gallery-badges { position: absolute; top: 20px; left: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+.badge { padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.badge-sale { background: var(--accent); color: white; }
+.badge-rent { background: #059669; color: white; }
+.badge-lease { background: #0ea5e9; color: white; }
+.badge-active { background: white; color: var(--primary); }
+.save-btn-float { position: absolute; top: 20px; right: 20px; padding: 12px 24px; border-radius: 12px;
+  border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
+  background: white; color: var(--primary); box-shadow: var(--shadow-lg); transition: all 0.2s; }
+.save-btn-float:hover { transform: translateY(-2px); }
+.save-btn-float.saved { background: var(--success); color: white; border: none; }
+.gallery-thumbs { display: flex; gap: 8px; padding: 12px; background: rgba(0,0,0,0.5); overflow-x: auto; }
+.gallery-thumbs img { width: 80px; height: 60px; object-fit: cover; border-radius: 8px; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; }
+.gallery-thumbs img:hover, .gallery-thumbs img.active { opacity: 1; border: 2px solid white; }
+
+/* Content Grid */
+.content-grid { display: grid; grid-template-columns: 1fr 360px; gap: 24px; }
+@media (max-width: 900px) { .content-grid { grid-template-columns: 1fr; } }
+
+/* Cards */
+.card { background: white; border-radius: var(--radius-lg); padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow); }
+.card-title { font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+
+/* Property Header */
+.prop-header { margin-bottom: 24px; }
+.prop-title { font-size: 28px; font-weight: 700; color: var(--text-dark); margin-bottom: 12px; line-height: 1.3; }
+.prop-location { display: flex; align-items: center; gap: 8px; color: var(--text-light); font-size: 15px; margin-bottom: 16px; }
+.prop-price { font-size: 32px; font-weight: 800; color: var(--primary); margin-bottom: 20px; }
+.prop-stats { display: flex; flex-wrap: wrap; gap: 24px; }
+.stat { display: flex; align-items: center; gap: 10px; }
+.stat i { color: var(--primary); font-size: 18px; }
+.stat span { font-weight: 600; color: var(--text-dark); }
+
+/* Detail Rows */
+.detail-grid { display: grid; gap: 12px; }
+.detail-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 16px; background: var(--bg-light); border-radius: var(--radius); }
+.detail-label { font-size: 13px; color: var(--text-light); font-weight: 500; }
+.detail-value { font-size: 15px; font-weight: 600; color: var(--text-dark); text-align: right; }
+
+/* Contact Card */
+.contact-card { background: var(--primary-gradient); color: white; border-radius: var(--radius-lg); padding: 24px; position: sticky; top: 24px; }
+.contact-header { font-size: 16px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+.contact-profile { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.contact-avatar { width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 24px; overflow: hidden; flex-shrink: 0; }
+.contact-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.contact-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.contact-role { font-size: 13px; opacity: 0.9; margin-bottom: 16px; }
+.contact-methods { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+.contact-method { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255,255,255,0.1); border-radius: var(--radius); font-size: 14px; }
+.contact-method i { width: 20px; text-align: center; }
+.contact-btn { width: 100%; padding: 14px 24px; border-radius: var(--radius); border: none; font-weight: 600; font-size: 15px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; background: white; color: var(--primary); transition: all 0.2s; }
+.contact-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.save-btn-card { width: 100%; padding: 14px; margin-top: 12px; background: rgba(255,255,255,0.15); color: white; border: 2px solid rgba(255,255,255,0.4); }
+
+/* Amenities */
+.amenities-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.amenity-chip { padding: 8px 16px; background: var(--bg-light); border-radius: 20px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+
+/* Description */
+.desc-text { font-size: 15px; line-height: 1.7; color: var(--text-dark); white-space: pre-wrap; }
+
+/* Map */
+.map-container { height: 280px; border-radius: var(--radius); overflow: hidden; background: var(--bg-light); }
+
+/* Loading */
+.loading-state { text-align: center; padding: 80px 20px; color: var(--text-light); }
+.loading-state .spinner { width: 48px; height: 48px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menu">☰</button>
+<div id="sidebar-container"></div>
+
+<main class="main">
+  <a href="javascript:history.back()" class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i> Back</a>
+  
+  <div id="propertyContent">
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading property details...</p>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, getDocs, query, where, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCIfzneDzWVveG8p_0mywoA9D9F5AyzZX4",
+  authDomain: "bahai-1b76d.firebaseapp.com",
+  projectId: "bahai-1b76d",
+  storageBucket: "bahai-1b76d.firebasestorage.app",
+  messagingSenderId: "646878644941",
+  appId: "1:646878644941:web:5b4ccc3412250337587784"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+window.firebaseApp = app;
+
+const urlParams = new URLSearchParams(window.location.search);
+const propertyId = urlParams.get('id');
+
+let currentListing = null;
+let currentUserInfo = null;
+
+const labels = {
+  propertyCategory: { residential: "Residential", commercial: "Commercial", land: "Land", condo: "Condominium", special: "Special Purpose" },
+  furnishing: { furnished: "Fully Furnished", "semi-furnished": "Semi-Furnished", unfurnished: "Unfurnished" },
+  saleType: { outright: "Outright Cash", installment: "Installment", bank_financing: "Bank Financing" },
+  leaseType: { gross: "Gross Lease", net: "Net Lease", "triple-net": "Triple Net" },
+  paymentTerms: { monthly: "Monthly", quarterly: "Quarterly", "semi-annual": "Semi-Annual", annual: "Annual" },
+  maintenance: { landlord: "Landlord", tenant: "Tenant", shared: "Shared" },
+  zoning: { commercial: "Commercial", industrial: "Industrial", residential: "Residential", agricultural: "Agricultural", mixed_use: "Mixed Use", tourism: "Tourism" }
+};
+
+function getListingType(l) {
+  if (l.listingType === 'lease' || l.type === 'lease') return 'lease';
+  if (l.listingType === 'rent' || l.type === 'rent') return 'rent';
+  if (l.listingType === 'sale' || l.type === 'sale') return 'sale';
+  if (l.monthlyRent != null && l.monthlyRent > 0) return 'rent';
+  if (l.annualRent != null && l.annualRent > 0) return 'lease';
+  if ((l.pricing || l.salePrice) > 0) return 'sale';
+  return 'sale';
+}
+
+function getDisplayPrice(l) {
+  const t = getListingType(l);
+  if (t === 'rent') return '₱' + (l.monthlyRent || 0).toLocaleString() + '/month';
+  if (t === 'lease') return '₱' + (l.annualRent || 0).toLocaleString() + '/year';
+  return '₱' + (l.pricing || l.salePrice || 0).toLocaleString();
+}
+
+function getAddress(l) {
+  const parts = [l.location || l.address, l.city, l.province].filter(Boolean);
+  return parts.length ? parts.join(', ') : 'Location not specified';
+}
+
+async function loadUserInfo(userId) {
+  if (!userId) return { displayName: 'Unknown', email: 'N/A', phone: 'N/A', role: 'user', photoURL: null };
+  try {
+    const userDoc = await getDoc(doc(db, "users", userId));
+    if (userDoc.exists()) {
+      const d = userDoc.data();
+      return {
+        displayName: d.fullName || d.email?.split('@')[0] || 'User',
+        email: d.email || 'N/A',
+        phone: d.phone || 'N/A',
+        role: d.role || 'user',
+        photoURL: d.photoURL || d.profilePhotoURL || null
+      };
+    }
+    const brokerDoc = await getDoc(doc(db, "brokers", userId));
+    if (brokerDoc.exists()) {
+      const d = brokerDoc.data();
+      return {
+        displayName: d.fullName || d.name || 'Broker',
+        email: d.email || 'N/A',
+        phone: d.phone || 'N/A',
+        role: 'broker',
+        photoURL: d.photoURL || d.profilePhoto || d.profileImage || null
+      };
+    }
+  } catch (e) { console.warn(e); }
+  return { displayName: 'User', email: 'N/A', phone: 'N/A', role: 'user', photoURL: null };
+}
+
+async function loadProperty() {
+  if (!propertyId) {
+    document.getElementById('propertyContent').innerHTML = '<div class="card"><p style="padding:40px;text-align:center;">No property ID provided.</p></div>';
+    return;
+  }
+  try {
+    const propDoc = await getDoc(doc(db, "properties", propertyId));
+    if (!propDoc.exists()) {
+      document.getElementById('propertyContent').innerHTML = '<div class="card"><p style="padding:40px;text-align:center;">Property not found.</p></div>';
+      return;
+    }
+    currentListing = { id: propDoc.id, ...propDoc.data() };
+    currentUserInfo = await loadUserInfo(currentListing.userId);
+    renderProperty();
+    setupSaveButton();
+  } catch (e) {
+    console.error(e);
+    document.getElementById('propertyContent').innerHTML = '<div class="card"><p style="padding:40px;text-align:center;color:red;">Error loading property.</p></div>';
+  }
+}
+
+function renderDetailSection(title, icon, items) {
+  if (!items || items.length === 0) return '';
+  return `
+    <div class="card">
+      <h3 class="card-title"><i class="fas fa-${icon}"></i> ${title}</h3>
+      <div class="detail-grid">
+        ${items.map(([label, value]) => `
+          <div class="detail-row">
+            <span class="detail-label">${label}</span>
+            <span class="detail-value">${value || '—'}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+}
+
+function renderProperty() {
+  const l = currentListing;
+  const u = currentUserInfo;
+  const type = getListingType(l);
+  const photos = l.photos || l.imageUrls || [];
+  const mainImg = photos[0] || 'https://via.placeholder.com/800x400/0b2e52/white?text=No+Image';
+  const amenities = l.amenities || [];
+  const initials = (u.displayName || 'U').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+  const avatarHtml = u.photoURL
+    ? `<img src="${u.photoURL}" alt="${u.displayName}" onerror="this.parentElement.innerHTML='${initials}'">`
+    : initials;
+
+  const badgeClass = type === 'sale' ? 'badge-sale' : type === 'rent' ? 'badge-rent' : 'badge-lease';
+  const badgeText = type === 'sale' ? 'For Sale' : type === 'rent' ? 'For Rent' : 'For Lease';
+
+  let basicItems = [
+    ['Property Category', labels.propertyCategory[l.propertyCategory] || l.propertyCategory],
+    ['Property Type', (l.propertyType || '').replace(/_/g, ' ')],
+    ['Bedrooms', l.bedrooms || (type === 'rent' && l.propertyType === 'studio' ? 'Studio' : '—')],
+    ['Bathrooms', l.bathrooms || '—'],
+    ['Floor Area', l.floorArea || l.totalArea ? (l.floorArea || l.totalArea) + ' sqm' : '—'],
+    ['Lot Area', l.lotArea ? l.lotArea + ' sqm' : '—'],
+    ['Furnishing', labels.furnishing[l.furnishing] || l.furnishing || '—'],
+    ['Year Built', l.yearBuilt || '—']
+  ];
+
+  let saleItems = [];
+  if (type === 'sale') {
+    saleItems = [
+      ['Sale Price', '₱' + (l.salePrice || l.pricing || 0).toLocaleString()],
+      ['Price Negotiable', l.priceNegotiable === 'yes' ? 'Yes' : 'No'],
+      ['Sale Type', labels.saleType[l.saleType] || l.saleType || '—']
+    ];
+  }
+
+  let rentLeaseItems = [];
+  if (type === 'rent') {
+    rentLeaseItems = [
+      ['Monthly Rent', '₱' + (l.monthlyRent || 0).toLocaleString()],
+      ['Security Deposit', l.securityDeposit ? '₱' + l.securityDeposit.toLocaleString() : '—']
+    ];
+  } else if (type === 'lease') {
+    rentLeaseItems = [
+      ['Annual Rent', '₱' + (l.annualRent || 0).toLocaleString()],
+      ['Lease Type', labels.leaseType[l.leaseType] || l.leaseType || '—'],
+      ['Lease Duration', l.leaseDuration ? l.leaseDuration + ' years' : '—'],
+      ['Renewal Option', l.renewalOption || '—'],
+      ['Payment Terms', labels.paymentTerms[l.paymentTerms] || l.paymentTerms || '—'],
+      ['Security Bond', l.securityBond ? '₱' + l.securityBond.toLocaleString() : '—'],
+      ['Advance Payment', l.advancePayment ? l.advancePayment + ' month(s)' : '—'],
+      ['Zoning', labels.zoning[l.zoning] || l.zoning || '—'],
+      ['Access Road', l.accessRoad || '—'],
+      ['Frontage', l.frontage ? l.frontage + ' m' : '—'],
+      ['Utilities', l.utilities || '—'],
+      ['Restrictions', l.restrictions || '—'],
+      ['Maintenance', labels.maintenance[l.maintenance] || l.maintenance || '—']
+    ];
+  }
+
+  const locationItems = [
+    ['Address', l.address || l.location],
+    ['City', l.city],
+    ['Province', l.province]
+  ].filter(([, v]) => v);
+
+  const roleText = u.role === 'landlord' ? 'Property Owner' : u.role === 'broker' ? 'Licensed Broker' : 'Posted by';
+
+  const html = `
+    <div class="gallery-hero">
+      <img src="${mainImg}" alt="${l.title}" id="mainGalleryImg">
+      <div class="gallery-badges">
+        <span class="badge ${badgeClass}">${badgeText}</span>
+        <span class="badge badge-active">${l.status === 'active' ? 'Available' : (l.status || 'Available')}</span>
+      </div>
+      <button class="save-btn-float" id="saveBtnFloat">
+        <i class="far fa-heart" id="saveIcon"></i>
+        <span id="saveText">Save Property</span>
+      </button>
+      ${photos.length > 1 ? `
+      <div class="gallery-thumbs">
+        ${photos.map((url, i) => `<img src="${url}" alt="" class="${i === 0 ? 'active' : ''}" data-index="${i}">`).join('')}
+      </div>
+      ` : ''}
+    </div>
+
+    <div class="content-grid">
+      <div>
+        <div class="card prop-header">
+          <h1 class="prop-title">${l.title || 'Untitled Property'}</h1>
+          <div class="prop-location"><i class="fas fa-map-marker-alt"></i> ${getAddress(l)}</div>
+          <div class="prop-price">${getDisplayPrice(l)}</div>
+          <div class="prop-stats">
+            <div class="stat"><i class="fas fa-bed"></i><span>${l.bedrooms || (type === 'rent' && l.propertyType === 'studio' ? 'Studio' : '—')} Beds</span></div>
+            <div class="stat"><i class="fas fa-bath"></i><span>${l.bathrooms || '—'} Baths</span></div>
+            <div class="stat"><i class="fas fa-ruler-combined"></i><span>${l.floorArea || l.totalArea || '—'} sqm</span></div>
+            ${l.lotArea ? `<div class="stat"><i class="bi bi-map"></i><span>${l.lotArea} sqm Lot</span></div>` : ''}
+          </div>
+        </div>
+
+        ${l.description ? `
+        <div class="card">
+          <h3 class="card-title"><i class="fas fa-align-left"></i> Description</h3>
+          <div class="desc-text">${l.description}</div>
+        </div>
+        ` : ''}
+
+        ${renderDetailSection('Basic Information', 'info-circle', basicItems)}
+        ${saleItems.length ? renderDetailSection('Sale Information', 'cash-stack', saleItems) : ''}
+        ${rentLeaseItems.length ? renderDetailSection(type === 'rent' ? 'Rent Information' : 'Lease Information', 'file-text', rentLeaseItems) : ''}
+        ${locationItems.length ? renderDetailSection('Location', 'geo-alt', locationItems) : ''}
+
+        ${amenities.length ? `
+        <div class="card">
+          <h3 class="card-title"><i class="fas fa-star"></i> Amenities & Features</h3>
+          <div class="amenities-grid">
+            ${amenities.map(a => `<span class="amenity-chip"><i class="fas fa-check"></i> ${a}</span>`).join('')}
+          </div>
+        </div>
+        ` : ''}
+
+        ${l.latitude && l.longitude ? `
+        <div class="card">
+          <h3 class="card-title"><i class="fas fa-map"></i> Map</h3>
+          <div class="map-container" id="mapContainer">
+            <a href="https://www.google.com/maps?q=${l.latitude},${l.longitude}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;height:100%;background:var(--bg-light);color:var(--primary);font-weight:600;text-decoration:none;">
+              <i class="fas fa-map-marker-alt" style="margin-right:8px;"></i> View on Google Maps
+            </a>
+          </div>
+        </div>
+        ` : ''}
+      </div>
+
+      <div>
+        <div class="contact-card">
+          <div class="contact-header"><i class="fas fa-user"></i> Contact ${u.role === 'landlord' ? 'Owner' : 'Broker'}</div>
+          <div class="contact-profile">
+            <div class="contact-avatar">${avatarHtml}</div>
+            <div>
+              <div class="contact-name">${u.displayName}</div>
+              <div class="contact-role">${roleText}</div>
+            </div>
+          </div>
+          <div class="contact-methods">
+            <div class="contact-method"><i class="fas fa-envelope"></i> ${u.email}</div>
+            <div class="contact-method"><i class="fas fa-phone"></i> ${u.phone}</div>
+          </div>
+          <button class="contact-btn" id="contactBtn"><i class="fas fa-comment"></i> Message</button>
+          <button class="contact-btn save-btn-card" id="saveBtnCard"><i class="far fa-heart"></i> <span id="saveTextCard">Save Property</span></button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('propertyContent').innerHTML = html;
+
+  if (photos.length > 1) {
+    document.querySelectorAll('.gallery-thumbs img').forEach(thumb => {
+      thumb.addEventListener('click', () => {
+        document.querySelectorAll('.gallery-thumbs img').forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+        document.getElementById('mainGalleryImg').src = photos[thumb.dataset.index];
+      });
+    });
+  }
+
+  document.getElementById('contactBtn').addEventListener('click', () => {
+    if (auth.currentUser) {
+      window.contactBroker && window.contactBroker(l.userId, l.id);
+    } else {
+      window.location.href = '../login.html?redirect=buyer/new_property_details.html?id=' + propertyId;
+    }
+  });
+}
+
+async function setupSaveButton() {
+  const updateSaveUI = (isSaved) => {
+    ['saveBtnFloat', 'saveBtnCard'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      btn.classList.toggle('saved', isSaved);
+      const icon = btn.querySelector('i');
+      if (icon) icon.className = isSaved ? 'fas fa-heart' : 'far fa-heart';
+      const text = btn.querySelector('span');
+      if (text) text.textContent = isSaved ? 'Saved' : (id === 'saveBtnCard' ? 'Save Property' : 'Save Property');
+    });
+  };
+
+  const checkSaved = async () => {
+    if (!auth.currentUser) return false;
+    const q = query(collection(db, 'savedProperties'), where('userId', '==', auth.currentUser.uid), where('propertyId', '==', propertyId));
+    const snap = await getDocs(q);
+    return !snap.empty;
+  };
+
+  const toggleSave = async () => {
+    if (!auth.currentUser) {
+      window.location.href = '../login.html?redirect=buyer/new_property_details.html?id=' + propertyId;
+      return;
+    }
+    try {
+      const isSaved = await checkSaved();
+      if (isSaved) {
+        const q = query(collection(db, 'savedProperties'), where('userId', '==', auth.currentUser.uid), where('propertyId', '==', propertyId));
+        const snap = await getDocs(q);
+        if (!snap.empty) await deleteDoc(snap.docs[0].ref);
+        updateSaveUI(false);
+        showToast('Removed from saved');
+      } else {
+        await addDoc(collection(db, 'savedProperties'), { userId: auth.currentUser.uid, propertyId, savedAt: new Date(), createdAt: new Date() });
+        updateSaveUI(true);
+        showToast('Property saved!');
+      }
+      if (typeof window.updateSidebarStats === 'function') window.updateSidebarStats();
+    } catch (e) {
+      showToast('Error saving', true);
+    }
+  };
+
+  const saved = await checkSaved();
+  updateSaveUI(saved);
+
+  document.getElementById('saveBtnFloat')?.addEventListener('click', toggleSave);
+  document.getElementById('saveBtnCard')?.addEventListener('click', toggleSave);
+}
+
+function showToast(msg, isError = false) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = `position:fixed;top:20px;right:20px;padding:14px 24px;border-radius:12px;z-index:9999;font-weight:600;background:${isError ? '#ef4444' : '#10b981'};color:white;box-shadow:0 10px 25px rgba(0,0,0,0.2);`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+window.contactBroker = async function(userId, propId) {
+  const u = currentUserInfo;
+  if (u && u.email && u.email !== 'N/A') {
+    const subject = encodeURIComponent(currentListing?.title ? `Inquiry: ${currentListing.title}` : 'Property Inquiry');
+    const body = encodeURIComponent(`Hello ${u.displayName},\n\nI'm interested in your property${currentListing?.title ? `: ${currentListing.title}` : ''}.\n\nPlease send me more information.`);
+    window.location.href = `mailto:${u.email}?subject=${subject}&body=${body}`;
+  } else {
+    window.location.href = 'messages.html';
+  }
+};
+
+onAuthStateChanged(auth, () => {
+  if (propertyId) loadProperty();
+});
+
+if (propertyId) loadProperty();
+</script>
+
+<script src="../sidebar-user.js"></script>
+<script src="buyer-sidebar-loader.js"></script>
+<script>
+loadBuyerSidebar('new_property_details.html');
+</script>
+</body>
+</html>

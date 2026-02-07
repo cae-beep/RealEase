@@ -8,12 +8,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="style.css">
 <style>
+    /* Match broker dashboard design - Navy + Gold */
     :root {
-        /* Navy blue - primary */
         --primary-gradient: linear-gradient(135deg, #0b2e52 0%, #1e3a5f 100%);
         --primary-light: #1e3a5f;
         --primary-dark: #071e38;
-        /* Gold - accent / CTAs */
         --secondary-gradient: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
         --accent-gradient: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
         --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
@@ -25,7 +24,11 @@
         --text-light: #718096;
     }
 
-    /* Hero Section Enhancement */
+    body {
+        background: #f1f5f9;
+    }
+
+    /* Hero Section - match broker */
     .hero-section {
         background: var(--primary-gradient);
         color: white;
@@ -35,7 +38,6 @@
         position: relative;
         overflow: hidden;
     }
-    
     .hero-section::before {
         content: '';
         position: absolute;
@@ -47,25 +49,49 @@
         background-size: cover;
         opacity: 0.1;
     }
-    
     .hero-section h1 {
         font-size: 2.8rem;
         font-weight: 700;
         margin-bottom: 15px;
         line-height: 1.2;
         max-width: 800px;
-        color: white;
+        position: relative;
+        z-index: 1;
     }
-    
     .hero-section p {
         font-size: 1.1rem;
         opacity: 0.9;
         max-width: 600px;
         margin-bottom: 20px;
-        color: rgba(255, 255, 255, 0.95);
+        position: relative;
+        z-index: 1;
     }
-    
-    /* Search Section Enhancement */
+    .hero-stats {
+        display: flex;
+        gap: 30px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+    }
+    .hero-stat-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .hero-stat-icon {
+        font-size: 1.5rem;
+        background: rgba(255,255,255,0.2);
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .hero-stat-value { font-size: 1.5rem; font-weight: 700; }
+    .hero-stat-label { font-size: 0.9rem; opacity: 0.8; }
+    .welcome-message, .guest-message { position: relative; z-index: 1; }
+
+    /* Search Section - match broker */
     .search-section {
         background: white;
         border-radius: var(--border-radius);
@@ -74,7 +100,6 @@
         box-shadow: var(--card-shadow);
         border: 1px solid rgba(0, 0, 0, 0.05);
     }
-    
     .search-title {
         font-size: 1.4rem;
         font-weight: 600;
@@ -84,25 +109,7 @@
         align-items: center;
         gap: 12px;
     }
-    
-    .search-title i {
-        color: #d4af37;
-        font-size: 1.2rem;
-    }
-    
-    .search-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 25px;
-        margin-bottom: 30px;
-    }
-    
-    .search-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-    
+    .search-title i { color: #d4af37; font-size: 1.2rem; }
     .search-label {
         font-size: 0.9rem;
         font-weight: 500;
@@ -111,7 +118,13 @@
         align-items: center;
         gap: 6px;
     }
-    
+    .search-group { display: flex; flex-direction: column; gap: 8px; }
+    .search-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
     .search-select, .search-input {
         padding: 14px 16px;
         border: 2px solid #e5e7eb;
@@ -120,13 +133,11 @@
         transition: all 0.3s ease;
         background: white;
     }
-    
     .search-select:focus, .search-input:focus {
         outline: none;
         border-color: #d4af37;
         box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     }
-    
     .search-actions {
         display: flex;
         gap: 15px;
@@ -134,7 +145,6 @@
         margin-top: 30px;
         flex-wrap: wrap;
     }
-    
     .search-button {
         background: var(--primary-gradient);
         color: white;
@@ -151,12 +161,10 @@
         min-width: 200px;
         justify-content: center;
     }
-    
     .search-button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(11, 46, 82, 0.4);
+        box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
     }
-    
     .reset-button {
         background: white;
         color: var(--text-dark);
@@ -173,14 +181,13 @@
         min-width: 200px;
         justify-content: center;
     }
-    
     .reset-button:hover {
         background: #f9fafb;
         border-color: #d4af37;
         transform: translateY(-2px);
     }
-    
-    /* Section Styling */
+
+    /* Section title - match broker */
     .section-title {
         font-size: 1.5rem;
         font-weight: 600;
@@ -190,187 +197,19 @@
         align-items: center;
         gap: 12px;
     }
-    
-    .section-title i {
-        color: #d4af37;
-        font-size: 1.3rem;
-    }
-    
-    /* AI Chatbot Enhancement */
-    .ai-chatbot-section {
-        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-        border-radius: var(--border-radius);
-        padding: 30px;
-        margin-bottom: 40px;
-        border: 1px solid #e2e8f0;
-    }
-    
-    .chatbot-container {
-        background: white;
-        border-radius: var(--border-radius-sm);
-        overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        border: 1px solid #e5e7eb;
-    }
-    
-    .chat-messages {
-        max-height: 300px;
-        overflow-y: auto;
-        padding: 20px;
-        background: white;
-    }
-    
-    .message {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 20px;
-        animation: fadeIn 0.3s ease;
-    }
-    
-    .message.bot .avatar {
-        background: var(--primary-gradient);
-        color: white;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-    
-    .message.bot .content {
-        background: #f8fafc;
-        padding: 15px 20px;
-        border-radius: 18px;
-        border-top-left-radius: 5px;
-        max-width: 80%;
-    }
-    
-    .chat-input {
-        display: flex;
-        gap: 10px;
-        padding: 20px;
-        background: #f9fafb;
-        border-top: 1px solid #e5e7eb;
-    }
-    
-    .chat-input input {
-        flex: 1;
-        padding: 14px 20px;
-        border: 2px solid #e5e7eb;
-        border-radius: 12px;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-    }
-    
-    .chat-input input:focus {
-        outline: none;
-        border-color: #d4af37;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-    
-    .chat-input button {
-        background: var(--primary-gradient);
-        color: white;
-        border: none;
-        padding: 14px 24px;
-        border-radius: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .chat-input button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-    }
-    
-    .voice-btn {
-        background: white !important;
-        color: var(--text-dark) !important;
-        border: 2px solid #e5e7eb !important;
-        padding: 14px !important;
-    }
-    
-    /* Categories Enhancement */
-    .categories-section {
-        margin-bottom: 40px;
-    }
-    
-    .categories-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 25px;
-        margin-top: 20px;
-    }
-    
-    .category-card {
-        background: white;
-        border-radius: var(--border-radius);
-        padding: 25px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border: 2px solid transparent;
-        box-shadow: var(--card-shadow);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .category-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--card-hover-shadow);
-        border-color: #d4af37;
-    }
-    
-    .category-card.active {
-        background: var(--primary-gradient);
-        color: white;
-        border-color: #d4af37;
-    }
-    
-    .category-card.active .category-count {
-        color: rgba(255, 255, 255, 0.9);
-    }
-    
-    .category-icon {
-        font-size: 2.5rem;
-        margin-bottom: 15px;
-    }
-    
-    .category-name {
-        font-size: 1.3rem;
-        font-weight: 600;
-        margin-bottom: 8px;
-    }
-    
-    .category-count {
-        font-size: 0.9rem;
-        color: var(--text-light);
-        margin-bottom: 15px;
-    }
-    
-    /* Properties Grid Enhancement */
+    .section-title i { color: #d4af37; font-size: 1.3rem; }
+
+    /* Listings grid & cards - match broker */
+    .properties-section, .recommendations-section { margin-bottom: 40px; }
     .listings-grid, .recommendations-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 30px;
         margin-top: 25px;
     }
-    
-    .listing-card-wrapper {
-        transition: all 0.3s ease;
-    }
-    
-    .listing-card-wrapper:hover {
-        transform: translateY(-5px);
-    }
-    
+    .listing-card-wrapper { transition: all 0.3s ease; }
+    .listing-card-wrapper:hover { transform: translateY(-5px); }
     .listing-card {
-        position: relative;
         background: white;
         border-radius: var(--border-radius);
         overflow: hidden;
@@ -379,59 +218,26 @@
         border: 1px solid rgba(0, 0, 0, 0.05);
         height: 100%;
     }
-    
-    .listing-card:hover {
-        box-shadow: var(--card-hover-shadow);
-    }
-    
-    .card-link-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 1;
-        opacity: 0;
-        cursor: pointer;
-    }
-    
+    .listing-card:hover { box-shadow: var(--card-hover-shadow); }
     .listing-card-image-container {
         position: relative;
         height: 220px;
         overflow: hidden;
     }
-    
     .listing-image {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.5s ease;
     }
-    
-    .listing-card:hover .listing-image {
-        transform: scale(1.05);
-    }
-    
-    .listing-type-badge {
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        color: white;
-        z-index: 2;
-    }
+    .listing-card:hover .listing-image { transform: scale(1.05); }
+    .listing-type-badge.type-rent,
     .listing-type-badge.rent { background: #10b981; }
+    .listing-type-badge.type-lease,
     .listing-type-badge.lease { background: #10b981; }
+    .listing-type-badge.type-sale,
     .listing-type-badge.sale { background: #3b82f6; }
-    
-    .listing-content {
-        padding: 25px;
-    }
-    
+    .listing-content { padding: 25px; }
     .listing-header {
         display: flex;
         justify-content: space-between;
@@ -439,7 +245,6 @@
         margin-bottom: 15px;
         gap: 15px;
     }
-    
     .listing-title {
         font-size: 1.2rem;
         font-weight: 600;
@@ -453,7 +258,6 @@
         -webkit-box-orient: vertical;
         max-height: 3.6em;
     }
-    
     .listing-location {
         display: flex;
         align-items: center;
@@ -464,25 +268,18 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
-    
     .listing-price {
         font-size: 1.2rem;
         font-weight: 700;
         color: var(--primary-dark);
-        white-space: normal !important; /* Change from nowrap to normal */
-        word-break: break-word; /* Allow breaking if needed */
+        white-space: normal !important;
+        word-break: break-word;
         text-align: right;
-        min-width: fit-content; /* Ensure minimum width fits content */
-        flex-shrink: 0; /* Prevent shrinking */
-        max-width: 45%; /* Limit width but allow wrapping */
+        min-width: fit-content;
+        flex-shrink: 0;
+        max-width: 45%;
     }
-
-    .listing-header > div:first-child {
-    flex: 1;
-    min-width: 0; /* This is crucial for text-overflow to work */
-    overflow: hidden;
-    }
-    
+    .listing-header > div:first-child { flex: 1; min-width: 0; overflow: hidden; }
     .listing-details {
         display: flex;
         gap: 20px;
@@ -490,7 +287,6 @@
         padding-bottom: 20px;
         border-bottom: 1px solid #e5e7eb;
     }
-    
     .detail {
         display: flex;
         align-items: center;
@@ -498,21 +294,10 @@
         color: var(--text-light);
         font-size: 0.9rem;
     }
-    
-    .detail-icon {
-        font-size: 1.1rem;
-    }
-    
-    .listing-broker {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 15px;
-    }
-    
     .broker-avatar {
         width: 40px;
         height: 40px;
+        min-width: 40px;
         border-radius: 50%;
         background: var(--primary-gradient);
         color: white;
@@ -521,12 +306,14 @@
         justify-content: center;
         font-weight: 600;
         font-size: 0.9rem;
+        overflow: hidden;
     }
-    
-    .broker-info {
-        flex: 1;
+    .broker-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
-    
+    .broker-info { flex: 1; }
     .broker-name {
         font-weight: 600;
         color: var(--text-dark);
@@ -536,7 +323,6 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
-    
     .broker-contact {
         font-size: 0.8rem;
         color: var(--text-light);
@@ -544,7 +330,6 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
-    
     .listing-status {
         display: inline-block;
         padding: 6px 15px;
@@ -553,73 +338,20 @@
         font-weight: 600;
         margin-bottom: 20px;
     }
-    
-    .listing-actions {
-        display: flex;
-        gap: 12px;
+    .status-active, .listing-status.status-active,
+    .status-available, .listing-status.status-available {
+        background: #10b981 !important;
+        color: white !important;
     }
-    
-    .action-btn {
-        flex: 1;
-        padding: 12px;
-        border-radius: 12px;
-        font-size: 0.9rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
+    .status-pending, .listing-status.status-pending {
+        background: var(--accent-gradient) !important;
+        color: white !important;
     }
-    
-    .contact-btn {
-        background: var(--primary-gradient);
-        color: white;
+    .status-sold, .listing-status.status-sold,
+    .status-rented, .listing-status.status-rented {
+        background: #ef4444 !important;
+        color: white !important;
     }
-    
-    .contact-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-    }
-    
-    /* Recommendations Section */
-    .recommendations-section {
-        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-        border-radius: var(--border-radius);
-        padding: 35px;
-        margin-bottom: 40px;
-        border: 1px solid rgba(102, 126, 234, 0.2);
-    }
-    
-    .listing-match-badge {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background: var(--secondary-gradient);
-        color: white;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-    }
-    
-    .listing-ai-badge {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background: var(--accent-gradient);
-        color: white;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-    }
-    
-    /* Loading States */
     .loading-state, .error-state, .empty-state {
         grid-column: 1 / -1;
         text-align: center;
@@ -628,9 +360,10 @@
         border-radius: var(--border-radius);
         box-shadow: var(--card-shadow);
     }
-    
+    .empty-state-icon { font-size: 64px; margin-bottom: 20px; opacity: 0.5; }
+    .empty-state h3 { font-size: 20px; margin-bottom: 10px; color: var(--text-dark); }
     .spinner {
-        border: 4px solid rgba(102, 126, 234, 0.2);
+        border: 4px solid rgba(212, 175, 55, 0.2);
         border-top: 4px solid #d4af37;
         border-radius: 50%;
         width: 50px;
@@ -638,507 +371,60 @@
         animation: spin 1s linear infinite;
         margin: 0 auto 20px;
     }
-    
-    /* Status Colors */
-    .listing-status.status-available,
-    .listing-status.status-active {
-        background: var(--secondary-gradient) !important;
-        color: white !important;
-        padding: 6px 15px !important;
-        border-radius: 20px !important;
-        font-size: 0.8rem !important;
-        font-weight: 600 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.5px !important;
-        border: none !important;
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
-    }
-    
-    .listing-status.status-pending {
-        background: var(--accent-gradient) !important;
-        color: white !important;
-    }
-    
-    .listing-status.status-sold,
-    .listing-status.status-rented {
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
-        color: white !important;
-    }
-    
-    /* Demo prompts */
-    .demo-prompt-btn {
-        padding: 10px 16px;
-        background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        font-size: 0.9rem;
-        color: var(--text-dark);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        white-space: nowrap;
-    }
-    
-    .demo-prompt-btn:hover {
-        background: var(--primary-light);
-        color: white;
-        border-color: #d4af37;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-    }
-    
-    /* Message Modal - Consistent Sizing */
-    .message-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(5px);
-        z-index: 9999;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    
-    .message-modal.show {
-        display: flex;
-        opacity: 1;
-    }
-    
-    .message-modal-content {
-        width: 90%;
-        max-width: 700px;
-        max-height: 85vh;
-        background: white;
-        border-radius: var(--border-radius-lg);
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        animation: modalSlideIn 0.3s ease;
-    }
-    
-    .message-header {
-        padding: 25px 30px;
-        background: var(--primary-gradient);
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .message-header h2 {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        flex: 1;
-        min-width: 0;
-    }
-    
-    .message-subtitle {
-        font-size: 0.9rem;
-        opacity: 0.9;
-        margin-top: 5px;
-    }
-    
-    .message-close {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        color: white;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        flex-shrink: 0;
-        margin-left: 15px;
-    }
-    
-    .message-close:hover {
-        background: rgba(255, 255, 255, 0.3);
-        transform: rotate(90deg);
-    }
-    
-    .message-broker-card {
-        padding: 20px 30px;
-        background: #f8fafc;
-        border-bottom: 1px solid #e5e7eb;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-    
-    .message-broker-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: var(--primary-gradient);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        font-size: 1.2rem;
-        flex-shrink: 0;
-    }
-    
-    .message-broker-info {
-        flex: 1;
-        min-width: 0;
-    }
-    
-    .message-broker-name {
-        font-weight: 600;
-        color: var(--text-dark);
-        font-size: 1.1rem;
-        margin-bottom: 4px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    
-    .message-broker-role {
-        font-size: 0.85rem;
-        color: var(--text-light);
-    }
-    
-    .messages-container {
-        flex: 1;
-        padding: 25px 30px;
-        overflow-y: auto;
-        min-height: 300px;
-        max-height: 400px;
-        background: #f9fafb;
-    }
-    
-    .message-bubble {
-        margin-bottom: 20px;
-        max-width: 80%;
-    }
-    
-    .message-bubble.sent {
-        margin-left: auto;
-    }
-    
-    .message-bubble.received {
-        margin-right: auto;
-    }
-    
-    .message-bubble-content {
-        background: white;
-        padding: 15px 20px;
-        border-radius: 18px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        position: relative;
-    }
-    
-    .message-bubble.sent .message-bubble-content {
-        background: var(--primary-gradient);
-        color: white;
-    }
-    
-    .message-time {
-        display: block;
-        font-size: 0.75rem;
-        opacity: 0.7;
-        margin-top: 8px;
-    }
-    
-    .message-bubble.sent .message-time {
-        color: rgba(255, 255, 255, 0.9);
-    }
-    
-    .loading-messages {
-        text-align: center;
-        padding: 40px 20px;
-        color: var(--text-light);
-    }
-    
-    .no-messages {
-        text-align: center;
-        padding: 40px 20px;
-        color: var(--text-light);
-    }
-    
-    .message-input-area {
-        padding: 25px 30px;
-        background: white;
-        border-top: 1px solid #e5e7eb;
-    }
-    
-    .message-textarea {
-        width: 100%;
-        padding: 15px;
-        border: 2px solid #e5e7eb;
-        border-radius: 12px;
-        font-size: 0.95rem;
-        resize: none;
-        min-height: 80px;
-        max-height: 150px;
-        margin-bottom: 15px;
-        transition: all 0.3s ease;
-    }
-    
-    .message-textarea:focus {
-        outline: none;
-        border-color: #d4af37;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-    
-    .message-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 15px;
-    }
-    
-    .contact-info {
-        flex: 1;
-        font-size: 0.85rem;
-        color: var(--text-light);
-        display: flex;
-        gap: 20px;
-        overflow: hidden;
-    }
-    
-    .contact-info span {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        flex: 1;
-        min-width: 0;
-    }
-    
-    .send-btn {
-        background: var(--primary-gradient);
-        color: white;
-        border: none;
-        padding: 12px 30px;
-        border-radius: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-shrink: 0;
-    }
-    
-    .send-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-    }
-    
-    .quick-contact-buttons {
-        display: flex;
-        gap: 10px;
-    }
-    
-    .quick-contact-btn {
-        flex: 1;
-        padding: 12px;
-        border-radius: 12px;
-        text-align: center;
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-    
-    .email-btn {
-        background: #f0f9ff;
-        color: #0ea5e9;
-        border: 1px solid #bae6fd;
-    }
-    
-    .email-btn:hover {
-        background: #0ea5e9;
-        color: white;
-        transform: translateY(-2px);
-    }
-    
-    .call-btn {
-        background: #f0fdf4;
-        color: #10b981;
-        border: 1px solid #bbf7d0;
-    }
-    
-    .call-btn:hover {
-        background: #10b981;
-        color: white;
-        transform: translateY(-2px);
-    }
-    
-    /* Badge styling for property types */
-    .type-sale {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-        color: white;
-    }
-    
-    .type-rent {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: white;
-    }
-    
-    .type-lease {
-        background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
-        color: white;
-    }
-    
-    /* Price styling */
-    .price-sale { color: #3b82f6; }
-    .price-rent { color: #3b82f6; }
-    .price-lease { color: #3b82f6; }
-    
-    /* Welcome text enhancement */
-    #welcomeText {
-        font-size: 1.1rem;
-        font-weight: 500;
-        opacity: 0.95;
-        margin-top: 10px;
-        padding: 10px 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    
-    /* Animations */
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    
-    @keyframes slideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-    }
-    
     @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
-    
-    @keyframes modalSlideIn {
-        from { transform: translateY(-20px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
+
+    /* Categories - match broker card style */
+    .categories-section { margin-bottom: 40px; }
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
     }
-    
-    /* Responsive Design */
+    .category-card {
+        background: white;
+        padding: 25px 20px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--card-hover-shadow);
+        border-color: #d4af37;
+    }
+    .category-icon { color: #d4af37; font-size: 40px; }
+
+    /* AI chatbot section */
+    .ai-chatbot-section {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 30px;
+        margin-bottom: 40px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    @media (max-width: 1024px) {
+        .container { margin-left: 0; padding: 25px; }
+        .mobile-menu-toggle { display: flex; align-items: center; justify-content: center; }
+        .listings-grid, .recommendations-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .hero-stats { gap: 20px; }
+    }
     @media (max-width: 768px) {
-        .hero-section {
-            padding: 30px 20px;
-        }
-        
-        .hero-section h1 {
-            font-size: 2rem;
-        }
-        
-        .search-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .search-actions {
-            flex-direction: column;
-        }
-        
-        .search-button, .reset-button {
-            min-width: 100%;
-        }
-        
-        .listings-grid, .recommendations-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .categories-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .chat-input {
-            flex-direction: column;
-        }
-        
-        .listing-details {
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        /* Responsive Modal */
-        .message-modal-content {
-            width: 95%;
-            max-height: 90vh;
-            margin: 10px;
-        }
-        
-        .message-header {
-            padding: 20px;
-        }
-        
-        .message-broker-card {
-            padding: 15px 20px;
-        }
-        
-        .messages-container {
-            padding: 20px;
-            max-height: 350px;
-        }
-        
-        .message-input-area {
-            padding: 20px;
-        }
-        
-        .message-actions {
-            flex-direction: column;
-            align-items: stretch;
-        }
-        
-        .contact-info {
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .quick-contact-buttons {
-            flex-direction: column;
-        }
-        
-        .listing-title {
-            -webkit-line-clamp: 2;
-            max-height: 3.6em;
-        }
-        
-        .broker-name, .broker-contact {
-            max-width: 200px;
-        }
+        .container { padding: 20px; }
+        .listings-grid, .recommendations-grid { grid-template-columns: 1fr; gap: 15px; }
+        .hero-section h1 { font-size: 1.8rem; }
+        .hero-section { padding: 30px 24px; }
     }
 </style>
 </head>
 
 <body>
 <script src="../ai_chatbot.js" type="module"></script>
-<script src="../sidebar-user.js"></script>
 
 <!-- Mobile Menu Toggle -->
 <button class="mobile-menu-toggle" id="mobileMenuToggle">
@@ -1215,32 +501,32 @@
     <h1>Discover House and Lot for sale and rent in Batangas</h1>
     <p>Find your dream property in Batangas - homes, condos, lots, and commercial spaces</p>
     <div id="welcomeText" class="welcome-message"></div>
-    <div class="hero-stats" style="display: flex; gap: 30px; margin-top: 30px;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="font-size: 1.5rem; background: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-building"></i>
-            </div>
+    <div id="guestMessage" style="display: none;" class="guest-message">
+        <strong>👋 Welcome Guest!</strong>
+        <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;">
+            Browse properties without logging in. <a href="../login.html">Sign in</a> to save properties and contact brokers.
+        </p>
+    </div>
+    <div class="hero-stats">
+        <div class="hero-stat-item">
+            <div class="hero-stat-icon"><i class="fas fa-building"></i></div>
             <div>
-                <div style="font-size: 1.5rem; font-weight: 700;" id="totalProperties">0</div>
-                <div style="font-size: 0.9rem; opacity: 0.8;">Total Properties</div>
+                <div class="hero-stat-value" id="totalProperties">0</div>
+                <div class="hero-stat-label">Total Properties</div>
             </div>
         </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="font-size: 1.5rem; background: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-map-marker-alt"></i>
-            </div>
+        <div class="hero-stat-item">
+            <div class="hero-stat-icon"><i class="fas fa-map-marker-alt"></i></div>
             <div>
-                <div style="font-size: 1.5rem; font-weight: 700;">20+</div>
-                <div style="font-size: 0.9rem; opacity: 0.8;">Cities & Towns</div>
+                <div class="hero-stat-value">20+</div>
+                <div class="hero-stat-label">Cities & Towns</div>
             </div>
         </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="font-size: 1.5rem; background: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-robot"></i>
-            </div>
+        <div class="hero-stat-item">
+            <div class="hero-stat-icon"><i class="fas fa-robot"></i></div>
             <div>
-                <div style="font-size: 1.5rem; font-weight: 700;">AI-Powered</div>
-                <div style="font-size: 0.9rem; opacity: 0.8;">Smart Recommendations</div>
+                <div class="hero-stat-value">AI-Powered</div>
+                <div class="hero-stat-label">Smart Recommendations</div>
             </div>
         </div>
     </div>
@@ -1345,7 +631,7 @@
 </div>
 
 <!-- AI Chatbot Section -->
-<div class="ai-chatbot-section">
+<div id="ai-chatbot-section" class="ai-chatbot-section">
     <h2 class="section-title">
         <i class="fas fa-robot"></i> AI Property Assistant
     </h2>
@@ -1455,97 +741,25 @@
 </div>
 
 <!-- Sidebar Loader -->
+<script src="../sidebar-user.js"></script>
+<script src="buyer-sidebar-loader.js"></script>
 <script>
-// Mobile menu functionality
-document.getElementById('mobileMenuToggle').addEventListener('click', function() {
-    const sidebar = document.querySelector('.sidebar');
-    if (sidebar) {
-        sidebar.classList.toggle('active');
-    }
+function scrollToAiChatbot() {
+    const el = document.getElementById('ai-chatbot-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+document.addEventListener('DOMContentLoaded', function() {
+    loadBuyerSidebar('buyer_dashboard.html');
+    // Scroll to AI chatbot section when navigated via sidebar AI Assistant link
+    if (window.location.hash === '#ai-chatbot-section') scrollToAiChatbot();
 });
-
-// Close sidebar when clicking on a link (mobile)
-document.addEventListener('click', function(e) {
-    if (window.innerWidth <= 1024) {
-        if (e.target.closest('.sidebar-link')) {
-            const sidebar = document.querySelector('.sidebar');
-            if (sidebar) {
-                sidebar.classList.remove('active');
-            }
-        }
-    }
+window.addEventListener('hashchange', function() {
+    if (window.location.hash === '#ai-chatbot-section') scrollToAiChatbot();
 });
-
-// Load sidebar
-fetch('sidebar.html')
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to load sidebar: ' + response.status);
-        }
-        return response.text();
-    })
-    .then(html => {
-        document.getElementById('sidebar-container').innerHTML = html;
-        if (typeof window.updateSidebarUserProfile === 'function') {
-            window.updateSidebarUserProfile();
-        }
-        // Highlight active link
-        const links = document.querySelectorAll('.sidebar-link');
-        links.forEach(link => {
-            if (link.getAttribute('href') === 'buyer_dashboard.html') {
-                link.classList.add('active');
-            }
-        });
-        
-        // Setup logout button
-        setupLogoutButton();
-    })
-    .catch(error => {
-        console.error('Error loading sidebar:', error);
-        document.getElementById('sidebar-container').innerHTML = 
-            '<div class="sidebar" style="padding: 20px; background: #f8f9fa; color: #dc3545;">' +
-            '<p>Unable to load navigation. Please refresh the page.</p>' +
-            '</div>';
-    });
 
 window.viewAllProperties = function() {
     window.location.href = 'search_results.html';
 };
-
-// Handle window resize
-window.addEventListener('resize', function() {
-    const sidebar = document.querySelector('.sidebar');
-    if (window.innerWidth > 1024 && sidebar) {
-        sidebar.classList.remove('active');
-    }
-});
-
-// Simple logout function
-function setupLogoutButton() {
-    const logoutBtn = document.getElementById("logoutBtn");
-    if (!logoutBtn) {
-        setTimeout(setupLogoutButton, 100);
-        return;
-    }
-
-    // Remove existing event listeners
-    const newLogoutBtn = logoutBtn.cloneNode(true);
-    logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
-
-    // Add new event listener
-    newLogoutBtn.addEventListener("click", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (confirm("Are you sure you want to log out?")) {
-            if (typeof window.performLogout === 'function') {
-                window.performLogout();
-            } else {
-                window.location.href = "../login.html";
-            }
-        }
-    });
-}
 
 // Update total properties count
 function updateTotalPropertiesCount(count) {
@@ -1606,6 +820,11 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Expose for sidebar
+window.firebaseApp = app;
+window.firebaseAuth = auth;
+window.firebaseDB = db;
+
 // Global variables
 let allListings = [];
 let userMap = new Map();
@@ -1615,6 +834,7 @@ let messageListener = null;
 
 // Welcome text element
 const welcomeText = document.getElementById("welcomeText");
+const guestMessage = document.getElementById("guestMessage");
 
 // --- MESSAGING SYSTEM FUNCTIONS ---
 
@@ -1664,7 +884,9 @@ function initializeMessagingListeners() {
 window.contactBroker = async function(userId, propertyId = null) {
     const currentUser = auth.currentUser;
     if (!currentUser) {
-        alert('Please log in to contact brokers');
+        alert('Please log in to contact brokers. You can browse properties as a guest, but need to sign in to send messages.');
+        const redirect = encodeURIComponent(window.location.pathname + (window.location.search || ''));
+        window.location.href = "../login.html?redirect=" + (redirect || encodeURIComponent('buyer/buyer_dashboard.html'));
         return;
     }
 
@@ -2318,7 +1540,7 @@ async function applyFilters() {
     if (propertyType) filters.propertyType = propertyType;
     if (searchTerm) filters.searchTerm = searchTerm;
 
-    // Log search event for recommendations
+    // Log search event for recommendations (only for logged-in users)
     try {
         const currentUser = auth.currentUser;
         if (currentUser && Object.keys(filters).length > 0) {
@@ -2530,7 +1752,7 @@ async function loadCategories() {
 async function filterByCategory(categoryName) {
     const filters = { propertyCategory: categoryName };
 
-    // Log category click as a search event for recommendations
+    // Log category click as a search event for recommendations (only for logged-in users)
     try {
         const currentUser = auth.currentUser;
         if (currentUser) {
@@ -2651,12 +1873,28 @@ async function loadUserData(userId) {
                 displayName: fullName.trim(),
                 email: userData.email || 'Email not available',
                 phone: userData.phone || 'Phone not available',
-                role: userData.role || 'user'
+                role: userData.role || 'user',
+                photoURL: userData.photoURL || userData.profilePhotoURL || null
             };
             
             userMap.set(userId, userInfo);
             
             console.log(`✅ Loaded user ${userId}: "${userInfo.displayName}" (${userInfo.role})`);
+            return;
+        }
+        
+        // Fallback: try brokers collection (some brokers store profile there)
+        const brokerDoc = await getDoc(doc(db, "brokers", userId));
+        if (brokerDoc.exists()) {
+            const brokerData = brokerDoc.data();
+            const fullName = brokerData.fullName || brokerData.name || brokerData.email?.split('@')[0] || `User ${userId.substring(0, 8)}`;
+            userMap.set(userId, {
+                displayName: fullName.trim(),
+                email: brokerData.email || 'Email not available',
+                phone: brokerData.phone || 'Phone not available',
+                role: 'broker',
+                photoURL: brokerData.photoURL || brokerData.profilePhoto || brokerData.profileImage || null
+            });
             return;
         }
         
@@ -2666,7 +1904,8 @@ async function loadUserData(userId) {
             displayName: `User ${userId.substring(0, 8)}`,
             email: 'Email not available',
             phone: 'Phone not available',
-            role: 'user'
+            role: 'user',
+            photoURL: null
         });
         
     } catch (error) {
@@ -2675,7 +1914,8 @@ async function loadUserData(userId) {
             displayName: `User ${userId.substring(0, 8)}`,
             email: 'Email not available',
             phone: 'Phone not available',
-            role: 'user'
+            role: 'user',
+            photoURL: null
         });
     }
 }
@@ -2791,8 +2031,8 @@ function displayFilteredListings() {
 async function displayListings(listings) {
   const container = document.getElementById('listingsContainer');
   
-  // Check which properties are already saved
-  const savedMap = await checkSavedStatus(listings);
+  // Check which properties are already saved (only for logged-in users)
+  const savedMap = auth.currentUser ? await checkSavedStatus(listings) : new Map();
   
   container.innerHTML = listings.map(listing => {
     const isSaved = savedMap.has(listing.id);
@@ -2800,10 +2040,17 @@ async function displayListings(listings) {
       displayName: `User ${listing.userId ? listing.userId.substring(0, 8) : 'Unknown'}`,
       email: 'N/A',
       phone: 'N/A',
-      role: 'user'
+      role: 'user',
+      photoURL: null
     };
     
     const userInitials = userInfo.displayName.split(' ').map(n => n[0]).join('').toUpperCase() || 'UU';
+    const brokerAvatarHtml = userInfo.photoURL
+      ? `<img src="${userInfo.photoURL}" alt="${(userInfo.displayName || '').replace(/"/g, '&quot;')}" onerror="var p=this.parentElement;p.innerHTML=p.getAttribute('data-fallback')||'U'">`
+      : userInitials;
+    const brokerAvatarWrapper = userInfo.photoURL
+      ? `<div class="broker-avatar" data-fallback="${(userInitials || 'U').replace(/"/g, '&quot;')}" aria-label="Broker avatar">${brokerAvatarHtml}</div>`
+      : `<div class="broker-avatar" aria-label="Broker avatar">${userInitials}</div>`;
     const listingType = getListingType(listing);
     const displayPrice = getDisplayPrice(listing);
     const priceClass = getPriceClass(listing);
@@ -2837,10 +2084,11 @@ async function displayListings(listings) {
     const brokerName = userInfo.displayName;
     const truncatedBrokerName = brokerName.length > 20 ? brokerName.substring(0, 20) + '...' : brokerName;
     
-    // Match broker dashboard: card-link-overlay for click, type badge on image
+    // Add type badge to property card
+    const typeBadge = `<div class="listing-type-badge ${typeBadgeClass}">${typeBadgeText}</div>`;
+    
     const locationDisplay = listing.location || listing.address || 'Location not specified';
     const listingTypeLabel = listingType === 'rent' ? 'For Rent' : listingType === 'lease' ? 'For Lease' : 'For Sale';
-    const badgeClass = listingType === 'sale' ? 'sale' : 'rent';
     let statusText = listing.status || 'available';
     let statusClass = 'status-active';
     let showStatus = true;
@@ -2851,20 +2099,30 @@ async function displayListings(listings) {
     } else if (statusText.toLowerCase() === 'pending') {
       statusClass = 'status-pending';
     }
+    
+    // Determine contact button text and behavior based on auth state
+    const contactButton = auth.currentUser 
+      ? `<button class="action-btn contact-btn" data-user-id="${listing.userId}">
+            <i class="fas fa-comment"></i> Contact Broker
+         </button>`
+      : `<button class="action-btn contact-btn" onclick="window.location.href='../login.html'">
+            <i class="fas fa-sign-in-alt"></i> Login to Contact
+         </button>`;
+    
     return `
 <div class="listing-card-wrapper">
     <div class="listing-card" data-listing-id="${listing.id}">
         <a href="property_details.html?id=${listing.id}" class="card-link-overlay" aria-label="View ${title}"></a>
         <div class="listing-card-image-container">
-            <span class="listing-type-badge ${badgeClass}">${listingTypeLabel}</span>
             <img src="${mainPhoto}" alt="${listing.title}" class="listing-image">
+            ${typeBadge}
         </div>
         <div class="listing-content">
             <div class="listing-header">
                 <div style="flex: 1; min-width: 0;">
                     <h3 class="listing-title" title="${title}">${truncatedTitle}</h3>
                 </div>
-                <div class="listing-price">${displayPrice}</div>
+                <div class="listing-price ${priceClass}">${displayPrice}</div>
             </div>
             <div class="listing-location">
                 <i class="fas fa-map-marker-alt" style="flex-shrink: 0;"></i>
@@ -2878,7 +2136,7 @@ async function displayListings(listings) {
                 ${listingType === 'rent' && listing.securityDeposit ? `<div class="detail"><i class="fas fa-coins"></i> Deposit: ₱${listing.securityDeposit.toLocaleString()}</div>` : ''}
             </div>
             <div class="listing-broker">
-                <div class="broker-avatar" aria-label="Broker avatar">${userInitials}</div>
+                ${brokerAvatarWrapper}
                 <div class="broker-info">
                     <div class="broker-name" title="${brokerName}">${truncatedBrokerName}</div>
                     <div class="broker-contact">
@@ -2893,11 +2151,56 @@ async function displayListings(listings) {
     `;
   }).join('');
   
-  // Setup event listeners for save buttons and contact buttons
-  setTimeout(setupListingEventListeners, 100);
-  
-  // Force badges to be visible
-  setTimeout(forceBadgeVisibility, 100);
+    setTimeout(() => {
+        setupListingEventListeners();
+        makePropertyCardsClickable();  // ADD THIS LINE
+        forceBadgeVisibility();
+    }, 100);
+}
+
+// Add this function to make cards clickable
+function makePropertyCardsClickable() {
+    // Wait a moment for the DOM to update
+    setTimeout(() => {
+        // Get all property cards
+        const cards = document.querySelectorAll('.listing-card');
+        
+        cards.forEach(card => {
+            // Make cursor show pointer
+            card.style.cursor = 'pointer';
+            
+            // Add click event listener
+            card.addEventListener('click', function(e) {
+                // Don't navigate if clicking on action buttons
+                if (e.target.closest('.action-btn') || 
+                    e.target.closest('button') || 
+                    e.target.tagName === 'BUTTON') {
+                    e.stopPropagation();
+                    return;
+                }
+                
+                // Get the listing ID from data attribute
+                const listingId = this.getAttribute('data-listing-id');
+                if (listingId) {
+                    // Navigate to property details page
+                    window.location.href = `property_details.html?id=${listingId}`;
+                }
+            });
+            
+            // Add hover effects
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+                this.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.12)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.08)';
+            });
+        });
+        
+        console.log(`Made ${cards.length} property cards clickable`);
+    }, 500);
 }
 
 function displayNoListings() {
@@ -2949,6 +2252,7 @@ async function toggleSaveProperty(propertyId, buttonElement) {
         const currentUser = auth.currentUser;
         if (!currentUser) {
             alert('Please login to save properties');
+            window.location.href = "../login.html";
             return;
         }
         
@@ -2989,7 +2293,7 @@ async function toggleSaveProperty(propertyId, buttonElement) {
             console.log(`Property ${propertyId} saved`);
             showSaveToast('Property saved!', false);
         }
-
+        if (typeof window.updateSidebarStats === 'function') window.updateSidebarStats();
     } catch (error) {
         console.error("Error toggling save:", error);
         showSaveToast("Error saving property", true);
@@ -3070,7 +2374,11 @@ function setupEventListeners() {
                     `;
                 }
                 
-                await loadRecommendationsFromPython();
+                if (auth.currentUser) {
+                    await loadRecommendationsFromPython();
+                } else {
+                    showGuestRecommendations();
+                }
             } catch (error) {
                 console.log("Could not refresh recommendations:", error);
             }
@@ -3082,38 +2390,22 @@ function setupEventListeners() {
 }
 
 function setupListingEventListeners() {
-    // Save property buttons
-    document.querySelectorAll('#listingsContainer .save-property-btn').forEach(btn => {
-        // Remove existing event listeners
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(newBtn, btn);
-        
-        // Add new event listener
-        newBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            const propertyId = this.getAttribute('data-property-id');
-            if (propertyId) {
-                toggleSaveProperty(propertyId, this);
-            }
-        });
-    });
-    
     // Contact buttons - prevent card click when clicking contact button
     document.querySelectorAll('#listingsContainer .action-btn.contact-btn').forEach(btn => {
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(newBtn, btn);
-        
-        newBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            const userId = this.getAttribute('data-user-id');
-            if (userId) {
-                window.contactBroker(userId);
-            }
-        });
+        if (btn.getAttribute('data-user-id')) {
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            
+            newBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                const userId = this.getAttribute('data-user-id');
+                if (userId) {
+                    window.contactBroker(userId);
+                }
+            });
+        }
     });
 }
 
@@ -3123,17 +2415,13 @@ async function loadRecommendationsFromPython() {
     try {
         const currentUser = auth.currentUser;
         if (!currentUser) {
-            console.log('User not authenticated, skipping recommendations');
-            showRecentPropertiesFallback('Save properties to get AI recommendations');
+            console.log('User not authenticated, showing guest recommendations');
+            showGuestRecommendations();
             return;
         }
 
         const userId = currentUser.uid;
         console.log('Loading recommendations from Python API for user:', userId);
-
-        // FIRST: Get actual saved count from Firestore (RELIABLE SOURCE)
-        const actualSavedCount = await getActualSavedCount(userId);
-        console.log('🎯 Actual saved properties count from Firestore:', actualSavedCount);
 
         // Show loading state
         const recoContainer = document.getElementById('recommendedListingsContainer');
@@ -3142,18 +2430,12 @@ async function loadRecommendationsFromPython() {
                 <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
                     <div class="spinner" style="border: 4px solid var(--bg-light); border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
                     <p style="color: var(--text-light);">Finding properties you'll love...</p>
-                    ${actualSavedCount < 3 ? `
-                    <div style="background: linear-gradient(135deg, rgba(11, 46, 82, 0.12) 0%, rgba(212, 175, 55, 0.12) 100%); padding: 10px; border-radius: 8px; margin-top: 10px;">
-                        <small>You have ${actualSavedCount} saved property${actualSavedCount !== 1 ? 's' : ''}</small>
-                    </div>
-                    ` : ''}
                 </div>
             `;
         }
 
-        // Call Python backend API with TRY-CATCH for JSON parsing
+        // Call Python backend API
         let data;
-        let apiResponseText = '';
         
         try {
             const response = await fetch(`${PYTHON_API_URL}?user_id=${userId}`, {
@@ -3168,71 +2450,46 @@ async function loadRecommendationsFromPython() {
                 throw new Error(`API request failed with status ${response.status}`);
             }
 
-            apiResponseText = await response.text();
+            const apiResponseText = await response.text();
             console.log('📦 Raw API response (first 500 chars):', apiResponseText.substring(0, 500));
 
-            // Debug: Check if response contains undefined
-            if (apiResponseText.includes('undefined')) {
-                console.warn('⚠️ API response contains "undefined" string');
-                // Clean the response by removing undefined
-                apiResponseText = apiResponseText.replace(/undefined/g, 'null');
-            }
+            // Clean the response by removing undefined
+            let cleanedResponse = apiResponseText.replace(/undefined/g, 'null');
 
             // Try to parse JSON
             try {
-                data = JSON.parse(apiResponseText);
+                data = JSON.parse(cleanedResponse);
             } catch (parseError) {
                 console.error('❌ JSON parse error:', parseError);
-                console.error('Problematic response:', apiResponseText);
-                
-                // Try to extract just the JSON part if there's extra text
-                const jsonMatch = apiResponseText.match(/\{.*\}/s);
-                if (jsonMatch) {
-                    try {
-                        data = JSON.parse(jsonMatch[0]);
-                        console.log('✅ Successfully extracted JSON from response');
-                    } catch (secondError) {
-                        console.error('❌ Still cannot parse JSON:', secondError);
-                        // Create fallback data
-                        data = createFallbackRecommendationData(actualSavedCount);
-                    }
-                } else {
-                    data = createFallbackRecommendationData(actualSavedCount);
-                }
+                // Create fallback data
+                data = {
+                    success: true,
+                    has_history: false,
+                    saved_count: 0,
+                    recommendation_type: 'recent',
+                    message: 'Showing recent properties',
+                    recommendations: []
+                };
             }
         } catch (fetchError) {
             console.error('🌐 Fetch error:', fetchError);
-            data = createFallbackRecommendationData(actualSavedCount);
+            data = {
+                success: false,
+                has_history: false,
+                saved_count: 0,
+                recommendation_type: 'recent',
+                message: 'Showing recent properties',
+                recommendations: []
+            };
         }
-
-        // Debug the response structure
-        console.log('📊 Parsed API data:', {
-            success: data.success,
-            has_history: data.has_history,
-            saved_count: data.saved_count,
-            actual_saved_count: actualSavedCount,
-            recommendation_type: data.recommendation_type,
-            recommendations_count: data.recommendations ? data.recommendations.length : 0,
-            message: data.message,
-            user_message: data.user_message
-        });
-
-        // IMPORTANT: Use actual saved count from Firestore instead of API's saved_count
-        // The API might be returning incorrect saved_count
-        data.saved_count = actualSavedCount;
 
         // Update the subtitle based on response
         const subtitle = document.getElementById('recommendationsSubtitle');
         if (subtitle) {
-            if (data.user_message && actualSavedCount < 3) {
-                subtitle.textContent = data.user_message.replace(
-                    /saved (\d+) properties/i,
-                    `saved ${actualSavedCount} properties`
-                );
-            } else if (data.message) {
+            if (data.message) {
                 subtitle.textContent = data.message;
             } else {
-                subtitle.textContent = `Based on your ${actualSavedCount} saved properties and search history`;
+                subtitle.textContent = 'Based on your saved properties and search history';
             }
         }
 
@@ -3266,163 +2523,31 @@ async function loadRecommendationsFromPython() {
             }
         }
         
-        // Handle partial recommendations
-        else if (data.recommendation_type === 'partial' && data.recommendations && Array.isArray(data.recommendations) && data.recommendations.length > 0) {
-            console.log(`📝 Received ${data.recommendations.length} partial recommendations`);
-            
-            const recommendedListings = data.recommendations
-                .map(rec => {
-                    const listing = allListings.find(l => l.id === rec.id || l.id === rec.property_id);
-                    if (listing) {
-                        return {
-                            ...listing,
-                            recoScore: rec.match_score || rec.similarity_score || 0,
-                            similarity_score: rec.similarity_score || rec.match_score || 0,
-                            similar_to: `You've saved ${actualSavedCount} properties. Save ${Math.max(0, 3 - actualSavedCount)} more for AI recommendations!`
-                        };
-                    }
-                    return null;
-                })
-                .filter(l => l !== null)
-                .slice(0, 5);
-
-            if (recommendedListings.length > 0) {
-                displayRecommendedListingsPython(recommendedListings, 'partial');
-                return;
-            }
-        }
-        
         // Fallback to recent properties
         console.log('📦 No AI recommendations, showing recent properties');
-        showRecentPropertiesFallback();
+        showGuestRecommendations();
 
     } catch (error) {
         console.error('💥 Error in recommendation system:', error);
-        showRecentPropertiesFallback('Error loading recommendations');
+        showGuestRecommendations('Error loading recommendations');
     }
 }
 
-// Helper function: Get actual saved count from Firestore
-async function getActualSavedCount(userId) {
+// Show properties to guest users
+async function showGuestRecommendations() {
     try {
-        const savedRef = collection(db, 'savedProperties');
-        const q = query(savedRef, where('userId', '==', userId));
-        const snapshot = await getDocs(q);
-        return snapshot.size;
-    } catch (error) {
-        console.error('Error getting saved count:', error);
-        return 0;
-    }
-}
-
-// Helper function: Create fallback recommendation data
-function createFallbackRecommendationData(savedCount) {
-    return {
-        success: true,
-        has_history: savedCount > 0,
-        saved_count: savedCount,
-        recommendation_type: savedCount >= 3 ? 'ai' : 'partial',
-        message: savedCount >= 3 ? 'AI recommendations are being processed' : 'Save more properties for AI recommendations',
-        user_message: savedCount >= 3 
-            ? 'Processing your preferences...' 
-            : `You've saved ${savedCount} properties. Save ${Math.max(0, 3 - savedCount)} more for AI recommendations!`,
-        recommendations: []
-    };
-}
-
-// Fallback function with specific messaging
-async function showRecentPropertiesFallback(message = '') {
-    try {
-        console.log('Showing recent properties as fallback');
+        console.log('Showing properties to guest user');
         
-        // Get recent active properties (sorted by creation date if available)
-        const activeListings = allListings.filter(listing => 
-            listing.status === 'active' ||
-            listing.status === 'available' ||
-            listing.status === 'Active' ||
-            (listing.status === undefined && listing.isActive !== false)
-        );
+        // Update section title for guests
+        const sectionTitle = document.querySelector('#recommendedSection .section-title');
+        const sectionSubtitle = document.querySelector('#recommendationsSubtitle');
         
-        // Sort by date if available, otherwise take first 5
-        const recentListings = activeListings
-            .sort((a, b) => {
-                const dateA = a.createdAt || a.uploadedAt || 0;
-                const dateB = b.createdAt || b.uploadedAt || 0;
-                return dateB - dateA; // Newest first
-            })
-            .slice(0, 5);
-        
-        if (recentListings.length > 0) {
-            displayRecommendedListingsPython(recentListings, 'recent');
-            
-            // Add a prompt message below the section
-            setTimeout(() => {
-                const section = document.getElementById('recommendedSection');
-                if (section) {
-                    let promptDiv = section.querySelector('.recent-prompt');
-                    if (!promptDiv) {
-                        promptDiv = document.createElement('div');
-                        promptDiv.className = 'recent-prompt';
-                        promptDiv.style.cssText = `
-                            background: linear-gradient(135deg, #0b2e52 0%, #1e3a5f 100%);
-                            color: white;
-                            padding: 15px 20px;
-                            border-radius: 8px;
-                            margin-top: 20px;
-                            text-align: center;
-                            animation: fadeIn 0.5s ease;
-                        `;
-                        promptDiv.innerHTML = `
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                                <div style="flex: 1; max-width: 600px;">
-                                    <strong>💡 Get AI Recommendations!</strong>
-                                    <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.9;">
-                                        Save 3+ properties you like to receive personalized AI recommendations based on your preferences.
-                                    </p>
-                                </div>
-                            </div>
-                        `;
-                        section.appendChild(promptDiv);
-                    }
-                }
-            }, 100);
-        } else {
-            // If no recent listings, show a message
-            const recoContainer = document.getElementById('recommendedListingsContainer');
-            if (recoContainer) {
-                recoContainer.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
-                        <div style="font-size: 48px; margin-bottom: 20px;">🏠</div>
-                        <h3 style="color: var(--text-dark); margin-bottom: 10px;">Start Your Property Journey</h3>
-                        <p style="color: var(--text-light); max-width: 500px; margin: 0 auto 20px;">
-                            Browse properties and save your favorites. After saving 3+ properties, 
-                            our AI will learn your preferences and show personalized recommendations!
-                        </p>
-                    </div>
-                `;
-            }
+        if (sectionTitle) {
+            sectionTitle.innerHTML = '<i class="fas fa-eye"></i> Featured Properties';
         }
-    } catch (error) {
-        console.error('Error loading recent listings:', error);
-        const recoContainer = document.getElementById('recommendedListingsContainer');
-        if (recoContainer) {
-            recoContainer.innerHTML = `
-                <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
-                    <div style="font-size: 48px; margin-bottom: 20px;">⚠️</div>
-                    <h3 style="color: var(--text-dark); margin-bottom: 10px;">Explore Properties</h3>
-                    <p style="color: var(--text-light); max-width: 500px; margin: 0 auto 20px;">
-                        Browse through our listings and save properties you're interested in.
-                    </p>
-                </div>
-            `;
+        if (sectionSubtitle) {
+            sectionSubtitle.textContent = 'Browse these featured properties. Sign in to get personalized AI recommendations!';
         }
-    }
-}
-
-// Special function for when user needs to save more properties
-async function showRecentPropertiesFallbackWithMessage(savedCount) {
-    try {
-        console.log(`User has ${savedCount} saved properties, showing encouragement message`);
         
         // Get recent active properties
         const activeListings = allListings.filter(listing => 
@@ -3442,22 +2567,16 @@ async function showRecentPropertiesFallbackWithMessage(savedCount) {
             .slice(0, 5);
         
         if (recentListings.length > 0) {
-            displayRecommendedListingsPython(recentListings, 'recent');
+            displayRecommendedListingsPython(recentListings, 'guest');
             
-            // Update section subtitle to show progress
-            const subtitle = document.getElementById('recommendationsSubtitle');
-            if (subtitle) {
-                subtitle.textContent = `You've saved ${savedCount} properties. Save ${3 - savedCount} more to unlock AI recommendations!`;
-            }
-            
-            // Add a more specific prompt message
+            // Add a prompt message below the section
             setTimeout(() => {
                 const section = document.getElementById('recommendedSection');
                 if (section) {
-                    let promptDiv = section.querySelector('.recent-prompt');
+                    let promptDiv = section.querySelector('.guest-prompt');
                     if (!promptDiv) {
                         promptDiv = document.createElement('div');
-                        promptDiv.className = 'recent-prompt';
+                        promptDiv.className = 'guest-prompt';
                         promptDiv.style.cssText = `
                             background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
                             color: white;
@@ -3470,14 +2589,10 @@ async function showRecentPropertiesFallbackWithMessage(savedCount) {
                         promptDiv.innerHTML = `
                             <div style="display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
                                 <div style="flex: 1; max-width: 600px;">
-                                    <strong>🚀 Almost There!</strong>
+                                    <strong>🔓 Unlock AI Recommendations!</strong>
                                     <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.9;">
-                                        You've saved ${savedCount} property${savedCount !== 1 ? 's' : ''}. 
-                                        Save ${3 - savedCount} more to unlock personalized AI recommendations!
+                                        <a href="../login.html" style="color: white; text-decoration: underline; font-weight: 600;">Sign in</a> to save properties and get personalized AI recommendations based on your preferences.
                                     </p>
-                                </div>
-                                <div style="background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 12px;">
-                                    ${savedCount}/3
                                 </div>
                             </div>
                         `;
@@ -3486,30 +2601,37 @@ async function showRecentPropertiesFallbackWithMessage(savedCount) {
                 }
             }, 100);
         } else {
-            // If no recent listings
+            // If no recent listings, show a message
             const recoContainer = document.getElementById('recommendedListingsContainer');
             if (recoContainer) {
                 recoContainer.innerHTML = `
                     <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
-                        <div style="font-size: 48px; margin-bottom: 20px;">🎯</div>
-                        <h3 style="color: var(--text-dark); margin-bottom: 10px;">Build Your Preferences</h3>
+                        <div style="font-size: 48px; margin-bottom: 20px;">🏠</div>
+                        <h3 style="color: var(--text-dark); margin-bottom: 10px;">Featured Properties Coming Soon</h3>
                         <p style="color: var(--text-light); max-width: 500px; margin: 0 auto 20px;">
-                            You've saved ${savedCount} property${savedCount !== 1 ? 's' : ''}. 
-                            Save ${3 - savedCount} more property${3 - savedCount !== 1 ? 's' : ''} to unlock 
-                            personalized AI recommendations tailored to your tastes!
+                            New properties are being added regularly. Check back soon for featured listings!
                         </p>
-                        <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
-                            <div style="background: var(--primary); color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px;">
-                                Progress: ${savedCount}/3
-                            </div>
-                        </div>
+                        <a href="../login.html" class="search-button" style="margin-top: 15px; display: inline-block;">
+                            <i class="fas fa-sign-in-alt"></i> Sign In for Better Experience
+                        </a>
                     </div>
                 `;
             }
         }
     } catch (error) {
-        console.error('Error in fallback with message:', error);
-        showRecentPropertiesFallback();
+        console.error('Error in guest recommendations:', error);
+        const recoContainer = document.getElementById('recommendedListingsContainer');
+        if (recoContainer) {
+            recoContainer.innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">⚠️</div>
+                    <h3 style="color: var(--text-dark); margin-bottom: 10px;">Explore Properties</h3>
+                    <p style="color: var(--text-light); max-width: 500px; margin: 0 auto 20px;">
+                        Browse through our listings below.
+                    </p>
+                </div>
+            `;
+        }
     }
 }
 
@@ -3528,15 +2650,15 @@ function displayRecommendedListingsPython(recommendations, type = 'personalized'
             if (sectionSubtitle) {
                 sectionSubtitle.textContent = 'Based on your saved properties and search history';
             }
-        } else if (type === 'partial') {
-            sectionTitle.innerHTML = '<i class="fas fa-star"></i> Getting Started';
+        } else if (type === 'guest') {
+            sectionTitle.innerHTML = '<i class="fas fa-eye"></i> Featured Properties';
             if (sectionSubtitle) {
-                sectionSubtitle.textContent = 'Save more properties to unlock AI recommendations';
+                sectionSubtitle.textContent = 'Browse these featured properties. Sign in to get personalized AI recommendations!';
             }
         } else {
             sectionTitle.innerHTML = '<i class="fas fa-clock"></i> Recent Properties';
             if (sectionSubtitle) {
-                sectionSubtitle.textContent = 'Browse these recently listed properties. Save some to get AI recommendations!';
+                sectionSubtitle.textContent = 'Browse these recently listed properties';
             }
         }
     }
@@ -3545,15 +2667,15 @@ function displayRecommendedListingsPython(recommendations, type = 'personalized'
         recoContainer.innerHTML = `
             <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
                 <div style="font-size: 48px; margin-bottom: 20px;">🏠</div>
-                <h3 style="color: var(--text-dark); margin-bottom: 10px;">Start Building Your Preferences</h3>
+                <h3 style="color: var(--text-dark); margin-bottom: 10px;">Featured Properties Coming Soon</h3>
                 <p style="color: var(--text-light); max-width: 500px; margin: 0 auto 20px;">
-                    Save properties you like or search for properties to get personalized AI recommendations!
+                    New properties are being added regularly. Check back soon!
                 </p>
             </div>`;
         return;
     }
 
-    // Check which properties are already saved
+    // Check which properties are already saved (only for logged-in users)
     checkSavedStatus(recommendations).then(savedMap => {
         recoContainer.innerHTML = recommendations.map(property => {
             const isSaved = savedMap.has(property.id);
@@ -3561,10 +2683,17 @@ function displayRecommendedListingsPython(recommendations, type = 'personalized'
                 displayName: `User ${property.userId ? property.userId.substring(0, 8) : 'Unknown'}`,
                 email: 'N/A',
                 phone: 'N/A',
-                role: 'user'
+                role: 'user',
+                photoURL: null
             };
             
             const userInitials = userInfo.displayName.split(' ').map(n => n[0]).join('').toUpperCase() || 'UU';
+            const brokerAvatarHtml = userInfo.photoURL
+              ? `<img src="${userInfo.photoURL}" alt="${(userInfo.displayName || '').replace(/"/g, '&quot;')}" onerror="var p=this.parentElement;p.innerHTML=p.getAttribute('data-fallback')||'U'">`
+              : userInitials;
+            const brokerAvatarWrapper = userInfo.photoURL
+              ? `<div class="broker-avatar" data-fallback="${(userInitials || 'U').replace(/"/g, '&quot;')}" aria-label="Broker avatar">${brokerAvatarHtml}</div>`
+              : `<div class="broker-avatar" aria-label="Broker avatar">${userInitials}</div>`;
             const listingType = getListingType(property);
             const displayPrice = getDisplayPrice(property);
             const priceClass = getPriceClass(property);
@@ -3590,17 +2719,27 @@ function displayRecommendedListingsPython(recommendations, type = 'personalized'
             const brokerName = userInfo.displayName;
             const truncatedBrokerName = brokerName.length > 20 ? brokerName.substring(0, 20) + '...' : brokerName;
             
-            // Optional recommendation label (AI Pick / RECENT / SAVE MORE) - no type badge or buttons to match broker card
+            // Add type badge to property card
+            const typeBadge = `<div class="listing-type-badge ${typeBadgeClass}">${typeBadgeText}</div>`;
+            
+            // Optional recommendation label
             let recommendationBadge = "";
             if (type === 'personalized') {
                 recommendationBadge = '<div class="listing-ai-badge">✨ AI Pick</div>';
-            } else if (type === 'partial') {
-                recommendationBadge = '<div class="listing-partial-badge" style="position: absolute; top: 10px; right: 10px; background: #d4af37; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; z-index: 2;">SAVE MORE</div>';
-            } else {
-                recommendationBadge = '<div class="listing-recent-badge" style="position: absolute; top: 10px; right: 10px; background: #6b7280; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; z-index: 2;">RECENT</div>';
+            } else if (type === 'guest') {
+                recommendationBadge = '<div class="listing-match-badge">FEATURED</div>';
             }
+            
+            // Determine contact button based on auth state
+            const contactButton = auth.currentUser 
+                ? `<button class="action-btn contact-btn" style="width: 100%;" data-user-id="${property.userId}">
+                      <i class="fas fa-comment"></i> Contact Broker
+                   </button>`
+                : `<button class="action-btn contact-btn" style="width: 100%;" onclick="window.location.href='../login.html'">
+                      <i class="fas fa-sign-in-alt"></i> Login to Contact
+                   </button>`;
+            
             const listingTypeLabel = listingType === 'rent' ? 'For Rent' : listingType === 'lease' ? 'For Lease' : 'For Sale';
-            const badgeClass = listingType === 'sale' ? 'sale' : 'rent';
             let recStatusText = property.status || 'available';
             let recStatusClass = 'status-active';
             let showRecStatus = true;
@@ -3611,13 +2750,14 @@ function displayRecommendedListingsPython(recommendations, type = 'personalized'
             } else if (recStatusText.toLowerCase() === 'pending') {
                 recStatusClass = 'status-pending';
             }
+            
             return `
                 <div class="listing-card-wrapper">
                     <div class="listing-card" data-listing-id="${property.id}">
                         <a href="property_details.html?id=${property.id}" class="card-link-overlay" aria-label="View ${title}"></a>
                         <div class="listing-card-image-container" style="position: relative;">
-                            <span class="listing-type-badge ${badgeClass}">${listingTypeLabel}</span>
                             <img src="${photo}" alt="${property.title || 'Property'}" class="listing-image">
+                            ${typeBadge}
                             ${matchScore && matchScore > 50 ? `<div class="listing-match-badge">${matchScore}% Match</div>` : ''}
                             ${recommendationBadge}
                         </div>
@@ -3626,7 +2766,7 @@ function displayRecommendedListingsPython(recommendations, type = 'personalized'
                                 <div style="flex: 1; min-width: 0;">
                                     <h3 class="listing-title" title="${title}">${truncatedTitle}</h3>
                                 </div>
-                                <div class="listing-price">${displayPrice}</div>
+                                <div class="listing-price ${priceClass}">${displayPrice}</div>
                             </div>
                             <div class="listing-location">
                                 <i class="fas fa-map-marker-alt" style="flex-shrink: 0;"></i>
@@ -3638,8 +2778,22 @@ function displayRecommendedListingsPython(recommendations, type = 'personalized'
                                 ${bathrooms ? `<div class="detail"><i class="fas fa-bath"></i> ${bathrooms} baths</div>` : ''}
                                 ${area && area !== 'N/A' ? `<div class="detail"><i class="fas fa-ruler-combined"></i> ${area} sqm</div>` : ''}
                             </div>
+                            
+                            <!-- AI Insight Section - Only for personalized recommendations -->
+                            ${property.similar_to && type === 'personalized' ? `
+                                <div class="ai-reason" style="margin: 12px 0; padding: 10px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%); border-radius: 8px; border-left: 3px solid #667eea;">
+                                    <div style="display: flex; align-items: flex-start; gap: 8px;">
+                                        <span style="font-size: 14px; color: #667eea;">💡</span>
+                                        <div style="flex: 1;">
+                                            <div style="font-size: 12px; font-weight: 600; color: #667eea; margin-bottom: 2px;">AI Insight</div>
+                                            <div style="font-size: 13px; color: var(--text-light);">${property.similar_to}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
                             <div class="listing-broker">
-                                <div class="broker-avatar" aria-label="Broker avatar">${userInitials}</div>
+                                ${brokerAvatarWrapper}
                                 <div class="broker-info">
                                     <div class="broker-name" title="${brokerName}">${truncatedBrokerName}</div>
                                     <div class="broker-contact">
@@ -3654,7 +2808,7 @@ function displayRecommendedListingsPython(recommendations, type = 'personalized'
             `;
         }).join('');
         
-        // Setup event listeners for save buttons and contact buttons in recommendations
+        // Setup event listeners for contact buttons in recommendations
         setTimeout(() => {
             setupRecommendationsEventListeners();
         }, 100);
@@ -3665,26 +2819,10 @@ function displayRecommendedListingsPython(recommendations, type = 'personalized'
 }
 
 function setupRecommendationsEventListeners() {
-    // Save property buttons in recommendations
+    // Contact buttons in recommendations
     const recoContainer = document.getElementById('recommendedListingsContainer');
     if (recoContainer) {
-        recoContainer.querySelectorAll('.save-property-btn').forEach(btn => {
-            const newBtn = btn.cloneNode(true);
-            btn.parentNode.replaceChild(newBtn, btn);
-            
-            newBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-                const propertyId = this.getAttribute('data-property-id');
-                if (propertyId) {
-                    toggleSaveProperty(propertyId, this);
-                }
-            });
-        });
-        
-        // Contact buttons in recommendations
-        recoContainer.querySelectorAll('.action-btn.contact-btn').forEach(btn => {
+        recoContainer.querySelectorAll('.action-btn.contact-btn[data-user-id]').forEach(btn => {
             const newBtn = btn.cloneNode(true);
             btn.parentNode.replaceChild(newBtn, btn);
             
@@ -3786,6 +2924,7 @@ function addDemoPrompts() {
     }
 }
 
+// Function to show chatbot error state
 function showChatbotError() {
     const chatbotSection = document.querySelector('.ai-chatbot-section');
     if (chatbotSection) {
@@ -3822,45 +2961,67 @@ function showChatbotError() {
 document.addEventListener('DOMContentLoaded', () => {
     initializeDropdowns();
     
-    // Check authentication and load user data
+    // MODIFIED: Check authentication - ALLOW GUESTS
     onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-            window.location.href = "../login.html";
-            return;
-        }
-
-        try {
+        // Update UI based on auth state
+        if (user) {
+            // Logged-in user
             console.log('👤 Logged in user UID:', user.uid);
+            guestMessage.style.display = 'none';
+            
+            try {
+                // Load user data for welcome message
+                const userRef = doc(db, "users", user.uid);
+                const userSnap = await getDoc(userRef);
 
-            // Load user data for welcome message
-            const userRef = doc(db, "users", user.uid);
-            const userSnap = await getDoc(userRef);
-
-            if (userSnap.exists()) {
-                const userData = userSnap.data();
-                welcomeText.textContent = `Welcome back, ${userData.fullName || userData.email || 'User'}!`;
-                var fullName = userData.fullName || ((userData.firstName || '') + ' ' + (userData.lastName || '')).trim() || userData.email?.split('@')[0] || 'User';
-                var profileData = { fullName: fullName, email: userData.email, role: userData.role || 'user', firstName: userData.firstName, lastName: userData.lastName };
-                try { localStorage.setItem('userData', JSON.stringify(profileData)); } catch (e) {}
-                if (typeof window.updateSidebarUserProfile === 'function') { window.updateSidebarUserProfile(profileData); }
-            } else {
+                if (userSnap.exists()) {
+                    const userData = userSnap.data();
+                    const fullName = userData.fullName || userData.displayName || userData.name ||
+                        ((userData.firstName || '') + ' ' + (userData.lastName || '')).trim() || userData.email?.split('@')[0] || 'User';
+                    welcomeText.textContent = `Welcome back, ${fullName}!`;
+                    // Store and update sidebar so it shows logged-in user
+                    const profileData = {
+                        fullName,
+                        email: userData.email,
+                        role: userData.role || userData.userType || 'user',
+                        firstName: userData.firstName,
+                        lastName: userData.lastName,
+                        photoURL: userData.photoURL || userData.profilePhotoURL
+                    };
+                    try { localStorage.setItem('userData', JSON.stringify(profileData)); } catch (e) {}
+                    if (typeof window.updateSidebarUserProfile === 'function') {
+                        window.updateSidebarUserProfile(profileData);
+                    }
+                } else {
+                    welcomeText.textContent = "Welcome to BahAI Real Estate!";
+                }
+            } catch (error) {
+                console.error("Error loading user:", error);
                 welcomeText.textContent = "Welcome to BahAI Real Estate!";
             }
-        } catch (error) {
-            console.error("Error loading user:", error);
+            
+            // Load AI recommendations for logged-in users
+            setTimeout(() => {
+                loadRecommendationsFromPython().catch(error => {
+                    console.log("Python recommendations failed to load:", error);
+                    showGuestRecommendations();
+                });
+            }, 1000);
+        } else {
+            // Guest user
+            console.log('👤 Guest user (not logged in)');
             welcomeText.textContent = "Welcome to BahAI Real Estate!";
+            guestMessage.style.display = 'block';
+            
+            // Show guest recommendations
+            setTimeout(() => {
+                showGuestRecommendations();
+            }, 1000);
         }
 
-        // Load listings and categories
+        // Load listings and categories (available to everyone)
         loadAllListings();
         
-        // Load recommendations from Python backend
-        setTimeout(() => {
-            loadRecommendationsFromPython().catch(error => {
-                console.log("Python recommendations failed to load:", error);
-            });
-        }, 1000);
-
         // Setup event listeners
         setupEventListeners();
         
@@ -3905,6 +3066,7 @@ window.contactBroker = contactBroker;
 window.loadAllListings = loadAllListings;
 window.filterByCategory = filterByCategory;
 window.loadRecommendationsFromPython = loadRecommendationsFromPython;
+window.showGuestRecommendations = showGuestRecommendations;
 
 </script>
 

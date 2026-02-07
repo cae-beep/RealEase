@@ -810,7 +810,7 @@
       }
     });
 
-    // ✅ Role-Based Redirect
+    // ✅ Role-Based Redirect - always send to role dashboard after login
     function getRedirectPage(role) {
       switch (role) {
         case "seller":
@@ -824,9 +824,9 @@
         case "landlord":
           return "landlord/landlord_dashboard.html";
         case "admin":
-          return "approve_users.html";
+          return "admin/approve_users.html";
         default:
-          return "login.html";
+          return "buyer/buyer_dashboard.html";
       }
     }
     
