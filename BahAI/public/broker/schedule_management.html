@@ -34,12 +34,41 @@
       --info: #0ea5e9;
     }
 
+    /* Layout - push main content right of fixed sidebar */
+    .container {
+      margin-left: 280px;
+      padding-top: 15px;
+    }
+    .mobile-menu-toggle {
+      display: none;
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 1001;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+    }
+    .mobile-menu-toggle:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
     /* Hero Section - same as broker dashboard */
     .hero-section {
       background: var(--primary-gradient);
       color: white;
       border-radius: var(--border-radius-lg);
-      padding: 50px 40px;
+      padding: 28px 40px;
       margin-bottom: 40px;
       position: relative;
       overflow: hidden;
@@ -103,57 +132,6 @@
       align-items: center;
       position: relative;
       z-index: 1;
-    }
-
-    .view-toggle {
-      display: flex;
-      background: rgba(255,255,255,0.2);
-      border-radius: var(--border-radius-sm);
-      padding: 4px;
-      border: 1px solid rgba(255,255,255,0.3);
-    }
-    .view-btn {
-      padding: 10px 18px;
-      border: none;
-      background: transparent;
-      color: rgba(255,255,255,0.9);
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .view-btn:hover { background: rgba(255,255,255,0.15); }
-    .view-btn.active {
-      background: rgba(255,255,255,0.25);
-      color: white;
-    }
-    .refresh-btn {
-      background: rgba(255,255,255,0.2);
-      color: white;
-      border: 2px solid rgba(255,255,255,0.4);
-      padding: 14px 24px;
-      border-radius: var(--border-radius-sm);
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .refresh-btn:hover {
-      background: rgba(255,255,255,0.3);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    }
-    .refresh-btn.refreshing {
-      background: rgba(255,255,255,0.15);
-      cursor: not-allowed;
-      transform: none;
     }
 
     /* Section title - same as broker dashboard */
@@ -725,15 +703,16 @@
 
     /* Responsive - same as broker dashboard */
     @media (max-width: 1024px) {
-      .container { margin-left: 0; padding: 25px; }
-      .mobile-menu-toggle { display: flex; align-items: center; justify-content: center; }
+      .container { margin-left: 240px; padding: 25px; padding-top: 15px; }
+      .mobile-menu-toggle { display: flex !important; align-items: center; justify-content: center; }
       .hero-stats { gap: 20px; }
-      .view-toggle { align-self: flex-start; }
+      .hero-section { padding: 24px 30px; }
     }
     @media (max-width: 768px) {
-      .container { padding: 20px; }
+      .container { margin-left: 0; padding: 20px; padding-top: 60px; }
+      .mobile-menu-toggle { display: flex !important; }
       .hero-section h1 { font-size: 1.8rem; }
-      .hero-section { padding: 30px 24px; }
+      .hero-section { padding: 22px 24px; }
       .calendar-container { padding: 15px; }
       .schedules-list-container { padding: 15px; }
       .schedule-date-time { flex-direction: column; align-items: flex-start; gap: 8px; }
@@ -744,9 +723,8 @@
       .modal-btn { width: 100%; justify-content: center; }
     }
     @media (max-width: 480px) {
-      .container { padding: 15px; }
-      .view-toggle { width: 100%; }
-      .view-btn { flex: 1; justify-content: center; }
+      .container { padding: 15px; padding-top: 58px; }
+      .hero-section { padding: 20px 18px; }
       .schedules-header { flex-direction: column; align-items: flex-start; }
       .filter-buttons { width: 100%; }
       .filter-btn { flex: 1; justify-content: center; }
@@ -766,21 +744,6 @@
 
 <!-- Main - same layout as broker dashboard -->
 <div class="container">
-  <!-- View controls and refresh -->
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
-    <div class="view-toggle" id="viewToggle">
-      <button class="view-btn active" data-view="calendar">
-        <i class="fas fa-calendar-alt"></i> Calendar
-      </button>
-      <button class="view-btn" data-view="list">
-        <i class="fas fa-list"></i> List
-      </button>
-    </div>
-    <button class="refresh-btn" id="refreshBtn">
-      <i class="fas fa-sync-alt"></i> Refresh
-    </button>
-  </div>
-
   <!-- Calendar View - same section style as dashboard -->
   <div id="calendarView">
     <h2 class="section-title" style="margin-bottom: 20px;">
@@ -1030,17 +993,6 @@ async function loadCurrentUserData() {
 
 // Setup event listeners
 function setupEventListeners() {
-  // Refresh button
-  document.getElementById('refreshBtn').addEventListener('click', refreshSchedules);
-  
-  // View toggle buttons
-  document.querySelectorAll('.view-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const view = this.dataset.view;
-      setActiveView(view);
-    });
-  });
-  
   // Filter buttons (list view)
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', function() {
@@ -1674,29 +1626,6 @@ function updateStats() {
   // Stats display removed with hero section
 }
 
-// Set active view (calendar/list)
-function setActiveView(view) {
-  activeView = view;
-  
-  // Update button states
-  document.querySelectorAll('.view-btn').forEach(btn => {
-    btn.classList.remove('active');
-    if (btn.dataset.view === view) {
-      btn.classList.add('active');
-    }
-  });
-  
-  // Show/hide views
-  if (view === 'calendar') {
-    document.getElementById('calendarView').style.display = 'block';
-    document.getElementById('listView').style.display = 'none';
-  } else {
-    document.getElementById('calendarView').style.display = 'none';
-    document.getElementById('listView').style.display = 'block';
-    updateListView();
-  }
-}
-
 // Set active filter for list view
 function setActiveFilter(filter) {
   activeFilter = filter;
@@ -2264,23 +2193,6 @@ async function sendScheduleNotification(conversationId, action, messageText, sch
   } catch (error) {
     console.error('❌ Error sending schedule notification:', error);
   }
-}
-
-// Refresh schedules
-function refreshSchedules() {
-  const refreshBtn = document.getElementById('refreshBtn');
-  const originalHTML = refreshBtn.innerHTML;
-  
-  refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing';
-  refreshBtn.classList.add('refreshing');
-  
-  loadSchedules();
-  
-  // Reset button after 2 seconds
-  setTimeout(() => {
-    refreshBtn.innerHTML = originalHTML;
-    refreshBtn.classList.remove('refreshing');
-  }, 2000);
 }
 
 // Utility functions

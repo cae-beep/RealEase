@@ -392,31 +392,6 @@
       text-decoration: underline;
     }
 
-    .stats-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 15px;
-      font-size: 14px;
-    }
-
-    .stat-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .stat-value {
-      font-weight: 700;
-      color: var(--primary-light);
-      font-size: 20px;
-    }
-
-    .stat-label {
-      color: var(--text-light);
-      font-size: 12px;
-    }
-
     .filter-buttons {
       display: flex;
       gap: 8px;
@@ -1417,21 +1392,6 @@
           <span id="noticeText">No conversations yet. Start messaging brokers from property listings.</span>
         </div>
         
-        <div class="stats-row" id="conversationStats">
-          <div class="stat-item">
-            <div class="stat-value">0</div>
-            <div class="stat-label">Total</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">0</div>
-            <div class="stat-label">Unread</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">0</div>
-            <div class="stat-label">Today</div>
-          </div>
-        </div>
-        
         <div class="filter-buttons">
           <button class="filter-btn active" id="filterAll">
             <i class="fas fa-list"></i> All
@@ -1637,9 +1597,17 @@ onAuthStateChanged(auth, async (user) => {
   initPage();
 });
 
+// Get URL param (e.g. userId from view_profile Message link)
+function getUrlParam(name) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(name) || '';
+}
+
 // Initialize the page
 async function initPage() {
   debugLog('🚀 Initializing messages page...');
+  
+  const targetUserId = getUrlParam('userId');
   
   // Load current user data first
   await loadCurrentUserData();
@@ -1653,6 +1621,22 @@ async function initPage() {
   
   // Load conversations
   await loadConversations();
+  
+  // If userId in URL, auto-open existing conversation with that user
+  if (targetUserId && allConversations.length > 0) {
+    const conv = allConversations.find(c => {
+      const brokerId = c.brokerId || (c.participants && c.participants.find(id => id !== currentUser.uid));
+      return brokerId === targetUserId;
+    });
+    if (conv) {
+      const brokerId = conv.brokerId || conv.participants.find(id => id !== currentUser.uid);
+      await selectConversation(conv.id, brokerId, conv.propertyId || null);
+      // Clear URL param so back button works naturally
+      if (window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+  }
 }
 
 // Load current user data
@@ -1799,9 +1783,6 @@ async function loadConversations() {
     } else {
       // Sort by last message time
       allConversations.sort((a, b) => b.lastMessageTime - a.lastMessageTime);
-      
-      // Update UI
-      updateStats();
       
       // Load all user data for conversations
       await loadAllUsersForConversations();
@@ -2006,25 +1987,10 @@ function showNoConversations() {
       </a>
     </div>
   `;
-  updateStats();
 }
 
-// Update conversation statistics
-function updateStats() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  const total = allConversations.length;
-  const unread = allConversations.filter(conv => conv.unreadCount?.[currentUser.uid] > 0).length;
-  const todayCount = allConversations.filter(conv => {
-    const lastTime = conv.lastMessageTime;
-    return lastTime >= today;
-  }).length;
-  
-  document.querySelectorAll('.stat-value')[0].textContent = total;
-  document.querySelectorAll('.stat-value')[1].textContent = unread;
-  document.querySelectorAll('.stat-value')[2].textContent = todayCount;
-}
+// Update conversation statistics (stats removed - kept as no-op for any remaining callers)
+function updateStats() {}
 
 // Filter and display conversations
 function filterConversations() {

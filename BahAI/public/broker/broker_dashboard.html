@@ -25,12 +25,41 @@
         --text-light: #718096;
     }
 
+    /* Layout - push main content right of fixed sidebar */
+    .container {
+        margin-left: 280px;
+        padding-top: 15px;
+    }
+    .mobile-menu-toggle {
+        display: none;
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 1001;
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        font-size: 22px;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+    }
+    .mobile-menu-toggle:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
     /* Hero Section - same as buyer dashboard */
     .hero-section {
         background: var(--primary-gradient);
         color: white;
         border-radius: var(--border-radius-lg);
-        padding: 50px 40px;
+        padding: 28px 40px;
         margin-bottom: 40px;
         position: relative;
         overflow: hidden;
@@ -426,11 +455,11 @@
 
     /* Tablet */
     @media (max-width: 1024px) {
-        .container { margin-left: 0; padding: 25px; padding-top: 80px; }
-        .mobile-menu-toggle { display: flex; align-items: center; justify-content: center; }
+        .container { margin-left: 240px; padding: 25px; padding-top: 15px; }
+        .mobile-menu-toggle { display: flex !important; align-items: center; justify-content: center; }
         .listings-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
         .hero-stats { gap: 20px; }
-        .hero-section { padding: 40px 30px; }
+        .hero-section { padding: 24px 30px; }
         .hero-section h1 { font-size: 2.2rem; }
         .hero-section p { font-size: 1rem; }
         .search-section { padding: 28px 25px; }
@@ -438,12 +467,13 @@
         .search-button, .reset-button { min-width: 180px; }
     }
 
-    /* Large Mobile */
+    /* Large Mobile - sidebar hidden */
     @media (max-width: 768px) {
-        .container { padding: 20px; padding-top: 75px; }
+        .container { margin-left: 0; padding: 20px; padding-top: 60px; }
+        .mobile-menu-toggle { display: flex !important; }
         .listings-grid { grid-template-columns: 1fr; gap: 15px; }
         .hero-section h1 { font-size: 1.8rem; }
-        .hero-section { padding: 30px 24px; }
+        .hero-section { padding: 22px 24px; }
         .hero-section p { font-size: 0.95rem; }
         .hero-stats {
             flex-direction: column;
@@ -507,7 +537,7 @@
 
     /* Small Mobile */
     @media (max-width: 480px) {
-        .container { padding: 15px; padding-top: 70px; }
+        .container { padding: 15px; padding-top: 58px; }
         .mobile-menu-toggle {
             top: 12px;
             left: 12px;
@@ -515,7 +545,7 @@
             height: 44px;
             font-size: 20px;
         }
-        .hero-section { padding: 24px 18px; margin-bottom: 25px; }
+        .hero-section { padding: 20px 18px; margin-bottom: 25px; }
         .hero-section h1 { font-size: 1.5rem; }
         .hero-section p { font-size: 0.9rem; }
         .hero-stat-value { font-size: 1.2rem; }
