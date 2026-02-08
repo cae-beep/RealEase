@@ -370,7 +370,7 @@ function displayPropertiesInChat(properties) {
     
     if (properties.length > 3) {
         html += `<p style="text-align: center; margin-top: 10px;">
-                    <a href="search_results.html" style="color: var(--primary); text-decoration: underline;">
+                    <a href="search_results.html?source=ai" style="color: var(--primary); text-decoration: underline;">
                         View all ${properties.length} properties →
                     </a>
                  </p>`;

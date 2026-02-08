@@ -642,6 +642,7 @@ async function initPage() {
   // Wait for authentication
   await new Promise((resolve) => {
     onAuthStateChanged(auth, async (user) => {
+      if (typeof window.updateBuyerNavAuth === 'function') window.updateBuyerNavAuth(user);
       if (!user) {
         showError('Please log in to schedule a viewing');
         setTimeout(() => {

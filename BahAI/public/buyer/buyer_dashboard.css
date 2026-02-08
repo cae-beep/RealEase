@@ -71,11 +71,11 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Dashboard Layout Styles */
+/* Dashboard Layout Styles - top nav */
 .container {
-    padding-left: 280px;
+    padding-left: 30px;
+    padding-right: 30px;
     max-width: 100%;
-    transition: padding-left 0.3s ease;
 }
 
 @media (max-width: 1024px) {
@@ -873,28 +873,13 @@
     z-index: 2;
 }
 
-/* Mobile Menu Toggle */
+/* Mobile Menu Toggle - hidden (top nav has its own hamburger) */
 .mobile-menu-toggle {
-    display: none;
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1001;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    width: 50px;
-    height: 50px;
-    font-size: 1.5rem;
-    cursor: pointer;
+    display: none !important;
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-    .mobile-menu-toggle {
-        display: block;
-    }
     
     .container {
         padding-left: 20px;

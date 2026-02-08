@@ -35,58 +35,28 @@ body {
     min-height: 100vh;
 }
 
-/* Sidebar Styles - navy background (overridden by sidebar.html inline for full navy theme) */
-.sidebar {
-    width: 280px;
-    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
-    box-shadow: var(--shadow-lg);
-    border-right: 1px solid rgba(212, 175, 55, 0.2);
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100%;
-    z-index: 1000;
-    transition: transform 0.3s ease;
-    overflow-y: auto;
+/* Top navigation - classic horizontal bar */
+#sidebar-container {
+    position: relative;
 }
 
-@media (max-width: 1024px) {
-    .sidebar {
-        transform: translateX(-100%);
-    }
-    .sidebar.active {
-        transform: translateX(0);
-    }
-}
-
-/* Mobile Menu Toggle */
+/* Mobile Menu Toggle - hidden when using top nav (navbar has its own hamburger) */
 .mobile-menu-toggle {
-    display: none;
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1001;
-    background: var(--primary);
-    color: white;
-    border: none;
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    font-size: 24px;
-    cursor: pointer;
-    box-shadow: var(--shadow-lg);
+    display: none !important;
 }
 
 .container {
     flex: 1;
-    margin-left: 280px;
+    margin-left: 0;
     padding: 30px;
-    transition: margin-left 0.3s ease;
+    padding-top: 94px; /* 64px navbar + 30px top padding */
+    min-height: 100vh;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
     .container {
-        margin-left: 0;
+        padding: 20px;
+        padding-top: 84px;
     }
 }
 

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Profile - BahAI Real Estate</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+:root {
+  --primary: #0b2e52;
+  --primary-gradient: linear-gradient(135deg, #0b2e52 0%, #1e3a5f 100%);
+  --accent: #d4af37;
+  --text-dark: #1a202c;
+  --text-light: #64748b;
+  --bg-light: #f8fafc;
+  --bg-white: #ffffff;
+  --border: #e2e8f0;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: var(--text-dark); min-height: 100vh; }
+
+.mobile-menu-toggle { display: none; position: fixed; top: 20px; left: 20px; z-index: 1001;
+  background: var(--primary-gradient); color: white; border: none; width: 50px; height: 50px;
+  border-radius: 12px; font-size: 24px; cursor: pointer; }
+.main { flex: 1; margin-left: 0; padding: 24px; padding-top: 94px; width: 100%; min-height: calc(100vh - 94px); }
+
+.back-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; margin-bottom: 24px;
+  background: white; border: 2px solid var(--border); border-radius: var(--radius); color: var(--text-dark);
+  font-weight: 600; text-decoration: none; transition: all 0.2s; }
+.back-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+/* Profile view - buyer context */
+.profile-view-card { background: var(--bg-white); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); overflow: hidden; margin-bottom: 24px; }
+.profile-view-header { background: var(--primary-gradient); color: white; padding: 32px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.profile-view-avatar { width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 36px; overflow: hidden; flex-shrink: 0; }
+.profile-view-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-view-info { flex: 1; min-width: 200px; }
+.profile-view-name { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+.profile-view-role { font-size: 16px; opacity: 0.95; margin-bottom: 8px; }
+.profile-view-verified { font-size: 13px; opacity: 0.9; display: flex; align-items: center; gap: 6px; }
+.profile-view-verified i { color: var(--accent); }
+.profile-view-body { padding: 28px; display: grid; gap: 24px; }
+.profile-view-section h3 { font-size: 18px; font-weight: 600; color: var(--text-dark); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+.profile-view-section h3 i { color: var(--primary); }
+.profile-view-bio { font-size: 15px; line-height: 1.7; color: var(--text-dark); }
+.profile-contact-row { display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: var(--bg-light); border-radius: var(--radius); margin-bottom: 10px; font-size: 15px; }
+.profile-contact-row i { width: 24px; text-align: center; color: var(--primary); }
+.profile-empty { text-align: center; padding: 60px 24px; color: var(--text-light); }
+.profile-empty p { margin-top: 12px; font-size: 15px; }
+.loading-state { text-align: center; padding: 80px 20px; color: var(--text-light); }
+.loading-state .spinner { width: 48px; height: 48px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Properties grid - listings by this broker/landlord */
+.profile-properties-section { margin-top: 8px; }
+.profile-properties-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.profile-property-card { background: var(--bg-white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); text-decoration: none; color: inherit; display: block; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid var(--border); }
+.profile-property-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+.profile-property-card img { width: 100%; height: 180px; object-fit: cover; display: block; }
+.profile-property-card-content { padding: 16px; }
+.profile-property-card-title { font-size: 1rem; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.profile-property-card-loc { font-size: 0.85rem; color: var(--text-light); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.profile-property-card-price { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+.profile-properties-empty { text-align: center; padding: 32px 20px; color: var(--text-light); font-size: 15px; background: var(--bg-light); border-radius: var(--radius); }
+@media (max-width: 600px) { .profile-properties-grid { grid-template-columns: 1fr; } }
+/* Stats row - broker credentials */
+.profile-stats-row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; }
+.profile-stat-item { background: var(--bg-light); padding: 12px 20px; border-radius: var(--radius); font-size: 14px; }
+.profile-stat-item .stat-val { font-weight: 700; color: var(--primary); margin-right: 6px; }
+/* Info rows - professional details */
+.profile-info-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; font-size: 15px; }
+.profile-info-row .label { color: var(--text-light); min-width: 140px; font-weight: 500; }
+.profile-info-row .val { color: var(--text-dark); flex: 1; }
+/* Tags - specializations */
+.profile-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.profile-tag { padding: 6px 14px; background: rgba(11,46,82,0.08); color: var(--primary); border-radius: 20px; font-size: 13px; font-weight: 500; }
+/* Social links */
+.profile-social-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.profile-social-link { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-light); color: var(--primary); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.2s; }
+.profile-social-link:hover { background: var(--primary); color: white; transform: translateY(-2px); }
+@media (max-width: 600px) {
+  .profile-view-header { flex-direction: column; text-align: center; }
+  .profile-view-info { text-align: center; }
+}
+</style>
+</head>
+<body>
+<button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menu">☰</button>
+<div id="sidebar-container"></div>
+
+<main class="main">
+  <a href="#" class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i> Back</a>
+  
+  <div id="profileContent">
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading profile...</p>
+    </div>
+  </div>
+</main>
+
+<script src="../sidebar-user.js"></script>
+<script src="buyer-sidebar-loader.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCIfzneDzWVveG8p_0mywoA9D9F5AyzZX4",
+  authDomain: "bahai-1b76d.firebaseapp.com",
+  projectId: "bahai-1b76d",
+  storageBucket: "bahai-1b76d.firebasestorage.app",
+  messagingSenderId: "646878644941",
+  appId: "1:646878644941:web:5b4ccc3412250337587784"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+function getUrlParams() {
+  const p = new URLSearchParams(window.location.search);
+  return { type: p.get('type') || 'broker', id: p.get('id') || '' };
+}
+
+document.getElementById('backBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  const referrer = document.referrer;
+  if (referrer && referrer.includes(window.location.hostname) && !referrer.includes('view_profile')) {
+    window.history.back();
+  } else {
+    window.location.href = 'buyer_dashboard.html';
+  }
+});
+
+async function loadProfile(type, profileId) {
+  let profileData = null;
+  if (type === 'broker') {
+    try {
+      const brokerDoc = await getDoc(doc(db, "brokers", profileId));
+      if (brokerDoc.exists()) profileData = { ...brokerDoc.data(), id: profileId };
+    } catch (_) {}
+    if (!profileData) {
+      try {
+        const userDoc = await getDoc(doc(db, "users", profileId));
+        if (userDoc.exists()) profileData = { ...userDoc.data(), id: profileId };
+      } catch (_) {}
+    }
+  } else {
+    try {
+      const landlordDoc = await getDoc(doc(db, "landlords", profileId));
+      if (landlordDoc.exists()) profileData = { ...landlordDoc.data(), id: profileId };
+    } catch (_) {}
+    if (!profileData) {
+      try {
+        const userDoc = await getDoc(doc(db, "users", profileId));
+        if (userDoc.exists()) profileData = { ...userDoc.data(), id: profileId };
+      } catch (_) {}
+    }
+  }
+  return profileData;
+}
+
+async function loadProperties(userId) {
+  try {
+    const q = query(
+      collection(db, "properties"),
+      where("userId", "==", userId)
+    );
+    const snapshot = await getDocs(q);
+    const list = [];
+    snapshot.forEach(d => list.push({ id: d.id, ...d.data() }));
+    return list.filter(p => !p.status || p.status === 'active' || p.status === 'available');
+  } catch (e) {
+    console.warn('Error loading properties:', e);
+    return [];
+  }
+}
+
+function getListingType(p) {
+  if (p.monthlyRent) return 'rent';
+  if (p.annualRent) return 'lease';
+  return 'sale';
+}
+
+function getDisplayPrice(p) {
+  const t = getListingType(p);
+  if (t === 'rent') return '₱' + (p.monthlyRent || 0).toLocaleString() + '/mo';
+  if (t === 'lease') return '₱' + (p.annualRent || 0).toLocaleString() + '/yr';
+  return '₱' + (p.pricing || p.salePrice || 0).toLocaleString();
+}
+
+function ensureArray(v) {
+  if (!v) return [];
+  if (Array.isArray(v)) return v;
+  if (typeof v === 'string') return v.split(',').map(s => s.trim()).filter(Boolean);
+  return [String(v)];
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function renderProfile(profile, type, properties) {
+  const fullName = profile.fullName || profile.displayName || profile.name || (type === 'broker' ? 'Broker' : 'Landlord');
+  const role = type === 'broker' ? (profile.title || profile.role || profile.profession || 'Licensed Broker') : 'Property Owner';
+  const photoURL = profile.photoURL || profile.profilePhoto || profile.profileImage || profile.imageURL || '';
+  const bio = profile.bio || profile.description || profile.about || '';
+  const email = profile.email || 'Not provided';
+  const phone = profile.phone || profile.phoneNumber || profile.contactNumber || 'Not provided';
+  const location = profile.location || profile.city || profile.address || 'Not specified';
+
+  const initials = (fullName || 'U').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+  const avatarHtml = photoURL
+    ? `<img src="${photoURL}" alt="${fullName}">`
+    : initials;
+
+  const propertiesHtml = properties.length > 0
+    ? properties.map(p => {
+        const img = (p.photos || p.imageUrls || [])[0] || 'https://via.placeholder.com/280x180/0b2e52/white?text=No+Image';
+        const title = (p.title || 'Untitled').substring(0, 50) + ((p.title || '').length > 50 ? '…' : '');
+        const loc = (p.location || p.address || 'Location not specified').substring(0, 40) + ((p.location || p.address || '').length > 40 ? '…' : '');
+        const price = getDisplayPrice(p);
+        return `<a href="new_property_details.html?id=${p.id}" class="profile-property-card" aria-label="View ${title}">
+          <img src="${img}" alt="${title}">
+          <div class="profile-property-card-content">
+            <div class="profile-property-card-title">${title}</div>
+            <div class="profile-property-card-loc"><i class="fas fa-map-marker-alt"></i> ${loc}</div>
+            <div class="profile-property-card-price">${price}</div>
+          </div>
+        </a>`;
+      }).join('')
+    : '<div class="profile-properties-empty">No listed properties yet</div>';
+
+  let brokerSections = '';
+  if (type === 'broker') {
+    const yearsExp = profile.yearsExperience || profile.experienceYears || 0;
+    const licenseNum = profile.licenseNumber || profile.license || '';
+    const agency = profile.agencyName || profile.company || profile.brokerage || '';
+    const languages = profile.languages || profile.spokenLanguages || '';
+    const availability = profile.availability || profile.officeHours || '';
+    const website = profile.website || (profile.socialMedia && profile.socialMedia.website) || '';
+    const propertyTypes = ensureArray(profile.propertyTypes);
+    const servicesOffered = ensureArray(profile.servicesOffered);
+    const serviceAreas = ensureArray(profile.serviceAreas);
+    const clientsServed = profile.clientsServed || profile.totalClients || profile.clients || '0';
+    const successRate = profile.successRate ? profile.successRate + '%' : '0%';
+    const sm = profile.socialMedia || {};
+    const memberSince = profile.createdAt || profile.joinedDate || profile.dateCreated;
+
+    let memberSinceStr = '';
+    if (memberSince && memberSince.toDate) {
+      try { memberSinceStr = memberSince.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'long' }); } catch (_) {}
+    } else if (memberSince && typeof memberSince === 'object' && memberSince.seconds) {
+      try { memberSinceStr = new Date(memberSince.seconds * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }); } catch (_) {}
+    } else if (memberSince) {
+      try { memberSinceStr = new Date(memberSince).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }); } catch (_) {}
+    }
+
+    const socialPlatforms = [
+      { key: 'facebook', icon: 'fab fa-facebook-f', url: 'https://facebook.com/' },
+      { key: 'twitter', icon: 'fab fa-twitter', url: 'https://twitter.com/' },
+      { key: 'linkedin', icon: 'fab fa-linkedin-in', url: 'https://linkedin.com/in/' },
+      { key: 'instagram', icon: 'fab fa-instagram', url: 'https://instagram.com/' }
+    ];
+    const socialLinks = socialPlatforms.filter(pl => sm[pl.key] && sm[pl.key].trim())
+      .map(pl => `<a href="${pl.url}${sm[pl.key].trim()}" target="_blank" rel="noopener noreferrer" class="profile-social-link" aria-label="${pl.key}"><i class="${pl.icon}"></i></a>`)
+      .join('');
+
+    const statsHtml = (yearsExp > 0 || properties.length > 0 || clientsServed !== '0' || successRate !== '0%')
+      ? `<div class="profile-stats-row">
+          ${properties.length > 0 ? `<div class="profile-stat-item"><span class="stat-val">${properties.length}</span> Properties</div>` : ''}
+          ${yearsExp > 0 ? `<div class="profile-stat-item"><span class="stat-val">${yearsExp}</span> Years Experience</div>` : ''}
+          ${clientsServed !== '0' ? `<div class="profile-stat-item"><span class="stat-val">${clientsServed}</span> Clients Served</div>` : ''}
+          ${successRate !== '0%' ? `<div class="profile-stat-item"><span class="stat-val">${successRate}</span> Success Rate</div>` : ''}
+        </div>` : '';
+
+    const profDetails = [];
+    if (licenseNum) profDetails.push(`<div class="profile-info-row"><span class="label">License Number</span><span class="val">${escapeHtml(licenseNum)}</span></div>`);
+    if (agency) profDetails.push(`<div class="profile-info-row"><span class="label">Agency / Company</span><span class="val">${escapeHtml(agency)}</span></div>`);
+    if (languages) profDetails.push(`<div class="profile-info-row"><span class="label">Languages</span><span class="val">${escapeHtml(languages)}</span></div>`);
+    if (availability) profDetails.push(`<div class="profile-info-row"><span class="label">Availability</span><span class="val">${escapeHtml(availability)}</span></div>`);
+    if (memberSinceStr) profDetails.push(`<div class="profile-info-row"><span class="label">Member Since</span><span class="val">${escapeHtml(memberSinceStr)}</span></div>`);
+
+    const tagsHtml = (arr) => arr.length > 0
+      ? arr.map(t => `<span class="profile-tag">${escapeHtml(t)}</span>`).join('')
+      : '';
+
+    brokerSections = `
+      ${statsHtml ? `<div class="profile-view-section"><h3><i class="fas fa-chart-line"></i> Stats</h3>${statsHtml}</div>` : ''}
+      ${profDetails.length > 0 ? `<div class="profile-view-section"><h3><i class="fas fa-briefcase"></i> Professional Details</h3>${profDetails.join('')}</div>` : ''}
+      ${(propertyTypes.length || servicesOffered.length || serviceAreas.length) ? `
+        <div class="profile-view-section">
+          <h3><i class="fas fa-star"></i> Specializations</h3>
+          ${propertyTypes.length ? `<div style="margin-bottom:12px;"><div class="label" style="font-size:13px;color:var(--text-light);margin-bottom:6px;">Property Types</div><div class="profile-tags">${tagsHtml(propertyTypes)}</div></div>` : ''}
+          ${servicesOffered.length ? `<div style="margin-bottom:12px;"><div class="label" style="font-size:13px;color:var(--text-light);margin-bottom:6px;">Services Offered</div><div class="profile-tags">${tagsHtml(servicesOffered)}</div></div>` : ''}
+          ${serviceAreas.length ? `<div><div class="label" style="font-size:13px;color:var(--text-light);margin-bottom:6px;">Service Areas</div><div class="profile-tags">${tagsHtml(serviceAreas)}</div></div>` : ''}
+        </div>` : ''}
+      ${website ? `<div class="profile-view-section"><h3><i class="fas fa-globe"></i> Website</h3><a href="${website.startsWith('http') ? website : 'https://' + website}" target="_blank" rel="noopener noreferrer" style="color:var(--primary);font-weight:600;">${escapeHtml(website)}</a></div>` : ''}
+      ${socialLinks ? `<div class="profile-view-section"><h3><i class="fas fa-share-alt"></i> Connect</h3><div class="profile-social-row">${socialLinks}</div></div>` : ''}
+    `;
+  }
+
+  return `
+    <div class="profile-view-card">
+      <div class="profile-view-header">
+        <div class="profile-view-avatar">${avatarHtml}</div>
+        <div class="profile-view-info">
+          <div class="profile-view-name">${escapeHtml(fullName)}</div>
+          <div class="profile-view-role">${escapeHtml(role)}</div>
+          <div class="profile-view-verified"><i class="fas fa-check-circle"></i> Verified ${type}</div>
+        </div>
+      </div>
+      <div class="profile-view-body">
+        ${bio ? `<div class="profile-view-section"><h3><i class="fas fa-info-circle"></i> About</h3><div class="profile-view-bio">${escapeHtml(bio).replace(/\n/g, '<br>')}</div></div>` : ''}
+        <div class="profile-view-section">
+          <h3><i class="fas fa-address-card"></i> Contact</h3>
+          <div class="profile-contact-row"><i class="fas fa-envelope"></i> <span>${escapeHtml(email)}</span></div>
+          <div class="profile-contact-row"><i class="fas fa-phone"></i> <span>${escapeHtml(phone)}</span></div>
+          <div class="profile-contact-row"><i class="fas fa-map-marker-alt"></i> <span>${escapeHtml(location)}</span></div>
+        </div>
+        ${brokerSections}
+        <div class="profile-view-section profile-properties-section">
+          <h3><i class="fas fa-home"></i> Listings (${properties.length})</h3>
+          <div class="profile-properties-grid">${propertiesHtml}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function showError(msg) {
+  document.getElementById('profileContent').innerHTML = `
+    <div class="profile-view-card">
+      <div class="profile-empty">
+        <div style="font-size: 48px; margin-bottom: 16px;">👤</div>
+        <h3>Profile not found</h3>
+        <p>${msg}</p>
+        <a href="buyer_dashboard.html" class="back-btn" style="margin-top: 24px; display: inline-flex;">Return to Dashboard</a>
+      </div>
+    </div>
+  `;
+}
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = '../login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+    return;
+  }
+  loadBuyerSidebar('view_profile.html');
+  const { type, id } = getUrlParams();
+  if (!id) {
+    showError('No profile ID provided.');
+    return;
+  }
+  const [profile, properties] = await Promise.all([
+    loadProfile(type, id),
+    loadProperties(id)
+  ]);
+  if (!profile || Object.keys(profile).length === 0) {
+    showError('This profile could not be loaded.');
+    return;
+  }
+  document.getElementById('profileContent').innerHTML = renderProfile(profile, type, properties);
+});
+</script>
+</body>
+</html>

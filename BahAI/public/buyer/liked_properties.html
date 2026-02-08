@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Liked Properties - BahAI Real Estate</title>
+    <title>Saved Properties - BahAI Real Estate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -68,7 +68,8 @@
 
         .container {
             flex: 1;
-            margin-left: 280px;
+            margin-left: 0;
+            padding-top: 150px;
             max-width: 100%;
             padding: 30px;
             transition: margin-left 0.3s ease;
@@ -154,6 +155,70 @@
         }
         .recommendation-note span { opacity: 0.95; }
 
+        /* Page header: clear purpose for saved properties (margin-top clears fixed nav) */
+        .saved-page-header {
+            margin-top: 36px;
+            margin-bottom: 28px;
+        }
+        .saved-page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+        .saved-page-header p {
+            font-size: 1rem;
+            color: var(--text-light);
+            margin: 0;
+        }
+
+        /* AI Insights panel: BahAI decision-support */
+        .bahai-insights-panel {
+            background: linear-gradient(135deg, rgba(11,46,82,0.04) 0%, rgba(212,175,55,0.08) 100%);
+            border: 1px solid rgba(212,175,55,0.25);
+            border-radius: var(--border-radius-sm);
+            padding: 20px 24px;
+            margin-bottom: 28px;
+        }
+        .bahai-insights-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .bahai-insights-label i { color: var(--accent); }
+        .bahai-insights-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .bahai-insights-list li {
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+            line-height: 1.4;
+        }
+        .bahai-insights-list li::before {
+            content: '•';
+            color: var(--accent);
+            font-weight: 700;
+            position: absolute;
+            left: 0;
+        }
+        .bahai-insights-footer {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            margin-top: 12px;
+            font-style: italic;
+        }
+
         /* Stats Section */
         .liked-stats {
             display: grid;
@@ -215,6 +280,56 @@
             box-shadow: var(--shadow-lg);
             border-color: var(--accent);
         }
+        /* Recommended by BahAI badge */
+        .listing-bahai-badge {
+            position: absolute;
+            top: 15px;
+            right: 55px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            color: white;
+            z-index: 2;
+        }
+        /* Card action buttons: View Details, Message, Remove */
+        .listing-card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+        .listing-action-btn {
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            border: none;
+        }
+        .listing-action-btn.btn-view {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+        .listing-action-btn.btn-view:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+        .listing-action-btn.btn-message {
+            background: rgba(212,175,55,0.15);
+            color: var(--primary);
+            border: 1px solid rgba(212,175,55,0.4);
+        }
+        .listing-action-btn.btn-message:hover { background: rgba(212,175,55,0.25); }
+        .listing-action-btn.btn-remove {
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+        .listing-action-btn.btn-remove:hover { color: var(--danger); border-color: var(--danger); }
 
         .listing-image-container {
             position: relative;
@@ -400,6 +515,46 @@
             max-width: 500px;
             margin-left: auto;
             margin-right: auto;
+        }
+        /* Next actions section: Compare & Ask BahAI */
+        .next-actions-section {
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            padding: 24px 28px;
+            margin-bottom: 32px;
+            box-shadow: var(--card-shadow);
+        }
+        .next-actions-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+        }
+        .next-actions-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .next-action-btn {
+            padding: 12px 20px;
+            border-radius: var(--border-radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            border: 2px solid rgba(212,175,55,0.4);
+            background: rgba(212,175,55,0.08);
+            color: var(--primary);
+        }
+        .next-action-btn:hover {
+            background: rgba(212,175,55,0.18);
+            border-color: var(--accent);
+            transform: translateY(-2px);
         }
 
         .browse-btn {
@@ -704,6 +859,36 @@
             background: var(--danger);
         }
 
+        /* BahAI floating button - matches dashboard/search */
+        .bahai-assistant {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 900;
+        }
+        .bahai-assistant-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 22px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.2s;
+            border: 2px solid rgba(212,175,55,0.5);
+        }
+        .bahai-assistant-btn:hover {
+            box-shadow: 0 6px 24px rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+        }
+        @media (max-width: 768px) {
+            .bahai-assistant { bottom: 16px; right: 16px; }
+        }
+
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -726,10 +911,32 @@
                 padding: 20px;
             }
             
-            .liked-header {
+            .saved-page-header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .bahai-insights-panel {
+                padding: 16px 18px;
+            }
+            
+            .bahai-insights-list li {
+                font-size: 0.9rem;
+            }
+            
+            .next-actions-section {
+                padding: 20px;
+            }
+            
+            .next-actions-buttons {
                 flex-direction: column;
-                gap: 20px;
-                padding: 25px;
+            }
+            
+            .next-action-btn {
+                justify-content: center;
+            }
+            
+            .listing-card-actions {
+                flex-direction: column;
             }
             
             .listings-grid {
@@ -834,11 +1041,37 @@
     <div id="sidebar-container"></div>
 
     <div class="container">
+        <!-- Page header: clear purpose -->
+        <header class="saved-page-header">
+            <h1>Saved Properties</h1>
+            <p>Properties you're interested in — curated by you and BahAI</p>
+        </header>
+
+        <!-- AI Insights panel: decision-support (populated by JS when properties exist) -->
+        <div class="bahai-insights-panel" id="bahaiInsightsPanel" style="display: none;">
+            <div class="bahai-insights-label"><i class="fas fa-robot"></i> BahAI Insights</div>
+            <ul class="bahai-insights-list" id="bahaiInsightsList"></ul>
+            <div class="bahai-insights-footer">Generated by BahAI</div>
+        </div>
+
         <!-- Saved Properties Grid -->
         <div class="listings-grid" id="likedPropertiesContainer">
             <div class="loading-state">
                 <div class="spinner"></div>
                 <p>Loading your liked properties...</p>
+            </div>
+        </div>
+
+        <!-- Next actions: Compare & Ask BahAI (shown when properties exist) -->
+        <div class="next-actions-section" id="nextActionsSection" style="display: none;">
+            <div class="next-actions-title">What would you like to do next?</div>
+            <div class="next-actions-buttons">
+                <a href="buyer_dashboard.html#ai-chatbot-section" class="next-action-btn" onclick="window.location.href='buyer_dashboard.html#ai-chatbot-section'; return false;">
+                    <i class="fas fa-robot"></i> Ask BahAI for Recommendations
+                </a>
+                <a href="buyer_dashboard.html#ai-chatbot-section" class="next-action-btn" onclick="window.location.href='buyer_dashboard.html#ai-chatbot-section'; return false;">
+                    <i class="fas fa-balance-scale"></i> Compare Properties
+                </a>
             </div>
         </div>
 
@@ -849,6 +1082,14 @@
                 <!-- Similar properties will be loaded here -->
             </div>
         </div>
+    </div>
+
+    <!-- BahAI floating assistant - matches dashboard -->
+    <div class="bahai-assistant" aria-label="BahAI quick access">
+        <a href="buyer_dashboard.html#ai-chatbot-section" class="bahai-assistant-btn" id="bahaiAssistantBtn">
+            <i class="fas fa-robot"></i>
+            <span>Ask BahAI</span>
+        </a>
     </div>
 
     <!-- Modal for Property Details -->
@@ -998,6 +1239,7 @@
 
         // Authentication check
         onAuthStateChanged(auth, async (user) => {
+            if (typeof window.updateBuyerNavAuth === 'function') window.updateBuyerNavAuth(user);
             if (!user) {
                 window.location.href = "../login.html?redirect=" + encodeURIComponent(window.location.pathname || "buyer/liked_properties.html");
                 return;
@@ -1058,11 +1300,14 @@
                             getDoc(doc(db, "properties", savedData.propertyId))
                                 .then(propertyDoc => {
                                     if (propertyDoc.exists()) {
+                                        const propData = propertyDoc.data();
                                         return {
                                             property: {
                                                 id: propertyDoc.id,
                                                 savedId: savedDoc.id,
-                                                ...propertyDoc.data()
+                                                ...propData,
+                                                source: savedData.source,
+                                                aiRecommended: savedData.aiRecommended === true || savedData.source === 'ai'
                                             },
                                             savedAt: savedData.savedAt
                                         };
@@ -1215,7 +1460,40 @@ ${error.stack || error.message}
             }
         }
 
-        // Display liked properties
+        // Compute AI insights from saved properties (for BahAI Insights panel)
+        function computeBahaiInsights(properties) {
+            if (!properties || properties.length === 0) return [];
+            const insights = [];
+            const locs = properties.map(p => (p.location || p.address || '').split(',')[0].trim()).filter(Boolean);
+            const locCounts = {};
+            locs.forEach(l => { locCounts[l] = (locCounts[l] || 0) + 1; });
+            const topLoc = Object.entries(locCounts).sort((a, b) => b[1] - a[1])[0];
+            if (topLoc && topLoc[1] >= 2) {
+                insights.push(`Most saved properties are in ${topLoc[0]}`);
+            }
+            const types = properties.map(p => p.propertyType || p.propertyCategory || '').filter(Boolean);
+            const typeCounts = {};
+            types.forEach(t => { typeCounts[t] = (typeCounts[t] || 0) + 1; });
+            const topType = Object.entries(typeCounts).sort((a, b) => b[1] - a[1])[0];
+            if (topType && topType[0]) {
+                const typeLabel = (topType[0] || '').replace(/_/g, ' ').trim().toLowerCase();
+                insights.push(`You seem interested in ${typeLabel} more than other types`);
+            }
+            const prices = properties.map(p => p.pricing || p.salePrice || p.monthlyRent || (p.annualRent || 0) / 12 || 0).filter(p => p > 0);
+            if (prices.length >= 2) {
+                const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
+                const inRange = prices.filter(p => Math.abs(p - avg) / avg < 0.25).length;
+                if (inRange >= 2) {
+                    insights.push(`${inRange} properties match your budget preference`);
+                }
+            }
+            if (insights.length === 0) {
+                insights.push(`You have ${properties.length} saved ${properties.length === 1 ? 'property' : 'properties'}. Consider comparing them to decide.`);
+            }
+            return insights;
+        }
+
+        // Display liked properties with decision-focused cards
         function displayLikedProperties(properties) {
             const container = document.getElementById('likedPropertiesContainer');
             
@@ -1223,6 +1501,17 @@ ${error.stack || error.message}
                 showEmptyState();
                 return;
             }
+            
+            // Show AI insights and next actions
+            const insights = computeBahaiInsights(properties);
+            const insightsPanel = document.getElementById('bahaiInsightsPanel');
+            const insightsList = document.getElementById('bahaiInsightsList');
+            if (insightsPanel && insightsList && insights.length > 0) {
+                insightsList.innerHTML = insights.map(i => `<li>${i}</li>`).join('');
+                insightsPanel.style.display = 'block';
+            }
+            const nextSection = document.getElementById('nextActionsSection');
+            if (nextSection) nextSection.style.display = 'block';
             
             container.innerHTML = properties.map(property => {
                 const userInfo = userMap.get(property.userId) || {
@@ -1238,6 +1527,7 @@ ${error.stack || error.message}
                 const priceClass = getPriceClass(property);
                 const typeBadgeClass = getTypeBadgeClass(property);
                 const typeBadgeText = getTypeBadgeText(property);
+                const showBahaiBadge = property.aiRecommended === true || property.source === 'ai';
                 
                 let mainPhoto;
                 if (property.photos && property.photos.length > 0) {
@@ -1251,15 +1541,18 @@ ${error.stack || error.message}
                 const bedrooms = property.bedrooms || (listingType === 'rent' && property.propertyType === 'studio' ? 'Studio' : 0);
                 const bathrooms = property.bathrooms || 0;
                 const squareFootage = property.floorArea || property.totalArea || property.squareFootage || 'N/A';
+                const title = (property.title || 'Untitled Property').replace(/"/g, '&quot;');
+                const loc = (property.location || 'Location not specified').replace(/"/g, '&quot;');
                 
                 return `
-                <div class="listing-card" onclick="window.showPropertyModal('${property.id}')">
+                <div class="listing-card" data-property-id="${property.id}" onclick="window.location.href='new_property_details.html?id=${property.id}'">
                     <div class="listing-image-container">
-                        <img src="${mainPhoto}" alt="${property.title}" class="listing-image">
+                        <img src="${mainPhoto}" alt="${title}" class="listing-image">
                         <div class="listing-type-badge ${typeBadgeClass}">${typeBadgeText}</div>
+                        ${showBahaiBadge ? '<span class="listing-bahai-badge">Recommended by BahAI</span>' : ''}
                         <button class="remove-saved-btn" 
                                 onclick="event.stopPropagation(); window.removeFromLiked('${property.savedId}', '${property.id}')"
-                                title="Remove from liked">
+                                title="Remove from saved">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -1287,16 +1580,16 @@ ${error.stack || error.message}
                             </div>
                         </div>
                         
-                        <div class="listing-broker">
-                            <div class="broker-avatar">${userInitials}</div>
-                            <div class="broker-info">
-                                <div class="broker-name">${userInfo.displayName}</div>
-                                <div class="broker-role">
-                                    ${userInfo.role === 'landlord' ? 'Property Owner' : 
-                                      userInfo.role === 'broker' ? 'Licensed Broker' : 
-                                      userInfo.role === 'agent' ? 'Property Agent' : 'Posted by'}
-                                </div>
-                            </div>
+                        <div class="listing-card-actions">
+                            <a href="new_property_details.html?id=${property.id}" class="listing-action-btn btn-view" onclick="event.stopPropagation(); return true;">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+                            <a href="new_property_details.html?id=${property.id}" class="listing-action-btn btn-message" onclick="event.stopPropagation(); return true;">
+                                <i class="fas fa-envelope"></i> Message Seller
+                            </a>
+                            <button type="button" class="listing-action-btn btn-remove" onclick="event.stopPropagation(); window.removeFromLiked('${property.savedId}', '${property.id}')">
+                                <i class="fas fa-heart-broken"></i> Remove from Saved
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1629,19 +1922,24 @@ ${error.stack || error.message}
             }
         };
 
-        // Show empty state
+        // Show empty state: guided and intelligent
         function showEmptyState() {
             const container = document.getElementById('likedPropertiesContainer');
             container.innerHTML = `
                 <div class="empty-state">
                     <div class="empty-state-icon"><i class="fas fa-heart"></i></div>
-                    <h2>No Liked Properties Yet</h2>
-                    <p>Start browsing properties and click the heart button to save your favorites!</p>
-                    <a href="buyer_dashboard.html" class="browse-btn"><i class="fas fa-home"></i> Browse Properties</a>
+                    <h2>You haven't saved any properties yet</h2>
+                    <p>BahAI can help you find properties you'll like. Start browsing or ask for personalized recommendations.</p>
+                    <a href="buyer_dashboard.html#ai-chatbot-section" class="browse-btn"><i class="fas fa-robot"></i> Ask BahAI for Recommendations</a>
+                    <a href="buyer_dashboard.html" class="browse-btn" style="margin-top: 12px; background: transparent; border: 2px solid var(--primary); color: var(--primary);"><i class="fas fa-search"></i> Browse Properties</a>
                 </div>
             `;
             
             document.getElementById('similarSuggestions').style.display = 'none';
+            const insightsPanel = document.getElementById('bahaiInsightsPanel');
+            const nextSection = document.getElementById('nextActionsSection');
+            if (insightsPanel) insightsPanel.style.display = 'none';
+            if (nextSection) nextSection.style.display = 'none';
         }
 
         // Update statistics (analytics removed)

@@ -80,9 +80,9 @@
 
     .container {
       flex: 1;
-      margin-left: 280px;
+      margin-left: 0;
       padding: 0;
-      transition: margin-left 0.3s ease;
+      padding-top: 94px;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
@@ -136,6 +136,7 @@
       position: relative;
       z-index: 1;
     }
+
     .refresh-btn {
       background: rgba(255,255,255,0.2);
       color: white;
@@ -167,7 +168,7 @@
       grid-template-rows: 1fr;
       gap: 0;
       flex: 1;
-      min-height: 100vh;
+      min-height: calc(100vh - 94px);
       overflow: hidden;
     }
 
@@ -185,6 +186,23 @@
     .conversations-header {
       padding: 20px;
       border-bottom: 1px solid var(--border);
+    }
+    .conversations-header-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .conversations-header-title i {
+      color: #d4af37;
+    }
+    .conversations-header-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin: 0 0 16px 0;
     }
 
     /* Schedule status message styles */
@@ -486,7 +504,8 @@
     }
 
     .conversation-item.unread {
-      background: var(--unread-bg);
+      background: rgba(212, 175, 55, 0.08);
+      border-left: 4px solid #d4af37;
     }
 
     .conversation-avatar {
@@ -546,6 +565,7 @@
       margin-bottom: 6px;
     }
 
+    /* Property tag: "Regarding: [Property Name]" */
     .conversation-property {
       display: flex;
       align-items: center;
@@ -564,6 +584,16 @@
 
     .conversation-property i {
       font-size: 10px;
+    }
+
+    /* Property thumbnail in conversation list */
+    .conversation-property-thumb {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
     }
 
     .conversation-badge {
@@ -746,8 +776,9 @@
       font-size: 14px;
     }
 
+    /* Buyer messages: navy accent */
     .message-bubble.received .message-content {
-      background: var(--message-received);
+      background: #f1f5f9;
       border-bottom-left-radius: 4px;
       color: var(--text-dark);
     }
@@ -758,10 +789,23 @@
       border-bottom-right-radius: 4px;
     }
 
+    /* AI-suggested message: subtle gold accent (when flagged) */
+    .message-bubble.ai-suggested .message-content {
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+    .message-bubble.ai-suggested .message-ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: #b8860b;
+      margin-top: 4px;
+    }
+
     .message-time {
       font-size: 11px;
       color: var(--text-light);
-      margin-top: 4px;
+      margin-top: 6px;
       padding: 0 8px;
     }
 
@@ -814,6 +858,20 @@
       display: flex;
       gap: 12px;
       align-items: flex-end;
+      position: relative;
+    }
+
+    .chat-input-wrapper .ai-icon-near-input {
+      position: absolute;
+      left: 14px;
+      bottom: 16px;
+      color: #d4af37;
+      font-size: 14px;
+      pointer-events: none;
+    }
+
+    .chat-input-wrapper.has-ai-icon .chat-input {
+      padding-left: 38px;
     }
 
     .chat-input {
@@ -833,6 +891,49 @@
       outline: none;
       border-color: var(--primary-light);
       box-shadow: 0 0 0 3px rgba(11, 46, 82, 0.15);
+    }
+
+    /* BahAI Assist panel - suggested replies (core feature) */
+    .bahai-assist-panel {
+      margin-bottom: 16px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, rgba(11, 46, 82, 0.04) 0%, rgba(212, 175, 55, 0.08) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: var(--border-radius-sm);
+    }
+    .bahai-assist-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .bahai-assist-label i {
+      color: #d4af37;
+    }
+    .bahai-assist-suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .bahai-suggestion-chip {
+      padding: 8px 14px;
+      background: white;
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--text-dark);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .bahai-suggestion-chip:hover {
+      background: rgba(212, 175, 55, 0.12);
+      border-color: #d4af37;
     }
     .send-button {
       background: var(--primary-gradient);
@@ -1218,6 +1319,18 @@
       .filter-buttons {
         flex-wrap: wrap;
       }
+
+      /* BahAI Assist: remain accessible on mobile */
+      .bahai-assist-panel {
+        padding: 10px 14px;
+      }
+      .bahai-assist-suggestions {
+        gap: 6px;
+      }
+      .bahai-suggestion-chip {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
     }
 
     /* Small Mobile */
@@ -1290,8 +1403,10 @@
     <!-- Conversations Sidebar -->
     <div class="conversations-sidebar">
       <div class="conversations-header">
+        <h2 class="conversations-header-title"><i class="fas fa-comments"></i> Messages</h2>
+        <p class="conversations-header-subtitle">AI-assisted communication with property owners and brokers</p>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-          <h2 style="margin: 0;"><i class="fas fa-comments"></i> Conversations</h2>
+          <span style="font-size: 0.9rem; color: var(--text-light);">Conversations</span>
           <button class="refresh-btn" id="refreshBtn">
             <i class="fas fa-sync-alt"></i> Refresh
           </button>
@@ -1357,14 +1472,28 @@
       <div class="chat-messages-container" id="chatMessagesContainer">
         <div class="empty-state">
           <div class="empty-state-icon">💬</div>
-          <h3>No conversation selected</h3>
-          <p>Select a conversation from the list to view messages</p>
+          <h3>Select a conversation to begin</h3>
+          <p>BahAI can help you start the conversation. Choose a chat from the list.</p>
         </div>
       </div>
 
       <div class="chat-input-container" id="chatInputContainer" style="display: none;">
-        <div class="chat-input-wrapper">
-          <textarea class="chat-input" id="chatInput" placeholder="Type your message here..." rows="1"></textarea>
+        <!-- BahAI Assist: Suggested replies (auto-fill input, user confirms before send) -->
+        <div class="bahai-assist-panel" id="bahaiAssistPanel">
+          <div class="bahai-assist-label">
+            <i class="fas fa-robot"></i>
+            Suggested by BahAI
+          </div>
+          <div class="bahai-assist-suggestions">
+            <button type="button" class="bahai-suggestion-chip" data-suggestion="Is this property still available? I'm very interested.">Ask about availability</button>
+            <button type="button" class="bahai-suggestion-chip" data-suggestion="I'd like to schedule a site visit. When would be a good time?">Request a site visit</button>
+            <button type="button" class="bahai-suggestion-chip" data-suggestion="I'm interested in this property. Is there any flexibility on the price?">Negotiate price</button>
+          </div>
+        </div>
+        
+        <div class="chat-input-wrapper has-ai-icon">
+          <i class="fas fa-sparkles ai-icon-near-input" title="BahAI can help you compose messages"></i>
+          <textarea class="chat-input" id="chatInput" placeholder="Type your message or use BahAI suggestions…" rows="1"></textarea>
           <button class="send-button" id="sendButton">
             <i class="fas fa-paper-plane"></i>
           </button>
@@ -1495,6 +1624,7 @@ function debugLog(...args) {
 
 // Initialize on auth state change
 onAuthStateChanged(auth, async (user) => {
+  if (typeof window.updateBuyerNavAuth === 'function') window.updateBuyerNavAuth(user);
   if (!user) {
     window.location.href = "../login.html?redirect=" + encodeURIComponent(window.location.pathname || "buyer/messages.html");
     return;
@@ -1589,6 +1719,18 @@ function setupEventListeners() {
   // Send message
   document.getElementById('sendButton').addEventListener('click', sendMessage);
   
+  // BahAI Assist: suggestion chips auto-fill input (user confirms before send)
+  document.querySelectorAll('.bahai-suggestion-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+      const suggestion = this.getAttribute('data-suggestion');
+      const input = document.getElementById('chatInput');
+      if (suggestion && input) {
+        input.value = suggestion;
+        input.focus();
+      }
+    });
+  });
+  
   // Enter key for sending messages
   document.getElementById('chatInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -1664,6 +1806,9 @@ async function loadConversations() {
       // Load all user data for conversations
       await loadAllUsersForConversations();
       
+      // Load property data for conversations (for thumbnails and "Regarding" tag)
+      await loadAllPropertiesForConversations();
+      
       // Display conversations
       displayConversations(allConversations);
       
@@ -1699,6 +1844,18 @@ async function loadAllUsersForConversations() {
   // Load users in parallel
   const userPromises = Array.from(userIds).map(userId => loadUserData(userId));
   await Promise.all(userPromises);
+}
+
+// Load property data for all conversations (for thumbnails and "Regarding" tag)
+async function loadAllPropertiesForConversations() {
+  const propertyIds = new Set();
+  allConversations.forEach(conv => {
+    if (conv.propertyId) propertyIds.add(conv.propertyId);
+  });
+  if (propertyIds.size === 0) return;
+  debugLog(`🏠 Loading ${propertyIds.size} properties for conversation list...`);
+  const promises = Array.from(propertyIds).map(id => loadPropertyData(id));
+  await Promise.all(promises);
 }
 
 // Load conversations from database for buyer
@@ -1826,6 +1983,7 @@ function setupConversationsListener() {
       if (needsRefresh) {
         // Reload user data for new conversations
         await loadAllUsersForConversations();
+        await loadAllPropertiesForConversations();
         filterConversations();
       }
     });
@@ -2078,7 +2236,12 @@ function displayConversations(conversations) {
     const lastMessage = conversation.lastMessage || 'No messages yet';
     const preview = lastMessage.length > 50 ? lastMessage.substring(0, 50) + '...' : lastMessage;
     
+    const propPhoto = propertyInfo ? (getPropertyThumb(propertyInfo) || 'https://via.placeholder.com/44x44/0b2e52/white?text=Property') : null;
+    const title = propertyInfo?.title || '';
+    const regardingText = propertyInfo ? `Regarding: ${title.length > 25 ? title.substring(0, 25) + '...' : title || 'Property'}` : displayInfo.roleDisplay;
+
     conversationElement.innerHTML = `
+      ${propPhoto ? `<img class="conversation-property-thumb" src="${propPhoto.replace(/"/g, '&quot;')}" alt="">` : ''}
       <div class="conversation-avatar" style="background: ${photoURL ? 'transparent' : getAvatarColor(displayInfo.displayName)}">
         ${avatarHtml}
         ${hasPendingSchedule ? '<span style="position: absolute; bottom: -2px; right: -2px; background: #f59e0b; color: white; width: 16px; height: 16px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; z-index: 1;">📅</span>' : ''}
@@ -2093,12 +2256,7 @@ function displayConversations(conversations) {
           ${hasPendingSchedule ? ' <span style="color: #f59e0b;">📅</span>' : ''}
         </div>
         <div class="conversation-property">
-          <i class="fas fa-user-tag"></i> ${displayInfo.roleDisplay}
-          ${propertyInfo ? `
-            <span style="margin-left: 5px;">•</span>
-            <i class="fas fa-home"></i>
-            ${propertyInfo.title.substring(0, 20)}${propertyInfo.title.length > 20 ? '...' : ''}
-          ` : ''}
+          <i class="fas fa-home"></i> ${regardingText}
         </div>
       </div>
       ${unreadCount > 0 ? `<div class="conversation-badge">${unreadCount}</div>` : ''}
@@ -2218,21 +2376,49 @@ async function selectConversation(conversationId, brokerId, propertyId = null) {
   await markConversationAsRead(conversationId);
 }
 
+// Format property price for display (rent/lease/sale)
+function formatPropertyPrice(property) {
+  if (!property) return '—';
+  const type = property.listingType === 'lease' || property.type === 'lease' ? 'lease'
+    : property.listingType === 'rent' || property.type === 'rent' ? 'rent'
+    : property.monthlyRent != null && property.monthlyRent > 0 ? 'rent'
+    : property.annualRent != null && property.annualRent > 0 ? 'lease'
+    : 'sale';
+  if (type === 'rent') return `₱${(property.monthlyRent || 0).toLocaleString()}/mo`;
+  if (type === 'lease') return `₱${(property.annualRent || 0).toLocaleString()}/yr`;
+  return `₱${(property.pricing || property.salePrice || property.price || 0).toLocaleString()}`;
+}
+
+// Get property thumbnail URL
+function getPropertyThumb(property) {
+  if (!property) return null;
+  const arr = property.photos || property.imageUrls || property.galleryImages || [];
+  return Array.isArray(arr) && arr.length > 0 ? arr[0] : null;
+}
+
 // Load property data
 async function loadPropertyData(propertyId) {
   try {
     const propertyDoc = await getDoc(doc(db, "properties", propertyId));
     if (propertyDoc.exists()) {
       const propertyData = propertyDoc.data();
-      propertyMap.set(propertyId, {
+      const photos = propertyData.photos || propertyData.imageUrls || propertyData.galleryImages || [];
+      const prop = {
         id: propertyId,
         title: propertyData.title || 'Untitled Property',
-        location: propertyData.location || propertyData.address || 'Location not specified',
-        price: propertyData.pricing || propertyData.monthlyRent || propertyData.price || 0,
+        location: propertyData.location || propertyData.address || propertyData.city || 'Location not specified',
         type: propertyData.propertyType || propertyData.type || 'Property',
-        photos: propertyData.photos || propertyData.imageUrls || [],
-        userId: propertyData.userId || null
-      });
+        photos: photos,
+        imageUrls: propertyData.imageUrls || photos,
+        userId: propertyData.userId || null,
+        listingType: propertyData.listingType || propertyData.type,
+        monthlyRent: propertyData.monthlyRent,
+        annualRent: propertyData.annualRent,
+        salePrice: propertyData.salePrice,
+        pricing: propertyData.pricing,
+        price: propertyData.pricing || propertyData.monthlyRent || propertyData.salePrice || propertyData.price || 0
+      };
+      propertyMap.set(propertyId, prop);
     }
   } catch (error) {
     debugLog(`❌ Error loading property ${propertyId}:`, error);
@@ -2329,15 +2515,16 @@ function showEmptyMessagesState() {
   
   if (currentPropertyId && propertyMap.has(currentPropertyId)) {
     const property = propertyMap.get(currentPropertyId);
-    const photo = property.photos && property.photos.length > 0 ? property.photos[0] : 'https://via.placeholder.com/80x80/0b2e52/white?text=Property';
+    const photo = getPropertyThumb(property) || 'https://via.placeholder.com/80x80/0b2e52/white?text=Property';
+    const priceDisplay = formatPropertyPrice(property);
     
     messagesContainer.innerHTML = `
       <div class="property-quick-view" onclick="viewPropertyDetails('${currentPropertyId}')">
-        <img src="${photo}" alt="${property.title}">
+        <img src="${photo.replace(/"/g, '&quot;')}" alt="${(property.title || '').replace(/"/g, '&quot;')}">
         <div class="property-quick-info">
-          <h4>${property.title}</h4>
-          <p><i class="fas fa-map-marker-alt"></i> ${property.location}</p>
-          <div class="property-quick-price">₱${property.price.toLocaleString()}</div>
+          <h4>${(property.title || 'Untitled').replace(/</g, '&lt;')}</h4>
+          <p><i class="fas fa-map-marker-alt"></i> ${(property.location || '—').replace(/</g, '&lt;')}</p>
+          <div class="property-quick-price">${priceDisplay}</div>
         </div>
       </div>
       <div class="message-date">
@@ -2346,7 +2533,7 @@ function showEmptyMessagesState() {
       <div class="empty-state" style="padding: 40px 0;">
         <div class="empty-state-icon">💬</div>
         <h3>No messages yet</h3>
-        <p>Send a message to start the conversation</p>
+        <p>Send a message to start. BahAI suggestions above can help you begin.</p>
       </div>
     `;
   } else {
@@ -2354,7 +2541,7 @@ function showEmptyMessagesState() {
       <div class="empty-state">
         <div class="empty-state-icon">💬</div>
         <h3>No messages yet</h3>
-        <p>Send a message to start the conversation</p>
+        <p>Send a message to start. BahAI suggestions above can help you begin.</p>
       </div>
     `;
   }
@@ -2370,17 +2557,18 @@ function displayMessages(snapshot) {
   // Add property quick view at the top if available
   if (currentPropertyId && propertyMap.has(currentPropertyId)) {
     const property = propertyMap.get(currentPropertyId);
-    const photo = property.photos && property.photos.length > 0 ? property.photos[0] : 'https://via.placeholder.com/80x80/0b2e52/white?text=Property';
+    const photo = getPropertyThumb(property) || 'https://via.placeholder.com/80x80/0b2e52/white?text=Property';
+    const priceDisplay = formatPropertyPrice(property);
     
     const propertyView = document.createElement('div');
     propertyView.className = 'property-quick-view';
     propertyView.onclick = () => viewPropertyDetails(currentPropertyId);
     propertyView.innerHTML = `
-      <img src="${photo}" alt="${property.title}">
+      <img src="${photo.replace(/"/g, '&quot;')}" alt="${(property.title || '').replace(/"/g, '&quot;')}">
       <div class="property-quick-info">
-        <h4>${property.title}</h4>
-        <p><i class="fas fa-map-marker-alt"></i> ${property.location}</p>
-        <div class="property-quick-price">₱${property.price.toLocaleString()}</div>
+        <h4>${(property.title || 'Untitled').replace(/</g, '&lt;')}</h4>
+        <p><i class="fas fa-map-marker-alt"></i> ${(property.location || '—').replace(/</g, '&lt;')}</p>
+        <div class="property-quick-price">${priceDisplay}</div>
       </div>
     `;
     
@@ -2729,8 +2917,8 @@ function resetChatUI() {
   messagesContainer.innerHTML = `
     <div class="empty-state">
       <div class="empty-state-icon">💬</div>
-      <h3>No conversation selected</h3>
-      <p>Select a conversation from the list to view messages</p>
+      <h3>Select a conversation to begin</h3>
+      <p>BahAI can help you start the conversation. Choose a chat from the list.</p>
     </div>
   `;
   
@@ -3539,12 +3727,7 @@ function makeCallToBroker() {
 // View property details
 window.viewPropertyDetails = function(propertyId) {
   if (!propertyId) return;
-  
-  const propertyInfo = propertyMap.get(propertyId);
-  if (propertyInfo) {
-    // Redirect to dashboard to view property details
-    window.open(`buyer_dashboard.html#property-${propertyId}`, '_blank');
-  }
+  window.open(`new_property_details.html?id=${propertyId}`, '_blank');
 };
 
 // Helper function to get initials from name

@@ -1013,16 +1013,14 @@ function setupLogoutButton() {
 
 // Function to load sidebar based on user role
 async function loadSidebarBasedOnRole(userRole) {
-    let sidebarFile = 'sidebar.html'; // Default for broker
+    let sidebarFile = 'sidebar.html'; // Default
     
     if (userRole === 'agent') {
         sidebarFile = 'agent_sidebar.html';
     } else if (userRole === 'broker') {
-        sidebarFile = 'sidebar.html'; // Broker uses main sidebar
-    } else if (userRole === 'landlord') {
-        sidebarFile = '../landlord/sidebar.html';
+        sidebarFile = 'broker_sidebar.html';
     }
-    // For admin, user use default broker sidebar
+    // For other roles (admin, landlord, user) use default sidebar
     
     try {
         const response = await fetch(sidebarFile);
