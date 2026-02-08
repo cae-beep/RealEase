@@ -233,6 +233,12 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 window.firebaseApp = app;
+window.performLogout = async function() {
+  try {
+    await signOut(auth);
+    window.location.href = '../login.html';
+  } catch (e) { console.error(e); }
+};
 
 const urlParams = new URLSearchParams(window.location.search);
 const propertyId = urlParams.get('id');
@@ -887,7 +893,106 @@ document.getElementById('messageInput').addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 });
 
-onAuthStateChanged(auth, () => {
+async function getUserRole(userId) {
+  if (!userId) return 'user';
+  try {
+    const userDoc = await getDoc(doc(db, 'users', userId));
+    if (userDoc.exists()) {
+      const d = userDoc.data();
+      return d.role || d.userType || 'user';
+    }
+    const agentDoc = await getDoc(doc(db, 'agents', userId));
+    if (agentDoc.exists()) return 'agent';
+    const brokerDoc = await getDoc(doc(db, 'brokers', userId));
+    if (brokerDoc.exists()) return 'broker';
+  } catch (e) { console.warn(e); }
+  return 'user';
+}
+
+async function loadSidebarBasedOnRole(userRole, isGuest = false) {
+  let sidebarFile = 'sidebar.html';
+  if (userRole === 'landlord') {
+    sidebarFile = '../landlord/sidebar.html';
+  } else if (userRole === 'agent') {
+    sidebarFile = '../broker/agent_sidebar.html';
+  } else if (userRole === 'broker') {
+    sidebarFile = '../broker/sidebar.html';
+  }
+  try {
+    const response = await fetch(sidebarFile);
+    if (!response.ok) throw new Error('Sidebar ' + response.status);
+    let html = await response.text();
+    const container = document.getElementById('sidebar-container');
+    if (!container) return;
+    const basePrefix = userRole === 'landlord' ? '../landlord/' : (userRole === 'broker' || userRole === 'agent') ? '../broker/' : '';
+    if (basePrefix) {
+      html = html.replace(/href="([^"]+)"/g, function(m, href) {
+        if (href.startsWith('http') || href.startsWith('/') || href.startsWith('#')) return m;
+        if (href.startsWith('..')) return m;
+        return 'href="' + basePrefix + href + '"';
+      });
+    }
+    container.innerHTML = html;
+    container.querySelectorAll('script').forEach(function(oldScript) {
+      const newScript = document.createElement('script');
+      if (oldScript.src) newScript.src = oldScript.src;
+      else newScript.textContent = oldScript.textContent;
+      document.body.appendChild(newScript);
+    });
+    if (typeof window.updateSidebarUserProfile === 'function') window.updateSidebarUserProfile();
+    const links = document.querySelectorAll('.sidebar-link');
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href === 'new_property_details.html' || (href && href.indexOf('new_property_details') !== -1)) link.classList.add('active');
+      else link.classList.remove('active');
+    });
+    if (isGuest) {
+      const loginBtn = document.getElementById('logoutBtn');
+      if (loginBtn && loginBtn.classList.contains('login-btn')) {
+        const newBtn = loginBtn.cloneNode(true);
+        loginBtn.parentNode.replaceChild(newBtn, loginBtn);
+        newBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          window.location.href = '../login.html?redirect=' + encodeURIComponent('buyer/new_property_details.html' + (propertyId ? '?id=' + propertyId : ''));
+        });
+      }
+    } else {
+      setupLogoutButton();
+    }
+  } catch (e) {
+    console.error('Sidebar load error:', e);
+    const container = document.getElementById('sidebar-container');
+    if (container) container.innerHTML = '<div class="sidebar" style="padding:20px;background:#f8f9fa;color:#dc3545;"><p>Unable to load navigation. Please refresh.</p></div>';
+  }
+}
+
+function setupLogoutButton() {
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (!logoutBtn) { setTimeout(setupLogoutButton, 100); return; }
+  const newBtn = logoutBtn.cloneNode(true);
+  logoutBtn.parentNode.replaceChild(newBtn, logoutBtn);
+  newBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (confirm('Are you sure you want to log out?')) {
+      if (typeof window.performLogout === 'function') window.performLogout();
+      else window.location.href = '../login.html';
+    }
+  });
+}
+
+onAuthStateChanged(auth, async (user) => {
+  const isGuest = !user;
+  const userRole = user ? await getUserRole(user.uid) : 'user';
+  try {
+    const stored = typeof localStorage !== 'undefined' && localStorage.getItem('userData');
+    const roleFromStorage = stored ? (JSON.parse(stored) || {}).role : null;
+    const role = userRole !== 'user' ? userRole : (roleFromStorage || 'user');
+    await loadSidebarBasedOnRole(role, isGuest);
+  } catch (e) {
+    await loadSidebarBasedOnRole(userRole, isGuest);
+  }
   if (propertyId) loadProperty();
 });
 
@@ -895,9 +1000,16 @@ if (propertyId) loadProperty();
 </script>
 
 <script src="../sidebar-user.js"></script>
-<script src="buyer-sidebar-loader.js"></script>
 <script>
-loadBuyerSidebar('new_property_details.html');
+document.getElementById('mobileMenuToggle')?.addEventListener('click', function() {
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebar) sidebar.style.transform = sidebar.style.transform === 'translateX(0px)' ? 'translateX(-100%)' : 'translateX(0px)';
+});
+window.addEventListener('resize', function() {
+  const sidebar = document.querySelector('.sidebar');
+  if (window.innerWidth > 1024 && sidebar) sidebar.style.transform = 'translateX(0)';
+  else if (window.innerWidth <= 1024 && sidebar) sidebar.style.transform = 'translateX(-100%)';
+});
 </script>
 </body>
 </html>

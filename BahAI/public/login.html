@@ -758,6 +758,16 @@
         // ✅ Allow login for: approved, not_submitted, and rejected
         // They can access dashboard, but posting will be blocked for non-approved users
         const role = data.role;
+        // Save userData to localStorage so sidebar shows correct profile (avoids stale broker data for landlords)
+        try {
+          const profileData = {
+            fullName: data.fullName || data.displayName || data.name || ((data.firstName || '') + ' ' + (data.lastName || '')).trim() || user.email?.split('@')[0] || 'User',
+            email: data.email || user.email,
+            role: role,
+            photoURL: data.photoURL || data.profilePhotoURL || data.profilePhoto || data.profileImage || user.photoURL
+          };
+          localStorage.setItem('userData', JSON.stringify(profileData));
+        } catch (e) {}
         window.location.href = getRedirectPage(role);
 
       } catch (error) {
@@ -784,6 +794,10 @@
             createdAt: serverTimestamp()
           };
           await setDoc(userRef, data);
+          try {
+            const profileData = { fullName: user.displayName, email: user.email, role, photoURL: user.photoURL };
+            localStorage.setItem('userData', JSON.stringify(profileData));
+          } catch (e) {}
           showSuccess("✅ Account created! Please complete KYC verification to post properties.");
           setTimeout(() => {
             window.location.href = getRedirectPage(role);
@@ -795,6 +809,10 @@
 
         // 🚫 Only block if pending
         if (data.kycStatus === "pending") {
+          try {
+            const profileData = { fullName: data.fullName || user.displayName, email: data.email || user.email, role: data.role, photoURL: data.photoURL || user.photoURL };
+            localStorage.setItem('userData', JSON.stringify(profileData));
+          } catch (e) {}
           showInfo("🕒 Your KYC is still pending approval. You can access your dashboard but cannot post properties yet.");
           setTimeout(() => {
             window.location.href = getRedirectPage(data.role);
@@ -803,7 +821,17 @@
         }
 
         // ✅ Allow login regardless of KYC status
-        window.location.href = getRedirectPage(data.role);
+        const role = data.role;
+        try {
+          const profileData = {
+            fullName: data.fullName || data.displayName || data.name || user.displayName || user.email?.split('@')[0] || 'User',
+            email: data.email || user.email,
+            role: role,
+            photoURL: data.photoURL || data.profilePhotoURL || data.profilePhoto || data.profileImage || user.photoURL
+          };
+          localStorage.setItem('userData', JSON.stringify(profileData));
+        } catch (e) {}
+        window.location.href = getRedirectPage(role);
 
       } catch (error) {
         showError("❌ Google sign-in failed: " + error.message);

@@ -1934,6 +1934,8 @@ async function loadSidebarBasedOnRole(userRole) {
         sidebarFile = '../broker/agent_sidebar.html';
     } else if (userRole === 'broker') {
         sidebarFile = '../broker/sidebar.html';
+    } else if (userRole === 'landlord') {
+        sidebarFile = '../landlord/sidebar.html';
     }
     loadBuyerSidebar('property_details.html', {
         sidebarFile: sidebarFile,
