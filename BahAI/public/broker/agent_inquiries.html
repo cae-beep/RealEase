@@ -2019,16 +2019,31 @@ async function loadUserData(userId) {
       
       debugLog(`✅ User ${userId}: ${displayName} (${email})`);
     } else {
-      // User not found in database
-      debugLog(`⚠️ User document not found for: ${userId}`);
-      userMap.set(userId, {
-        id: userId,
-        displayName: `User ${userId.substring(0, 8)}`,
-        email: 'No email',
-        phone: 'No phone',
-        role: 'unknown',
-        photoURL: null
-      });
+      // Try brokers collection (other participant may be broker, e.g. broker-agent chat)
+      const brokerDoc = await getDoc(doc(db, "brokers", userId));
+      if (brokerDoc.exists()) {
+        const brokerData = brokerDoc.data();
+        const displayName = extractUserName(brokerData);
+        userMap.set(userId, {
+          id: userId,
+          displayName: displayName,
+          email: brokerData.email || 'No email',
+          phone: brokerData.phone || brokerData.phoneNumber || 'No phone',
+          role: 'broker',
+          photoURL: brokerData.photoURL || brokerData.profilePhoto || brokerData.profileImage || brokerData.imageURL || null
+        });
+        debugLog(`✅ Loaded broker as user for ${userId}: ${displayName}`);
+      } else {
+        debugLog(`⚠️ User document not found for: ${userId}`);
+        userMap.set(userId, {
+          id: userId,
+          displayName: `User ${userId.substring(0, 8)}`,
+          email: 'No email',
+          phone: 'No phone',
+          role: 'unknown',
+          photoURL: null
+        });
+      }
     }
   } catch (error) {
     debugLog(`❌ Error loading user ${userId}:`, error);
@@ -2098,12 +2113,13 @@ function displayConversations(conversations) {
   
   conversations.forEach(conversation => {
     const buyerId = conversation.buyerId;
-    const buyerInfo = userMap.get(buyerId);
     const brokerId = conversation.brokerId;
+    // Other participant may be in userMap (buyer/user) or brokerMap (broker)
+    const buyerInfo = userMap.get(buyerId);
     const brokerInfo = brokerId ? brokerMap.get(brokerId) : null;
+    const otherInfo = buyerInfo || brokerInfo;
     
-    // Create a default buyer info if not loaded yet
-    const displayInfo = buyerInfo || {
+    const displayInfo = otherInfo || {
       id: buyerId,
       displayName: `User ${buyerId ? buyerId.substring(0, 8) : 'Unknown'}`,
       initials: getInitials(`User ${buyerId ? buyerId.substring(0, 8) : 'Unknown'}`),
@@ -2225,16 +2241,15 @@ async function selectConversation(conversationId, buyerId, propertyId = null, br
     }
   });
   
-  // Get buyer info
-  const buyerInfo = userMap.get(buyerId);
-  
-  // If buyer info isn't loaded yet, load it now
-  if (!buyerInfo) {
+  // Get other participant info (may be buyer in userMap or broker in brokerMap)
+  let otherInfo = userMap.get(buyerId) || brokerMap.get(buyerId);
+  if (!otherInfo) {
     await loadUserData(buyerId);
+    otherInfo = userMap.get(buyerId) || brokerMap.get(buyerId);
   }
   
-  const finalBuyerInfo = userMap.get(buyerId) || {
-    displayName: `Buyer ${buyerId.substring(0, 8)}`,
+  const finalBuyerInfo = otherInfo || {
+    displayName: `User ${buyerId ? buyerId.substring(0, 8) : 'Unknown'}`,
     email: 'No email',
     phone: 'No phone',
     role: 'buyer',
