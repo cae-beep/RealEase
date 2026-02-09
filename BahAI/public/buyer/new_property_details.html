@@ -40,8 +40,10 @@ body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: var(--text-
 
 /* Hero Gallery */
 .gallery-hero { position: relative; border-radius: var(--radius-lg); overflow: hidden; background: var(--primary); margin-bottom: 24px; }
-.gallery-hero img { width: 100%; height: 420px; object-fit: cover; display: block; }
-.gallery-badges { position: absolute; top: 20px; left: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+.gallery-hero .main-media-wrap { width: 100%; height: 420px; position: relative; }
+.gallery-hero .main-media-wrap img, .gallery-hero .main-media-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gallery-hero .main-media-wrap video { background: #000; }
+.gallery-badges { position: absolute; top: 20px; left: 20px; display: flex; gap: 10px; flex-wrap: wrap; z-index: 2; }
 .badge { padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 .badge-sale { background: var(--accent); color: white; }
 .badge-rent { background: #059669; color: white; }
@@ -49,12 +51,14 @@ body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: var(--text-
 .badge-active { background: white; color: var(--primary); }
 .save-btn-float { position: absolute; top: 20px; right: 20px; padding: 12px 24px; border-radius: 12px;
   border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
-  background: white; color: var(--primary); box-shadow: var(--shadow-lg); transition: all 0.2s; }
+  background: white; color: var(--primary); box-shadow: var(--shadow-lg); transition: all 0.2s; z-index: 2; }
 .save-btn-float:hover { transform: translateY(-2px); }
 .save-btn-float.saved { background: var(--success); color: white; border: none; }
 .gallery-thumbs { display: flex; gap: 8px; padding: 12px; background: rgba(0,0,0,0.5); overflow-x: auto; }
-.gallery-thumbs img { width: 80px; height: 60px; object-fit: cover; border-radius: 8px; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; }
-.gallery-thumbs img:hover, .gallery-thumbs img.active { opacity: 1; border: 2px solid white; }
+.gallery-thumbs .thumb-item { width: 80px; height: 60px; border-radius: 8px; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; flex-shrink: 0; overflow: hidden; position: relative; }
+.gallery-thumbs .thumb-item:hover, .gallery-thumbs .thumb-item.active { opacity: 1; border: 2px solid white; }
+.gallery-thumbs .thumb-item img, .gallery-thumbs .thumb-item video { width: 100%; height: 100%; object-fit: cover; }
+.video-badge { position: absolute; bottom: 4px; left: 4px; background: rgba(0,0,0,0.7); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; }
 
 /* Content Grid */
 .content-grid { display: grid; grid-template-columns: 1fr 420px; gap: 24px; align-items: start; }
@@ -139,7 +143,7 @@ body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: var(--text-
 
 /* Recommended by BahAI badge */
 .badge-bahai { background: linear-gradient(135deg, var(--accent) 0%, #b8860b 100%); color: white; }
-.gallery-image-count { position: absolute; bottom: 60px; right: 20px; background: rgba(0,0,0,0.6); color: white; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; }
+.gallery-image-count { position: absolute; bottom: 70px; right: 20px; background: rgba(0,0,0,0.6); color: white; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; z-index: 2; }
 
 /* AI Insights panel */
 .bahai-insights-panel { background: linear-gradient(135deg, rgba(11,46,82,0.04) 0%, rgba(212,175,55,0.08) 100%); border: 1px solid rgba(212,175,55,0.25); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 24px; }
@@ -382,26 +386,54 @@ function getAddress(l) {
 async function loadUserInfo(userId) {
   if (!userId) return { displayName: 'Unknown', email: 'N/A', phone: 'N/A', role: 'user', photoURL: null };
   try {
+    // Match profile_agent: agents first (where agent photo is saved), then authUid fallback for invited agents
+    let agentDoc = await getDoc(doc(db, "agents", userId));
+    if (!agentDoc.exists()) {
+      const agentsQuery = query(collection(db, "agents"), where("authUid", "==", userId));
+      const agentSnap = await getDocs(agentsQuery);
+      if (!agentSnap.empty) agentDoc = agentSnap.docs[0];
+    }
+    if (agentDoc && agentDoc.exists()) {
+      const d = agentDoc.data();
+      return {
+        displayName: d.fullName || d.name || d.displayName || d.email?.split('@')[0] || 'Agent',
+        email: d.email || 'N/A',
+        phone: d.phone || d.phoneNumber || d.contactNumber || 'N/A',
+        role: 'agent',
+        photoURL: d.photoURL || d.profilePhotoURL || d.profilePhoto || d.profileImage || d.imageURL || null
+      };
+    }
     const userDoc = await getDoc(doc(db, "users", userId));
     if (userDoc.exists()) {
       const d = userDoc.data();
       return {
-        displayName: d.fullName || d.email?.split('@')[0] || 'User',
+        displayName: d.fullName || d.name || d.displayName || d.email?.split('@')[0] || 'User',
         email: d.email || 'N/A',
-        phone: d.phone || 'N/A',
-        role: d.role || 'user',
-        photoURL: d.photoURL || d.profilePhotoURL || null
+        phone: d.phone || d.phoneNumber || d.contactNumber || 'N/A',
+        role: d.role || d.userType || 'user',
+        photoURL: d.photoURL || d.profilePhotoURL || d.profilePhoto || d.profileImage || d.imageURL || null
       };
     }
     const brokerDoc = await getDoc(doc(db, "brokers", userId));
     if (brokerDoc.exists()) {
       const d = brokerDoc.data();
       return {
-        displayName: d.fullName || d.name || 'Broker',
+        displayName: d.fullName || d.name || d.displayName || 'Broker',
         email: d.email || 'N/A',
         phone: d.phone || 'N/A',
         role: 'broker',
-        photoURL: d.photoURL || d.profilePhoto || d.profileImage || null
+        photoURL: d.photoURL || d.profilePhotoURL || d.profilePhoto || d.profileImage || d.imageURL || null
+      };
+    }
+    const landlordDoc = await getDoc(doc(db, "landlords", userId));
+    if (landlordDoc.exists()) {
+      const d = landlordDoc.data();
+      return {
+        displayName: d.fullName || d.name || d.displayName || d.email?.split('@')[0] || 'Owner',
+        email: d.email || 'N/A',
+        phone: d.phone || 'N/A',
+        role: 'landlord',
+        photoURL: d.photoURL || d.profilePhotoURL || d.profilePhoto || d.profileImage || d.imageURL || null
       };
     }
   } catch (e) { console.warn(e); }
@@ -420,7 +452,9 @@ async function loadProperty() {
       return;
     }
     currentListing = { id: propDoc.id, ...propDoc.data() };
-    currentUserInfo = await loadUserInfo(currentListing.userId);
+    // Prefer agentId for contact; brokerId for broker-listed; fallback to userId/landlordId
+    const contactId = currentListing.agentId || currentListing.brokerId || currentListing.userId || currentListing.landlordId;
+    currentUserInfo = await loadUserInfo(contactId);
     renderProperty();
     setupSaveButton();
   } catch (e) {
@@ -508,17 +542,36 @@ function renderDetailSection(title, icon, items) {
     </div>`;
 }
 
+function isVideoFile(url) {
+  if (!url) return false;
+  const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm', '.mkv', '.m4v'];
+  const urlLower = url.toLowerCase();
+  return videoExtensions.some(ext => urlLower.includes(ext)) ||
+         urlLower.includes('/videos/') ||
+         urlLower.includes('video/');
+}
+
 function renderProperty() {
   const l = currentListing;
   const u = currentUserInfo;
   const type = getListingType(l);
-  const photos = l.photos || l.imageUrls || [];
-  const mainImg = photos[0] || 'https://via.placeholder.com/800x400/0b2e52/white?text=No+Image';
+  // Build allMedia: images first, then videos (same as property_details)
+  let allMedia = [];
+  if (l.photos && l.photos.length > 0) allMedia = [...l.photos];
+  else if (l.imageUrls && l.imageUrls.length > 0) allMedia = [...l.imageUrls];
+  if (l.videoUrls && l.videoUrls.length > 0) allMedia = [...allMedia, ...l.videoUrls];
+  else if (l.mediaUrls && l.mediaUrls.videos) {
+    (l.mediaUrls.videos || []).forEach(v => { if (v && v.url) allMedia.push(v.url); });
+  }
+  if (allMedia.length === 0) allMedia = ['https://via.placeholder.com/800x400/0b2e52/white?text=No+Image'];
+  const firstMedia = allMedia[0];
+  const isFirstVideo = isVideoFile(firstMedia);
   const amenities = l.amenities || [];
-  const initials = (u.displayName || 'U').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+  const initials = (u.displayName || 'U').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'U';
+  const safeInitials = (initials || 'U').replace(/["'<>]/g, '');
   const avatarHtml = u.photoURL
-    ? `<img src="${u.photoURL}" alt="${u.displayName}" onerror="this.parentElement.innerHTML='${initials}'">`
-    : initials;
+    ? `<img src="${(u.photoURL || '').replace(/"/g, '&quot;')}" alt="${(u.displayName || '').replace(/"/g, '&quot;')}" onerror="var p=this.parentElement;p.innerHTML=p.getAttribute('data-fallback')||'U'">`
+    : (safeInitials || 'U');
 
   const badgeClass = type === 'sale' ? 'badge-sale' : type === 'rent' ? 'badge-rent' : 'badge-lease';
   const badgeText = type === 'sale' ? 'For Sale' : type === 'rent' ? 'For Rent' : 'For Lease';
@@ -573,24 +626,41 @@ function renderProperty() {
     ['Province', l.province]
   ].filter(([, v]) => v);
 
-  const roleText = u.role === 'landlord' ? 'Property Owner' : u.role === 'broker' ? 'Licensed Broker' : 'Posted by';
+  const contactId = l.agentId || l.brokerId || l.userId || l.landlordId || '';
+  // Derive contactType from property hierarchy so broker profiles show "Verified Broker" not "Broker Affiliated"
+  const contactType = l.agentId ? 'agent' : l.brokerId ? 'broker' : l.landlordId ? 'landlord' : 'broker';
+  const roleText = u.role === 'landlord' ? 'Property Owner' : u.role === 'agent' ? 'Property Agent' : u.role === 'broker' ? 'Licensed Broker' : 'Posted by';
 
+  const hasVideos = allMedia.some(m => isVideoFile(m));
+  const mediaCountLabel = allMedia.length > 0
+    ? `${allMedia.length} ${hasVideos ? 'media' : 'photo'}${allMedia.length === 1 ? '' : 's'}`
+    : '';
   const html = `
     <div class="gallery-hero">
-      <img src="${mainImg}" alt="${l.title}" id="mainGalleryImg">
+      <div class="main-media-wrap">
+        <img src="${isFirstVideo ? 'https://via.placeholder.com/800x400/0b2e52/white?text=Video+Thumbnail' : firstMedia}" alt="${l.title}" id="mainGalleryImg" style="${isFirstVideo ? 'display:none;' : 'display:block;'}">
+        <video id="mainGalleryVideo" controls style="${isFirstVideo ? 'display:block;' : 'display:none;'}">
+          ${isFirstVideo ? `<source src="${firstMedia}" type="video/mp4">Your browser does not support the video tag.` : ''}
+        </video>
+      </div>
       <div class="gallery-badges">
         ${isFromAI ? '<span class="badge badge-bahai"><i class="fas fa-robot" style="margin-right:4px;"></i> Recommended by BahAI</span>' : ''}
         <span class="badge ${badgeClass}">${badgeText}</span>
         <span class="badge badge-active">${l.status === 'active' ? 'Available' : (l.status || 'Available')}</span>
       </div>
-      ${photos.length > 0 ? `<span class="gallery-image-count">${photos.length} photo${photos.length === 1 ? '' : 's'}</span>` : ''}
+      ${mediaCountLabel ? `<span class="gallery-image-count">${mediaCountLabel}</span>` : ''}
       <button class="save-btn-float" id="saveBtnFloat">
         <i class="far fa-heart" id="saveIcon"></i>
         <span id="saveText">Save Property</span>
       </button>
-      ${photos.length > 1 ? `
+      ${allMedia.length > 1 ? `
       <div class="gallery-thumbs">
-        ${photos.map((url, i) => `<img src="${url}" alt="" class="${i === 0 ? 'active' : ''}" data-index="${i}">`).join('')}
+        ${allMedia.map((media, i) => {
+          const isV = isVideoFile(media);
+          return `<div class="thumb-item ${i === 0 ? 'active' : ''}" data-media="${(media || '').replace(/"/g, '&quot;')}" data-index="${i}" data-type="${isV ? 'video' : 'image'}">
+            ${isV ? `<video src="${(media || '').replace(/"/g, '&quot;')}" style="width:100%;height:60px;object-fit:cover;"></video><span class="video-badge">VIDEO</span>` : `<img src="${(media || '').replace(/"/g, '&quot;')}" alt="">`}
+          </div>`;
+        }).join('')}
       </div>
       ` : ''}
     </div>
@@ -653,15 +723,15 @@ function renderProperty() {
 
       <div>
         <div class="contact-card">
-          <div class="contact-header"><i class="fas fa-user"></i> Contact ${u.role === 'landlord' ? 'Owner' : 'Broker'}</div>
+          <div class="contact-header"><i class="fas fa-user"></i> Contact ${u.role === 'landlord' ? 'Owner' : u.role === 'agent' ? 'Agent' : 'Broker'}</div>
           <div class="contact-profile">
-            <a href="view_profile.html?type=${u.role === 'landlord' ? 'landlord' : 'broker'}&id=${l.userId || ''}" class="contact-profile-link" title="View profile" aria-label="View ${u.displayName || 'Owner'}'s profile">
-              <div class="contact-avatar">${avatarHtml}</div>
+            <a href="view_profile.html?type=${contactType}&id=${contactId}" class="contact-profile-link" title="View profile" aria-label="View ${u.displayName || 'Owner'}'s profile">
+              <div class="contact-avatar" ${u.photoURL ? `data-fallback="${safeInitials.replace(/"/g, '&quot;')}"` : ''}>${avatarHtml}</div>
               <div class="contact-profile-info">
                 <div class="contact-name">${u.displayName || 'Owner'}</div>
                 <div class="contact-role">${roleText}</div>
                 <div class="contact-view-profile">View profile</div>
-                <div class="contact-verified"><i class="fas fa-check-circle"></i> Verified ${u.role === 'landlord' ? 'landlord' : 'broker'}</div>
+                <div class="contact-verified"><i class="fas fa-check-circle"></i> Verified ${u.role === 'landlord' ? 'landlord' : u.role === 'agent' ? 'agent' : 'broker'}</div>
               </div>
             </a>
           </div>
@@ -743,19 +813,38 @@ function renderProperty() {
     }
   });
 
-  if (photos.length > 1) {
-    document.querySelectorAll('.gallery-thumbs img').forEach(thumb => {
+  if (allMedia.length > 1) {
+    document.querySelectorAll('.gallery-thumbs .thumb-item').forEach(thumb => {
       thumb.addEventListener('click', () => {
-        document.querySelectorAll('.gallery-thumbs img').forEach(t => t.classList.remove('active'));
+        const idx = parseInt(thumb.dataset.index, 10);
+        const mediaUrl = allMedia[idx];
+        if (!mediaUrl) return;
+        const isVideo = isVideoFile(mediaUrl);
+        const mainImg = document.getElementById('mainGalleryImg');
+        const mainVideo = document.getElementById('mainGalleryVideo');
+        if (isVideo) {
+          mainImg.style.display = 'none';
+          mainVideo.style.display = 'block';
+          mainVideo.src = mediaUrl;
+          mainVideo.load();
+        } else {
+          mainVideo.style.display = 'none';
+          mainImg.style.display = 'block';
+          mainImg.src = mediaUrl;
+        }
+        document.querySelectorAll('.gallery-thumbs .thumb-item').forEach(t => t.classList.remove('active'));
         thumb.classList.add('active');
-        document.getElementById('mainGalleryImg').src = photos[thumb.dataset.index];
       });
     });
+  }
+  if (isFirstVideo && allMedia.length > 0) {
+    const mainVideo = document.getElementById('mainGalleryVideo');
+    if (mainVideo) mainVideo.src = firstMedia;
   }
 
   document.getElementById('contactBtn').addEventListener('click', () => {
     if (auth.currentUser) {
-      openMessageModal(l.userId, l.id);
+      openMessageModal(contactId, l.id);
     } else {
       window.location.href = '../login.html?redirect=buyer/new_property_details.html?id=' + propertyId;
     }

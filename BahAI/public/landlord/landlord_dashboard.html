@@ -942,7 +942,7 @@ function displayListings(listings) {
     return `
     <div class="listing-card-wrapper">
       <div class="listing-card" data-listing-id="${listing.id}">
-        <a href="../buyer/new_property_details.html?id=${listing.id}" class="card-link-overlay" aria-label="View ${listing.title}"></a>
+        <a href="property_details.html?id=${listing.id}" class="card-link-overlay" aria-label="View ${listing.title}"></a>
         <div class="listing-card-image-container">
           <span class="listing-type-badge ${badgeClass}">${listingType}</span>
           <img src="${imageUrl}" alt="${listing.title}" class="listing-image">

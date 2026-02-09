@@ -20,4 +20,4 @@ const storage = getStorage(app);
 
 // NO emulator connections - use production
 
-export { auth, db, storage };
+export { app, auth, db, storage };

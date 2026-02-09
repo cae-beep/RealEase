@@ -505,6 +505,26 @@
       display: block;
     }
 
+    .preview-item video {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      display: block;
+      border-radius: 8px;
+    }
+
+    .video-badge {
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
     .remove-btn {
       position: absolute;
       top: 5px;
@@ -616,48 +636,48 @@
       border: 1px solid #fbd38d;
     }
 
-    /* ===== KYC WARNING ===== */
-    .kyc-warning {
-      background: linear-gradient(135deg, #feebc8, #fbd38d);
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 25px;
-      text-align: center;
-      border: none;
-      max-width: 1200px;
-      margin-left: auto;
-      margin-right: auto;
+    /* ===== FORM DISABLED (KYC) ===== */
+    .form-disabled { position: relative; }
+    .form-disabled::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      backdrop-filter: blur(2px); background: rgba(255, 255, 255, 0.3);
+      z-index: 100; border-radius: 16px; pointer-events: auto;
     }
-
-    .kyc-warning h2 {
-      color: #744210;
-      margin-top: 0;
-      margin-bottom: 10px;
-      font-size: 18px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+    .form-disabled .form-content { opacity: 0.85; pointer-events: none; user-select: none; }
+    .form-disabled input, .form-disabled select, .form-disabled textarea,
+    .form-disabled .image-upload-area, .form-disabled .amenity-item input[type="checkbox"],
+    .form-disabled .btn, .form-disabled .type-card {
+      pointer-events: none; cursor: not-allowed;
     }
-
-    .kyc-warning a {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      margin-top: 15px;
-      transition: all 0.3s ease;
+    /* ===== FULL PAGE BLUR OVERLAY ===== */
+    .full-page-blur-overlay {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      backdrop-filter: blur(2px); background: rgba(255, 255, 255, 0.4);
+      z-index: 101; border-radius: 16px; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; text-align: center; padding: 40px;
     }
-
-    .kyc-warning a:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
+    .full-page-blur-overlay h2 {
+      color: #d63031; font-size: 24px; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 15px;
+    }
+    .full-page-blur-overlay .status {
+      font-size: 18px; font-weight: bold; color: #d63031; margin-bottom: 20px;
+      padding: 10px 25px; background: rgba(255, 255, 255, 0.85);
+      border-radius: 10px; border: 2px solid #ff7675;
+    }
+    .full-page-blur-overlay .message {
+      font-size: 16px; color: var(--text-dark); margin-bottom: 30px;
+      max-width: 600px; line-height: 1.6; background: rgba(255, 255, 255, 0.7);
+      padding: 15px; border-radius: 8px;
+    }
+    .full-page-blur-overlay .kyc-button {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, #e74c3c, #ff6b6b); color: white;
+      padding: 16px 35px; border-radius: 12px; text-decoration: none;
+      font-weight: bold; font-size: 16px; box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
+    }
+    .full-page-blur-overlay .kyc-button:hover {
+      transform: translateY(-2px); box-shadow: 0 12px 25px rgba(231, 76, 60, 0.5);
     }
 
     /* ===== MAP STYLES ===== */
@@ -942,16 +962,6 @@
     </div>
   </div>
 
-  <!-- KYC Warning -->
-  <div id="kycWarning" class="kyc-warning" style="display: none;">
-    <h2><i class="bi bi-exclamation-triangle"></i> KYC Verification Required</h2>
-    <p id="kycStatusText"></p>
-    <p id="kycMessage"></p>
-    <a href="../kyc.html">
-      <i class="bi bi-shield-lock"></i> Complete KYC Verification
-    </a>
-  </div>
-
   <!-- Success/Error Messages -->
   <div id="messageBox" class="message" style="display: none;"></div>
 
@@ -965,18 +975,18 @@
   </div>
 
   <!-- Type Selection -->
-  <div class="card">
+  <div id="typeSelectionCard" class="card" style="position: relative;">
     <div class="type-selection">
       <h2>Choose Listing Type</h2>
       <div class="type-grid">
-        <div class="type-card active" onclick="selectType('sale')">
+        <div class="type-card active" onclick="selectType('sale', event)">
           <span class="type-icon"><i class="bi bi-cash-coin"></i></span>
           <h3>FOR SALE</h3>
           <div class="description">
             List residential or commercial properties available for outright purchase with full ownership transfer.
           </div>
         </div>
-        <div class="type-card" onclick="selectType('lease')">
+        <div class="type-card" onclick="selectType('lease', event)">
           <span class="type-icon"><i class="bi bi-file-text"></i></span>
           <h3>FOR LEASE</h3>
           <div class="description">
@@ -985,10 +995,19 @@
         </div>
       </div>
     </div>
+    <div id="typeSelectionBlurOverlay" class="full-page-blur-overlay" style="display: none;">
+      <h2><i class="bi bi-exclamation-triangle"></i> KYC Verification Required</h2>
+      <div class="status" id="kycTypeStatus">Status: KYC Not Submitted</div>
+      <p class="message" id="kycTypeMessage">You must complete KYC verification before you can choose a listing type or post properties.</p>
+      <a href="../kyc.html" class="kyc-button">
+        <i class="bi bi-shield-lock"></i> Complete KYC Verification
+      </a>
+    </div>
   </div>
 
   <!-- SALE Form -->
-  <div id="saleForm" class="card property-details active">
+  <div id="saleForm" class="card property-details active" style="position: relative;">
+    <div class="form-content">
     <h2 style="color: var(--text-dark); margin-top: 0; margin-bottom: 30px; display: flex; align-items: center; gap: 12px;">
       <i class="bi bi-cash-coin"></i> Post Property For Sale
     </h2>
@@ -1144,7 +1163,7 @@
       
       <div class="form-group">
         <label>📍 Pin Location on Map</label>
-        <input type="text" id="saleLocationSearch" placeholder="Search address or click on map..." style="margin-bottom: 10px;">
+        <input type="text" id="saleLocationSearch" placeholder="Search address in Batangas or click on map..." style="margin-bottom: 10px;">
         <div id="saleMapPicker"></div>
         <div class="coordinates-display">
           <div class="coord-box">
@@ -1224,7 +1243,7 @@
         <p class="upload-info">Max 10 images • 5MB per image • JPG, PNG</p>
         <div id="saleImageCount" class="selected-count" style="display: none;">0 images</div>
       </div>
-      <input type="file" id="saleImages" accept="image/*" multiple style="display: none;" onchange="handleSaleImageSelection(event)">
+      <input type="file" id="saleImages" accept="image/*,video/*" multiple style="display: none;" onchange="handleSaleImageSelection(event)">
       <div class="preview-container" id="salePreviewContainer"></div>
 
       <!-- Form Actions -->
@@ -1237,10 +1256,20 @@
         </button>
       </div>
     </form>
+    </div>
+    <div id="saleFormBlurOverlay" class="full-page-blur-overlay" style="display: none;">
+      <h2><i class="bi bi-exclamation-triangle"></i> KYC Verification Required</h2>
+      <div class="status" id="kycSaleStatus">Status: KYC Not Submitted</div>
+      <p class="message" id="kycSaleMessage">You must complete KYC verification before posting properties for sale.</p>
+      <a href="../kyc.html" class="kyc-button">
+        <i class="bi bi-shield-lock"></i> Complete KYC Verification
+      </a>
+    </div>
   </div>
 
   <!-- LEASE Form (initially hidden) -->
-  <div id="leaseForm" class="card property-details" style="display: none;">
+  <div id="leaseForm" class="card property-details" style="display: none; position: relative;">
+    <div class="form-content">
     <h2 style="color: var(--text-dark); margin-top: 0; margin-bottom: 30px; display: flex; align-items: center; gap: 12px;">
       <i class="bi bi-file-text"></i> Post Property For Lease
     </h2>
@@ -1411,7 +1440,7 @@
       <!-- Map -->
       <div class="form-group">
         <label>📍 Pin Location on Map</label>
-        <input type="text" id="leaseLocationSearch" placeholder="Search address or click on map..." style="margin-bottom: 10px;">
+        <input type="text" id="leaseLocationSearch" placeholder="Search address in Batangas or click on map..." style="margin-bottom: 10px;">
         <div id="leaseMapPicker"></div>
         <div class="coordinates-display">
           <div class="coord-box">
@@ -1549,7 +1578,7 @@
         <p class="upload-info">Max 10 images • 5MB per image • JPG, PNG</p>
         <div id="leaseImageCount" class="selected-count" style="display: none;">0 images</div>
       </div>
-      <input type="file" id="leaseImages" accept="image/*" multiple style="display: none;" onchange="handleLeaseImageSelection(event)">
+      <input type="file" id="leaseImages" accept="image/*,video/*" multiple style="display: none;" onchange="handleLeaseImageSelection(event)">
       <div class="preview-container" id="leasePreviewContainer"></div>
 
       <!-- Form Actions -->
@@ -1562,6 +1591,15 @@
         </button>
       </div>
     </form>
+    </div>
+    <div id="leaseFormBlurOverlay" class="full-page-blur-overlay" style="display: none;">
+      <h2><i class="bi bi-exclamation-triangle"></i> KYC Verification Required</h2>
+      <div class="status" id="kycLeaseStatus">Status: KYC Not Submitted</div>
+      <p class="message" id="kycLeaseMessage">You must complete KYC verification before posting properties for lease.</p>
+      <a href="../kyc.html" class="kyc-button">
+        <i class="bi bi-shield-lock"></i> Complete KYC Verification
+      </a>
+    </div>
   </div>
 
   <!-- Upload Progress for Sale -->
@@ -1606,6 +1644,33 @@
     appId: "1:646878644941:web:5b4ccc3412250337587784"
   };
 
+  // ===== LOGOUT (for sidebar) =====
+  function setupLogoutButton() {
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (!logoutBtn) { setTimeout(setupLogoutButton, 100); return; }
+    const newLogoutBtn = logoutBtn.cloneNode(true);
+    logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
+    newLogoutBtn.addEventListener("click", function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (confirm("Are you sure you want to log out?")) {
+        if (typeof window.performLogout === 'function') window.performLogout();
+        else window.location.href = "../login.html";
+      }
+    });
+  }
+  window.performLogout = async function() {
+    try {
+      await firebase.auth().signOut();
+      localStorage.removeItem('userData');
+      sessionStorage.removeItem('userData');
+      window.location.href = "../login.html";
+    } catch (e) {
+      console.error('Logout error:', e);
+      window.location.href = "../login.html";
+    }
+  };
+
   // ===== SIDEBAR LOADER =====
   document.addEventListener('DOMContentLoaded', function() {
     // Mobile menu functionality
@@ -1622,11 +1687,14 @@
       .then(response => response.text())
       .then(html => {
         document.getElementById('sidebar-container').innerHTML = html;
+        if (typeof window.updateSidebarUserProfile === 'function') {
+          window.updateSidebarUserProfile();
+        }
         const links = document.querySelectorAll('.sidebar-link');
         links.forEach(link => {
           if (link.getAttribute('href') === 'agent_add_property.html') link.classList.add('active');
         });
-        if (typeof setupLogoutButton === 'function') setupLogoutButton();
+        setupLogoutButton();
       })
       .catch(error => console.error('Error loading sidebar:', error));
     
@@ -1725,50 +1793,49 @@
   // ===== USER PROFILE (agents collection first, then users) =====
   async function loadUserProfile() {
     try {
+      let sidebarData = null;
       const agentDoc = await firebase.firestore().collection('agents').doc(currentUser.uid).get();
       if (agentDoc.exists) {
         const d = agentDoc.data();
-        const sidebarData = {
+        sidebarData = {
           fullName: d.fullName || d.name || d.displayName,
           displayName: d.fullName || d.name || d.displayName,
           email: currentUser.email || d.email,
-          role: d.userType || d.role || 'agent'
+          role: d.userType || d.role || 'agent',
+          photoURL: d.photoURL || d.profilePhoto || d.profileImage || d.imageURL || currentUser.photoURL
         };
-        if (typeof window.updateSidebarUserProfile === 'function') {
-          window.updateSidebarUserProfile(sidebarData);
+      } else {
+        const userDoc = await firebase.firestore().collection('users').doc(currentUser.uid).get();
+        if (userDoc.exists) {
+          const d = userDoc.data();
+          sidebarData = {
+            fullName: d.fullName || d.name || d.displayName,
+            displayName: d.fullName || d.name || d.displayName,
+            email: currentUser.email || d.email,
+            role: d.userType || d.role || 'agent',
+            photoURL: d.photoURL || d.profilePhoto || d.profileImage || d.imageURL || currentUser.photoURL
+          };
         }
-        return;
       }
-      const userDoc = await firebase.firestore().collection('users').doc(currentUser.uid).get();
-      if (userDoc.exists) {
-        const d = userDoc.data();
-        const sidebarData = {
-          fullName: d.fullName || d.name || d.displayName,
-          displayName: d.fullName || d.name || d.displayName,
-          email: currentUser.email || d.email,
-          role: d.userType || d.role || 'agent'
-        };
-        if (typeof window.updateSidebarUserProfile === 'function') {
-          window.updateSidebarUserProfile(sidebarData);
-        }
-        return;
-      }
-      if (typeof window.updateSidebarUserProfile === 'function') {
-        window.updateSidebarUserProfile({
+      if (!sidebarData) {
+        sidebarData = {
           fullName: currentUser.displayName,
           displayName: currentUser.displayName,
           email: currentUser.email,
-          role: 'agent'
-        });
+          role: 'agent',
+          photoURL: currentUser.photoURL
+        };
+      }
+      try { localStorage.setItem('userData', JSON.stringify(sidebarData)); } catch (e) {}
+      if (typeof window.updateSidebarUserProfile === 'function') {
+        window.updateSidebarUserProfile(sidebarData);
       }
     } catch (error) {
       console.error('Error loading user profile:', error);
       if (typeof window.updateSidebarUserProfile === 'function') {
-        window.updateSidebarUserProfile({
-          fullName: currentUser.displayName,
-          email: currentUser.email,
-          role: 'agent'
-        });
+        const fallback = { fullName: currentUser.displayName, email: currentUser.email, role: 'agent', photoURL: currentUser.photoURL };
+        try { localStorage.setItem('userData', JSON.stringify(fallback)); } catch (e) {}
+        window.updateSidebarUserProfile(fallback);
       }
     }
   }
@@ -1782,10 +1849,18 @@
         
         // Check if agent is associated with a broker
         if (userData.brokerId) {
-          const brokerDoc = await firebase.firestore().collection('users').doc(userData.brokerId).get();
+          let brokerDoc = await firebase.firestore().collection('brokers').doc(userData.brokerId).get();
+          if (!brokerDoc.exists) {
+            brokerDoc = await firebase.firestore().collection('users').doc(userData.brokerId).get();
+          }
           if (brokerDoc.exists) {
             currentBroker = brokerDoc.data();
             currentBroker.id = userData.brokerId;
+            
+            // Normalize display name for broker info
+            if (!currentBroker.name && (currentBroker.fullName || currentBroker.displayName)) {
+              currentBroker.name = currentBroker.fullName || currentBroker.displayName;
+            }
             
             // Display broker information
             displayBrokerInfo();
@@ -1831,14 +1906,19 @@
   }
 
   // ===== TYPE SELECTION =====
-  function selectType(type) {
+  function selectType(type, evt) {
+    if (kycStatus !== 'approved') {
+      showMessage('Please complete KYC verification first', 'error');
+      return;
+    }
+    
     // Update UI
     document.querySelectorAll('.type-card').forEach(card => {
       card.classList.remove('active');
     });
     
-    const clickedCard = event.currentTarget;
-    clickedCard.classList.add('active');
+    const clickedCard = evt && evt.currentTarget ? evt.currentTarget : document.querySelector(`.type-card[onclick*="${type}"]`);
+    if (clickedCard) clickedCard.classList.add('active');
     
     // Show appropriate form
     if (type === 'sale') {
@@ -1965,84 +2045,88 @@
 
   // ===== IMAGE HANDLING =====
   function handleSaleImageSelection(event) {
-    const files = event.target.files;
-    const container = document.getElementById('salePreviewContainer');
-    const countElement = document.getElementById('saleImageCount');
-    
-    // Add new files to existing array
-    const newFiles = Array.from(files);
-    const totalFiles = selectedSaleImages.length + newFiles.length;
-    
-    // Check if total exceeds 10
-    if (totalFiles > 10) {
-      showMessage(`Maximum 10 images allowed. You already have ${selectedSaleImages.length} images.`, 'error');
+    if (kycStatus !== 'approved') {
+      showMessage('Please complete KYC verification first', 'error');
       event.target.value = '';
       return;
     }
     
-    // Check file size (5MB = 5 * 1024 * 1024 bytes)
+    const files = event.target.files;
+    const countElement = document.getElementById('saleImageCount');
+    
+    const newFiles = Array.from(files);
+    const totalFiles = selectedSaleImages.length + newFiles.length;
+    
+    if (totalFiles > 10) {
+      showMessage(`Maximum 10 files allowed. You already have ${selectedSaleImages.length} files.`, 'error');
+      event.target.value = '';
+      return;
+    }
+    
     for (const file of newFiles) {
-      if (file.size > 5 * 1024 * 1024) {
-        showMessage(`File "${file.name}" exceeds 5MB limit. Please choose smaller files.`, 'error');
+      if (file.type.startsWith('image/') && file.size > 5 * 1024 * 1024) {
+        showMessage(`Image "${file.name}" exceeds 5MB limit. Please choose smaller files.`, 'error');
+        event.target.value = '';
+        return;
+      }
+      if (file.type.startsWith('video/') && file.size > 100 * 1024 * 1024) {
+        showMessage(`Video "${file.name}" exceeds 100MB limit. Please choose smaller files.`, 'error');
         event.target.value = '';
         return;
       }
     }
     
-    // Add new files to the array
     selectedSaleImages.push(...newFiles);
-    
-    // Update UI
     updateSaleImagePreview();
     
-    // Update count display
     if (selectedSaleImages.length > 0) {
-      countElement.textContent = `${selectedSaleImages.length} image(s)`;
+      countElement.textContent = `${selectedSaleImages.length} file(s)`;
       countElement.style.display = 'block';
     }
     
-    // Reset file input so same files can be selected again
     event.target.value = '';
   }
 
   function handleLeaseImageSelection(event) {
-    const files = event.target.files;
-    const container = document.getElementById('leasePreviewContainer');
-    const countElement = document.getElementById('leaseImageCount');
-    
-    // Add new files to existing array
-    const newFiles = Array.from(files);
-    const totalFiles = selectedLeaseImages.length + newFiles.length;
-    
-    // Check if total exceeds 10
-    if (totalFiles > 10) {
-      showMessage(`Maximum 10 images allowed. You already have ${selectedLeaseImages.length} images.`, 'error');
+    if (kycStatus !== 'approved') {
+      showMessage('Please complete KYC verification first', 'error');
       event.target.value = '';
       return;
     }
     
-    // Check file size (5MB = 5 * 1024 * 1024 bytes)
+    const files = event.target.files;
+    const countElement = document.getElementById('leaseImageCount');
+    
+    const newFiles = Array.from(files);
+    const totalFiles = selectedLeaseImages.length + newFiles.length;
+    
+    if (totalFiles > 10) {
+      showMessage(`Maximum 10 files allowed. You already have ${selectedLeaseImages.length} files.`, 'error');
+      event.target.value = '';
+      return;
+    }
+    
     for (const file of newFiles) {
-      if (file.size > 5 * 1024 * 1024) {
-        showMessage(`File "${file.name}" exceeds 5MB limit. Please choose smaller files.`, 'error');
+      if (file.type.startsWith('image/') && file.size > 5 * 1024 * 1024) {
+        showMessage(`Image "${file.name}" exceeds 5MB limit. Please choose smaller files.`, 'error');
+        event.target.value = '';
+        return;
+      }
+      if (file.type.startsWith('video/') && file.size > 100 * 1024 * 1024) {
+        showMessage(`Video "${file.name}" exceeds 100MB limit. Please choose smaller files.`, 'error');
         event.target.value = '';
         return;
       }
     }
     
-    // Add new files to the array
     selectedLeaseImages.push(...newFiles);
-    
-    // Update UI
     updateLeaseImagePreview();
     
-    // Update count display
     if (selectedLeaseImages.length > 0) {
-      countElement.textContent = `${selectedLeaseImages.length} image(s)`;
+      countElement.textContent = `${selectedLeaseImages.length} file(s)`;
       countElement.style.display = 'block';
     }
     
-    // Reset file input so same files can be selected again
     event.target.value = '';
   }
 
@@ -2058,23 +2142,32 @@
       return;
     }
     
-    // Create preview for each image
     selectedSaleImages.forEach((file, index) => {
       const reader = new FileReader();
       reader.onload = function(e) {
         const div = document.createElement('div');
         div.className = 'preview-item';
-        div.innerHTML = `
-          <img src="${e.target.result}" alt="Preview ${index + 1}">
-          <button type="button" class="remove-btn" onclick="removeSaleImage(${index})">×</button>
-        `;
+        if (file.type.startsWith('video/')) {
+          div.innerHTML = `
+            <video controls>
+              <source src="${e.target.result}" type="${file.type}">
+              Your browser does not support the video tag.
+            </video>
+            <button type="button" class="remove-btn" onclick="removeSaleImage(${index})">×</button>
+            <div class="video-badge">VIDEO</div>
+          `;
+        } else {
+          div.innerHTML = `
+            <img src="${e.target.result}" alt="Preview ${index + 1}">
+            <button type="button" class="remove-btn" onclick="removeSaleImage(${index})">×</button>
+          `;
+        }
         container.appendChild(div);
       };
       reader.readAsDataURL(file);
     });
     
-    // Update count
-    countElement.textContent = `${selectedSaleImages.length} image(s)`;
+    countElement.textContent = `${selectedSaleImages.length} file(s)`;
     countElement.style.display = 'block';
   }
 
@@ -2096,17 +2189,27 @@
       reader.onload = function(e) {
         const div = document.createElement('div');
         div.className = 'preview-item';
-        div.innerHTML = `
-          <img src="${e.target.result}" alt="Preview ${index + 1}">
-          <button type="button" class="remove-btn" onclick="removeLeaseImage(${index})">×</button>
-        `;
+        if (file.type.startsWith('video/')) {
+          div.innerHTML = `
+            <video controls>
+              <source src="${e.target.result}" type="${file.type}">
+              Your browser does not support the video tag.
+            </video>
+            <button type="button" class="remove-btn" onclick="removeLeaseImage(${index})">×</button>
+            <div class="video-badge">VIDEO</div>
+          `;
+        } else {
+          div.innerHTML = `
+            <img src="${e.target.result}" alt="Preview ${index + 1}">
+            <button type="button" class="remove-btn" onclick="removeLeaseImage(${index})">×</button>
+          `;
+        }
         container.appendChild(div);
       };
       reader.readAsDataURL(file);
     });
     
-    // Update count
-    countElement.textContent = `${selectedLeaseImages.length} image(s)`;
+    countElement.textContent = `${selectedLeaseImages.length} file(s)`;
     countElement.style.display = 'block';
   }
 
@@ -2120,15 +2223,35 @@
     updateLeaseImagePreview();
   }
 
-  // ===== MAP FUNCTIONS =====
+  // ===== MAP FUNCTIONS (Batangas Province Only) =====
+  const BATANGAS_CENTER = { lat: 13.7564, lng: 121.0583 };
+  const BATANGAS_BOUNDS = {
+    north: 14.15,
+    south: 13.4,
+    east: 121.6,
+    west: 120.3
+  };
+
+  function isWithinBatangas(lat, lng) {
+    return lat >= BATANGAS_BOUNDS.south && lat <= BATANGAS_BOUNDS.north &&
+           lng >= BATANGAS_BOUNDS.west && lng <= BATANGAS_BOUNDS.east;
+  }
+
   window.initSaleMapPicker = function() {
-    const defaultLocation = { lat: 14.5995, lng: 120.9842 };
-    
     saleMap = new google.maps.Map(document.getElementById('saleMapPicker'), {
-      center: defaultLocation,
-      zoom: 12,
+      center: BATANGAS_CENTER,
+      zoom: 11,
       mapTypeControl: true,
       streetViewControl: true,
+      restriction: {
+        latLngBounds: {
+          north: BATANGAS_BOUNDS.north,
+          south: BATANGAS_BOUNDS.south,
+          east: BATANGAS_BOUNDS.east,
+          west: BATANGAS_BOUNDS.west
+        },
+        strictBounds: true
+      },
       styles: [
         {
           "featureType": "administrative",
@@ -2152,12 +2275,23 @@
     });
     
     const input = document.getElementById('saleLocationSearch');
-    saleAutocomplete = new google.maps.places.Autocomplete(input);
-    saleAutocomplete.bindTo('bounds', saleMap);
+    saleAutocomplete = new google.maps.places.Autocomplete(input, {
+      bounds: new google.maps.LatLngBounds(
+        { lat: BATANGAS_BOUNDS.south, lng: BATANGAS_BOUNDS.west },
+        { lat: BATANGAS_BOUNDS.north, lng: BATANGAS_BOUNDS.east }
+      ),
+      componentRestrictions: { country: 'ph' }
+    });
     
     saleAutocomplete.addListener('place_changed', function() {
       const place = saleAutocomplete.getPlace();
       if (place.geometry) {
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+        if (!isWithinBatangas(lat, lng)) {
+          showMessage('Please select a location within Batangas province.', 'error');
+          return;
+        }
         saleMap.setCenter(place.geometry.location);
         saleMap.setZoom(17);
         placeSaleMarker(place.geometry.location);
@@ -2168,23 +2302,36 @@
     });
     
     saleMap.addListener('click', function(event) {
+      if (kycStatus !== 'approved') {
+        showMessage('Please complete KYC verification first', 'error');
+        return;
+      }
       placeSaleMarker(event.latLng);
-      
-      // Reverse geocode to get address
       reverseGeocode(event.latLng, 'sale');
     });
     
-    placeSaleMarker(new google.maps.LatLng(defaultLocation));
+    placeSaleMarker(new google.maps.LatLng(BATANGAS_CENTER));
+    
+    if (kycStatus !== 'approved') {
+      saleMap.setOptions({ draggable: false, zoomControl: false, scrollwheel: false, disableDoubleClickZoom: true });
+    }
   };
 
   window.initLeaseMapPicker = function() {
-    const defaultLocation = { lat: 14.5995, lng: 120.9842 };
-    
     leaseMap = new google.maps.Map(document.getElementById('leaseMapPicker'), {
-      center: defaultLocation,
-      zoom: 12,
+      center: BATANGAS_CENTER,
+      zoom: 11,
       mapTypeControl: true,
       streetViewControl: true,
+      restriction: {
+        latLngBounds: {
+          north: BATANGAS_BOUNDS.north,
+          south: BATANGAS_BOUNDS.south,
+          east: BATANGAS_BOUNDS.east,
+          west: BATANGAS_BOUNDS.west
+        },
+        strictBounds: true
+      },
       styles: [
         {
           "featureType": "administrative",
@@ -2208,12 +2355,23 @@
     });
     
     const input = document.getElementById('leaseLocationSearch');
-    leaseAutocomplete = new google.maps.places.Autocomplete(input);
-    leaseAutocomplete.bindTo('bounds', leaseMap);
+    leaseAutocomplete = new google.maps.places.Autocomplete(input, {
+      bounds: new google.maps.LatLngBounds(
+        { lat: BATANGAS_BOUNDS.south, lng: BATANGAS_BOUNDS.west },
+        { lat: BATANGAS_BOUNDS.north, lng: BATANGAS_BOUNDS.east }
+      ),
+      componentRestrictions: { country: 'ph' }
+    });
     
     leaseAutocomplete.addListener('place_changed', function() {
       const place = leaseAutocomplete.getPlace();
       if (place.geometry) {
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+        if (!isWithinBatangas(lat, lng)) {
+          showMessage('Please select a location within Batangas province.', 'error');
+          return;
+        }
         leaseMap.setCenter(place.geometry.location);
         leaseMap.setZoom(17);
         placeLeaseMarker(place.geometry.location);
@@ -2224,13 +2382,19 @@
     });
     
     leaseMap.addListener('click', function(event) {
+      if (kycStatus !== 'approved') {
+        showMessage('Please complete KYC verification first', 'error');
+        return;
+      }
       placeLeaseMarker(event.latLng);
-      
-      // Reverse geocode to get address
       reverseGeocode(event.latLng, 'lease');
     });
     
-    placeLeaseMarker(new google.maps.LatLng(defaultLocation));
+    placeLeaseMarker(new google.maps.LatLng(BATANGAS_CENTER));
+    
+    if (kycStatus !== 'approved') {
+      leaseMap.setOptions({ draggable: false, zoomControl: false, scrollwheel: false, disableDoubleClickZoom: true });
+    }
   };
 
   // ===== ADDRESS PARSING HELPER =====
@@ -2305,9 +2469,15 @@
     updateSaleCoordinates(location.lat(), location.lng());
     
     saleMarker.addListener('dragend', function() {
+      let pos = saleMarker.getPosition();
+      let lat = pos.lat(), lng = pos.lng();
+      if (!isWithinBatangas(lat, lng)) {
+        lat = Math.max(BATANGAS_BOUNDS.south, Math.min(BATANGAS_BOUNDS.north, lat));
+        lng = Math.max(BATANGAS_BOUNDS.west, Math.min(BATANGAS_BOUNDS.east, lng));
+        saleMarker.setPosition({ lat, lng });
+        showMessage('Location must be within Batangas province.', 'error');
+      }
       updateSaleCoordinates(saleMarker.getPosition().lat(), saleMarker.getPosition().lng());
-      
-      // Reverse geocode when marker is dragged
       reverseGeocode(saleMarker.getPosition(), 'sale');
     });
     
@@ -2338,9 +2508,15 @@
     updateLeaseCoordinates(location.lat(), location.lng());
     
     leaseMarker.addListener('dragend', function() {
+      let pos = leaseMarker.getPosition();
+      let lat = pos.lat(), lng = pos.lng();
+      if (!isWithinBatangas(lat, lng)) {
+        lat = Math.max(BATANGAS_BOUNDS.south, Math.min(BATANGAS_BOUNDS.north, lat));
+        lng = Math.max(BATANGAS_BOUNDS.west, Math.min(BATANGAS_BOUNDS.east, lng));
+        leaseMarker.setPosition({ lat, lng });
+        showMessage('Location must be within Batangas province.', 'error');
+      }
       updateLeaseCoordinates(leaseMarker.getPosition().lat(), leaseMarker.getPosition().lng());
-      
-      // Reverse geocode when marker is dragged
       reverseGeocode(leaseMarker.getPosition(), 'lease');
     });
     
@@ -2453,11 +2629,8 @@
       const userData = userDoc.data();
       kycStatus = userData.kycStatus || 'not_submitted';
       
-      const warning = document.getElementById('kycWarning');
       const badge = document.getElementById('kycBadge');
       const badgeText = document.getElementById('kycBadgeText');
-      const statusText = document.getElementById('kycStatusText');
-      const message = document.getElementById('kycMessage');
       
       // Update KYC badge
       badge.style.display = 'flex';
@@ -2466,35 +2639,162 @@
       switch(kycStatus) {
         case 'not_submitted':
           badgeText.textContent = 'KYC: Not Submitted';
-          warning.style.display = 'block';
-          statusText.textContent = 'Status: KYC Not Submitted';
-          message.textContent = 'You must complete KYC verification before posting properties.';
           break;
           
         case 'pending':
           badgeText.textContent = 'KYC: Pending';
-          warning.style.display = 'block';
-          statusText.textContent = 'Status: KYC Pending Approval';
-          message.textContent = 'Your KYC is under review. Please wait for approval.';
           break;
           
         case 'rejected':
           badgeText.textContent = 'KYC: Rejected';
-          warning.style.display = 'block';
-          statusText.textContent = 'Status: KYC Rejected';
-          message.textContent = 'Your KYC was rejected. Please resubmit valid documents.';
           break;
           
         case 'approved':
           badgeText.textContent = 'KYC: Verified ✓';
-          warning.style.display = 'none';
           break;
       }
+      
+      updateFormForKYCStatus();
       
     } catch (error) {
       console.error('KYC check error:', error);
       showMessage('Error checking verification status', 'error');
     }
+  }
+
+  // ===== UPDATE FORM BASED ON KYC STATUS =====
+  function updateFormForKYCStatus() {
+    const typeOverlay = document.getElementById('typeSelectionBlurOverlay');
+    const saleOverlay = document.getElementById('saleFormBlurOverlay');
+    const leaseOverlay = document.getElementById('leaseFormBlurOverlay');
+    const typeStatus = document.getElementById('kycTypeStatus');
+    const typeMessage = document.getElementById('kycTypeMessage');
+    const saleStatus = document.getElementById('kycSaleStatus');
+    const saleMessage = document.getElementById('kycSaleMessage');
+    const leaseStatus = document.getElementById('kycLeaseStatus');
+    const leaseMessage = document.getElementById('kycLeaseMessage');
+    
+    if (!typeOverlay || !saleOverlay || !leaseOverlay) return;
+    
+    switch(kycStatus) {
+      case 'not_submitted':
+      case 'pending':
+      case 'rejected':
+        typeOverlay.style.display = 'flex';
+        saleOverlay.style.display = 'flex';
+        leaseOverlay.style.display = 'flex';
+        if (kycStatus === 'not_submitted') {
+          if (typeStatus) typeStatus.textContent = 'Status: KYC Not Submitted';
+          if (typeMessage) typeMessage.textContent = 'You must complete KYC verification before you can choose a listing type or post properties.';
+          if (saleStatus) saleStatus.textContent = 'Status: KYC Not Submitted';
+          if (saleMessage) saleMessage.textContent = 'You must complete KYC verification before posting properties for sale.';
+          if (leaseStatus) leaseStatus.textContent = 'Status: KYC Not Submitted';
+          if (leaseMessage) leaseMessage.textContent = 'You must complete KYC verification before posting properties for lease.';
+        } else if (kycStatus === 'pending') {
+          if (typeStatus) typeStatus.textContent = 'Status: KYC Pending Approval';
+          if (typeMessage) typeMessage.textContent = 'Your KYC is under review. Please wait for approval before you can choose a listing type or post properties.';
+          if (saleStatus) saleStatus.textContent = 'Status: KYC Pending Approval';
+          if (saleMessage) saleMessage.textContent = 'Your KYC is under review. Please wait for approval before posting properties for sale.';
+          if (leaseStatus) leaseStatus.textContent = 'Status: KYC Pending Approval';
+          if (leaseMessage) leaseMessage.textContent = 'Your KYC is under review. Please wait for approval before posting properties for lease.';
+        } else {
+          if (typeStatus) typeStatus.textContent = 'Status: KYC Rejected';
+          if (typeMessage) typeMessage.textContent = 'Your KYC was rejected. Please resubmit valid documents before you can choose a listing type or post properties.';
+          if (saleStatus) saleStatus.textContent = 'Status: KYC Rejected';
+          if (saleMessage) saleMessage.textContent = 'Your KYC was rejected. Please resubmit valid documents before posting properties for sale.';
+          if (leaseStatus) leaseStatus.textContent = 'Status: KYC Rejected';
+          if (leaseMessage) leaseMessage.textContent = 'Your KYC was rejected. Please resubmit valid documents before posting properties for lease.';
+        }
+        disableFormElements();
+        break;
+      case 'approved':
+        typeOverlay.style.display = 'none';
+        saleOverlay.style.display = 'none';
+        leaseOverlay.style.display = 'none';
+        enableFormElements();
+        break;
+    }
+  }
+
+  // ===== DISABLE/ENABLE FORM ELEMENTS =====
+  function disableFormElements() {
+    const typeCard = document.getElementById('typeSelectionCard');
+    const saleForm = document.getElementById('saleForm');
+    const leaseFormEl = document.getElementById('leaseForm');
+    if (typeCard) typeCard.classList.add('form-disabled');
+    if (saleForm) saleForm.classList.add('form-disabled');
+    if (leaseFormEl) leaseFormEl.classList.add('form-disabled');
+    
+    document.querySelectorAll('input, select, textarea').forEach(input => {
+      input.disabled = true;
+      input.style.cursor = 'not-allowed';
+    });
+    document.querySelectorAll('.btn, .type-card, .image-upload-area').forEach(btn => {
+      btn.style.pointerEvents = 'none';
+      btn.style.cursor = 'not-allowed';
+    });
+    const saleImages = document.getElementById('saleImages');
+    const leaseImages = document.getElementById('leaseImages');
+    if (saleImages) saleImages.disabled = true;
+    if (leaseImages) leaseImages.disabled = true;
+    
+    if (saleMap) saleMap.setOptions({ draggable: false, zoomControl: false, scrollwheel: false, disableDoubleClickZoom: true });
+    if (leaseMap) leaseMap.setOptions({ draggable: false, zoomControl: false, scrollwheel: false, disableDoubleClickZoom: true });
+  }
+
+  function enableFormElements() {
+    const typeCard = document.getElementById('typeSelectionCard');
+    const saleForm = document.getElementById('saleForm');
+    const leaseFormEl = document.getElementById('leaseForm');
+    if (typeCard) typeCard.classList.remove('form-disabled');
+    if (saleForm) saleForm.classList.remove('form-disabled');
+    if (leaseFormEl) leaseFormEl.classList.remove('form-disabled');
+    
+    document.querySelectorAll('input, select, textarea').forEach(input => {
+      input.disabled = false;
+      input.style.cursor = 'auto';
+    });
+    document.querySelectorAll('.btn, .type-card, .image-upload-area').forEach(btn => {
+      btn.style.pointerEvents = 'auto';
+      btn.style.cursor = 'pointer';
+    });
+    const saleImages = document.getElementById('saleImages');
+    const leaseImages = document.getElementById('leaseImages');
+    if (saleImages) saleImages.disabled = false;
+    if (leaseImages) leaseImages.disabled = false;
+    
+    if (saleMap) saleMap.setOptions({ draggable: true, zoomControl: true, scrollwheel: true, disableDoubleClickZoom: false });
+    if (leaseMap) leaseMap.setOptions({ draggable: true, zoomControl: true, scrollwheel: true, disableDoubleClickZoom: false });
+  }
+
+  // ===== UPLOAD MEDIA FILES (Images & Videos) =====
+  async function uploadMediaFiles(files, userId, propertyId, progressCallback) {
+    const mediaUrls = { images: [], videos: [] };
+    
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const timestamp = Date.now();
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${propertyId}_${timestamp}_${i}.${fileExt}`;
+      const fileType = file.type.startsWith('video/') ? 'videos' : 'images';
+      
+      const storageRef = firebase.storage().ref()
+        .child(`properties/${userId}/${propertyId}/${fileType}/${fileName}`);
+      
+      await storageRef.put(file);
+      const downloadURL = await storageRef.getDownloadURL();
+      
+      if (fileType === 'videos') {
+        mediaUrls.videos.push({ url: downloadURL });
+      } else {
+        mediaUrls.images.push({ url: downloadURL });
+      }
+      
+      const progressPercent = 30 + ((i + 1) / files.length) * 60;
+      if (progressCallback) progressCallback(progressPercent);
+    }
+    
+    return mediaUrls;
   }
 
   // ===== SALE FORM SUBMISSION =====
@@ -2540,34 +2840,27 @@
         status: 'available',
         createdAt: new Date(),
         updatedAt: new Date(),
-        imageUrls: []
+        imageUrls: [],
+        videoUrls: []
       });
       
       const propertyId = propertyRef.id;
       
-      progressText.textContent = `Uploading ${selectedSaleImages.length} image(s)...`;
+      progressText.textContent = `Uploading ${selectedSaleImages.length} file(s)...`;
       progressFill.style.width = '30%';
       
-      const imageUrls = [];
-      for (let i = 0; i < selectedSaleImages.length; i++) {
-        const file = selectedSaleImages[i];
-        const fileName = `${propertyId}_${Date.now()}_${i}`;
-        const storageRef = firebase.storage().ref().child(`properties/${currentUser.uid}/${propertyId}/${fileName}`);
-        
-        const snapshot = await storageRef.put(file);
-        const downloadURL = await snapshot.ref.getDownloadURL();
-        imageUrls.push(downloadURL);
-        
-        const progressPercent = 30 + ((i + 1) / selectedSaleImages.length) * 60;
-        progressFill.style.width = `${progressPercent}%`;
-      }
+      const mediaUrls = await uploadMediaFiles(selectedSaleImages, currentUser.uid, propertyId, (percent) => {
+        progressFill.style.width = `${percent}%`;
+      });
       
       progressText.textContent = 'Finalizing sale listing...';
       progressFill.style.width = '95%';
       
       await propertyRef.update({
-        imageUrls: imageUrls,
-        photos: imageUrls
+        imageUrls: mediaUrls.images.map(img => img.url),
+        videoUrls: mediaUrls.videos.map(vid => vid.url),
+        photos: mediaUrls.images.map(img => img.url),
+        hasVideos: mediaUrls.videos.length > 0
       });
       
       progressFill.style.width = '100%';
@@ -2631,34 +2924,27 @@
         status: 'available',
         createdAt: new Date(),
         updatedAt: new Date(),
-        imageUrls: []
+        imageUrls: [],
+        videoUrls: []
       });
       
       const propertyId = propertyRef.id;
       
-      progressText.textContent = `Uploading ${selectedLeaseImages.length} image(s)...`;
+      progressText.textContent = `Uploading ${selectedLeaseImages.length} file(s)...`;
       progressFill.style.width = '30%';
       
-      const imageUrls = [];
-      for (let i = 0; i < selectedLeaseImages.length; i++) {
-        const file = selectedLeaseImages[i];
-        const fileName = `${propertyId}_${Date.now()}_${i}`;
-        const storageRef = firebase.storage().ref().child(`properties/${currentUser.uid}/${propertyId}/${fileName}`);
-        
-        const snapshot = await storageRef.put(file);
-        const downloadURL = await snapshot.ref.getDownloadURL();
-        imageUrls.push(downloadURL);
-        
-        const progressPercent = 30 + ((i + 1) / selectedLeaseImages.length) * 60;
-        progressFill.style.width = `${progressPercent}%`;
-      }
+      const mediaUrls = await uploadMediaFiles(selectedLeaseImages, currentUser.uid, propertyId, (percent) => {
+        progressFill.style.width = `${percent}%`;
+      });
       
       progressText.textContent = 'Finalizing lease listing...';
       progressFill.style.width = '95%';
       
       await propertyRef.update({
-        imageUrls: imageUrls,
-        photos: imageUrls
+        imageUrls: mediaUrls.images.map(img => img.url),
+        videoUrls: mediaUrls.videos.map(vid => vid.url),
+        photos: mediaUrls.images.map(img => img.url),
+        hasVideos: mediaUrls.videos.length > 0
       });
       
       progressFill.style.width = '100%';
@@ -2701,13 +2987,20 @@
       return false;
     }
     
+    const saleLat = parseFloat(document.getElementById('saleLatitude').value);
+    const saleLng = parseFloat(document.getElementById('saleLongitude').value);
+    if (!isWithinBatangas(saleLat, saleLng)) {
+      showMessage('Please select a location within Batangas province.', 'error');
+      return false;
+    }
+    
     if (!selectedSaleType) {
       showMessage('Please select a sale type', 'error');
       return false;
     }
     
     if (selectedSaleImages.length === 0) {
-      showMessage('Please upload at least 1 property image', 'error');
+      showMessage('Please upload at least 1 property image or video', 'error');
       return false;
     }
     
@@ -2735,13 +3028,20 @@
       return false;
     }
     
+    const leaseLat = parseFloat(document.getElementById('leaseLatitude').value);
+    const leaseLng = parseFloat(document.getElementById('leaseLongitude').value);
+    if (!isWithinBatangas(leaseLat, leaseLng)) {
+      showMessage('Please select a location within Batangas province.', 'error');
+      return false;
+    }
+    
     if (!selectedLeaseType) {
       showMessage('Please select a lease type', 'error');
       return false;
     }
     
     if (selectedLeaseImages.length === 0) {
-      showMessage('Please upload at least 1 property image', 'error');
+      showMessage('Please upload at least 1 property image or video', 'error');
       return false;
     }
     

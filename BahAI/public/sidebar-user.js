@@ -29,7 +29,9 @@ window.updateSidebarUserProfile = function(userData) {
       agent: 'Property Agent',
       user: 'Buyer'
     };
-    userRoleEl.textContent = roleMap[userData.role] || (userData.role === 'agent' ? 'Property Agent' : 'User');
+    // Agent pages use agent_sidebar - always show Property Agent
+    var isAgentPage = /agent_/.test(window.location.pathname) || /agent_/.test(window.location.href);
+    userRoleEl.textContent = isAgentPage ? 'Property Agent' : (roleMap[userData.role] || (userData.role === 'agent' ? 'Property Agent' : 'User'));
   }
   if (userAvatarEl) {
     var photoURL = userData.photoURL || userData.profilePhotoURL || userData.profilePhoto || userData.profileImage || userData.imageURL;

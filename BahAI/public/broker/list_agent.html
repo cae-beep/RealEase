@@ -1136,6 +1136,7 @@
                 This action will:
                 <ul style="text-align: left; margin: 10px 0 10px 20px; color: var(--danger);">
                     <li>Permanently delete the agent account</li>
+                    <li>Delete ALL properties listed by this agent</li>
                     <li>Remove all agent data from the database</li>
                     <li>Cannot be undone</li>
                 </ul>
@@ -1170,17 +1171,47 @@
                 confirmDeleteBtn.innerHTML = '<span>⏳</span> Deleting...';
                 confirmDeleteBtn.disabled = true;
 
-                // Delete from agents collection
+                const authUid = agent.authUid || null;
+
+                // 1. Delete all properties listed by this agent (userId or agentId matches authUid or agentId)
+                const uidsToMatch = [agentId];
+                if (authUid) uidsToMatch.push(authUid);
+                const propertyIdsToDelete = new Set();
+                for (const uid of uidsToMatch) {
+                    const queries = [
+                        query(collection(db, "properties"), where("userId", "==", uid)),
+                        query(collection(db, "properties"), where("agentId", "==", uid)),
+                        query(collection(db, "properties"), where("listedBy", "==", uid))
+                    ];
+                    for (const q of queries) {
+                        try {
+                            const snap = await getDocs(q);
+                            snap.docs.forEach(d => propertyIdsToDelete.add(d.id));
+                        } catch (e) {
+                            console.warn('Property query failed:', e);
+                        }
+                    }
+                }
+                for (const propId of propertyIdsToDelete) {
+                    await deleteDoc(doc(db, "properties", propId));
+                }
+                if (propertyIdsToDelete.size > 0) {
+                    console.log(`✅ Deleted ${propertyIdsToDelete.size} properties for agent`);
+                }
+
+                // 2. Delete from users collection (doc ID = authUid for agents who completed setup)
+                if (authUid) {
+                    try {
+                        await deleteDoc(doc(db, "users", authUid));
+                        console.log(`✅ Deleted agent from users collection`);
+                    } catch (error) {
+                        // It's okay if it doesn't exist
+                    }
+                }
+
+                // 3. Delete from agents collection
                 await deleteDoc(doc(db, "agents", agentId));
                 console.log(`✅ Deleted agent ${agentId} from agents collection`);
-                
-                // Also delete from users collection if exists
-                try {
-                    await deleteDoc(doc(db, "users", agentId));
-                    console.log(`✅ Also deleted from users collection`);
-                } catch (error) {
-                    // It's okay if it doesn't exist in users
-                }
 
                 // Remove from local arrays
                 allAgents = allAgents.filter(a => a.id !== agentId);
@@ -1191,7 +1222,8 @@
                 renderAgents();
 
                 // Show success message
-                alert(`✅ Agent ${agent.fullName || agent.firstName || ''} has been permanently deleted.`);
+                const propMsg = propertyIdsToDelete.size > 0 ? ` (${propertyIdsToDelete.size} properties removed)` : '';
+                alert(`✅ Agent ${agent.fullName || agent.firstName || ''} has been permanently deleted${propMsg}.`);
 
             } catch (error) {
                 console.error("Error deleting agent:", error);

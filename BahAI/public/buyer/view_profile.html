@@ -57,6 +57,7 @@ body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f8
 }
 .badge-broker { background: var(--primary-gradient); color: white; }
 .badge-landlord { background: var(--accent-gradient); color: white; }
+.badge-broker-affiliated { background: var(--accent-gradient); color: white; }
 .badge-active { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
 .badge-verified { background: var(--accent-gradient); color: white; }
 
@@ -238,7 +239,30 @@ document.getElementById('backBtn').addEventListener('click', function(e) {
 
 async function loadProfile(type, profileId) {
   let profileData = null;
-  if (type === 'broker') {
+  if (type === 'agent') {
+    try {
+      let agentDoc = await getDoc(doc(db, "agents", profileId));
+      if (!agentDoc.exists()) {
+        const agentsQuery = query(collection(db, "agents"), where("authUid", "==", profileId));
+        const agentSnap = await getDocs(agentsQuery);
+        if (!agentSnap.empty) agentDoc = agentSnap.docs[0];
+      }
+      if (agentDoc && agentDoc.exists()) {
+        profileData = { ...agentDoc.data(), id: agentDoc.id };
+      }
+    } catch (_) {}
+    if (!profileData) {
+      try {
+        const userDoc = await getDoc(doc(db, "users", profileId));
+        if (userDoc.exists()) {
+          const d = userDoc.data();
+          if (d.userType === 'agent' || d.userRole === 'agent') {
+            profileData = { ...d, id: profileId };
+          }
+        }
+      } catch (_) {}
+    }
+  } else if (type === 'broker') {
     try {
       const brokerDoc = await getDoc(doc(db, "brokers", profileId));
       if (brokerDoc.exists()) profileData = { ...brokerDoc.data(), id: profileId };
@@ -264,15 +288,19 @@ async function loadProfile(type, profileId) {
   return profileData;
 }
 
-async function loadProperties(userId) {
+async function loadProperties(userId, type) {
   try {
-    const q = query(
-      collection(db, "properties"),
-      where("userId", "==", userId)
-    );
-    const snapshot = await getDocs(q);
-    const list = [];
-    snapshot.forEach(d => list.push({ id: d.id, ...d.data() }));
+    const propsRef = collection(db, "properties");
+    let list = [];
+    const q1 = query(propsRef, where("userId", "==", userId));
+    const snap1 = await getDocs(q1);
+    snap1.forEach(d => list.push({ id: d.id, ...d.data() }));
+    if (type === 'agent') {
+      const q2 = query(propsRef, where("agentId", "==", userId));
+      const snap2 = await getDocs(q2);
+      const seen = new Set(list.map(p => p.id));
+      snap2.forEach(d => { if (!seen.has(d.id)) { seen.add(d.id); list.push({ id: d.id, ...d.data() }); } });
+    }
     return list.filter(p => !p.status || p.status === 'active' || p.status === 'available');
   } catch (e) {
     console.warn('Error loading properties:', e);
@@ -306,20 +334,27 @@ function escapeHtml(s) {
 }
 
 function renderProfile(profile, type, properties) {
-  const fullName = profile.fullName || profile.displayName || profile.name || (type === 'broker' ? 'Broker' : 'Landlord');
-  const role = type === 'broker' ? (profile.title || profile.role || profile.profession || 'Licensed Broker') : 'Property Owner';
-  const photoURL = profile.photoURL || profile.profilePhoto || profile.profileImage || profile.imageURL || '';
+  const defaultNames = { broker: 'Broker', agent: 'Agent', landlord: 'Property Owner' };
+  const fullName = profile.fullName || profile.displayName || profile.name || defaultNames[type] || 'User';
+  const role = type === 'agent'
+    ? (profile.title || profile.role || profile.profession || 'Real Estate Agent')
+    : type === 'broker'
+    ? (profile.title || profile.role || profile.profession || 'Licensed Broker')
+    : 'Property Owner';
+  const photoURL = profile.photoURL || profile.profilePhotoURL || profile.profilePhoto || profile.profileImage || profile.imageURL || '';
   const bio = profile.bio || profile.description || profile.about || '';
   const email = profile.email || 'Not provided';
   const phone = profile.phone || profile.phoneNumber || profile.contactNumber || 'Not provided';
   const location = profile.location || profile.city || profile.address || 'Not specified';
 
-  const initials = (fullName || 'U').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+  const initials = (fullName || 'U').split(' ').map(n => n ? n[0] : '').join('').toUpperCase().substring(0, 2) || 'U';
+  const safeInitials = (initials || 'U').replace(/["'<>]/g, '');
   const avatarHtml = photoURL
-    ? `<img src="${photoURL}" alt="${fullName}">`
+    ? `<img src="${(photoURL || '').replace(/"/g, '&quot;')}" alt="${(fullName || '').replace(/"/g, '&quot;')}" onerror="var p=this.parentElement;p.innerHTML=p.getAttribute('data-fallback')||'U'">`
     : initials;
 
   const yearsExp = profile.yearsExperience || profile.experienceYears || 0;
+  const agentId = profile.agentId || profile.agentID || profile.id || '';
   const clientsServed = profile.clientsServed || profile.totalClients || profile.clients || '0';
   const successRate = profile.successRate ? profile.successRate + '%' : '0%';
   const licenseNum = profile.licenseNumber || profile.license || '';
@@ -351,8 +386,10 @@ function renderProfile(profile, type, properties) {
     .map(pl => `<a href="${pl.url}${sm[pl.key].trim()}" target="_blank" rel="noopener noreferrer" class="social-link ${pl.cls}" aria-label="${pl.key}"><i class="${pl.icon}"></i></a>`)
     .join('');
 
-  const badgesHtml = type === 'broker'
-    ? `<span class="profile-badge badge-broker">Broker</span><span class="profile-badge badge-active">Active</span><span class="profile-badge badge-verified">Verified</span>`
+  const badgesHtml = type === 'agent'
+    ? `<span class="profile-badge badge-broker-affiliated">Broker Affiliated</span>`
+    : type === 'broker'
+    ? `<span class="profile-badge badge-broker">Broker</span><span class="profile-badge badge-active">Active</span><span class="profile-badge badge-verified">Verified Broker</span>`
     : `<span class="profile-badge badge-landlord">Property Owner</span><span class="profile-badge badge-active">Active</span><span class="profile-badge badge-verified">Verified</span>`;
 
   const profileId = profile.id || '';
@@ -388,23 +425,24 @@ function renderProfile(profile, type, properties) {
   const tagsHtml = (arr) => arr.length > 0 ? arr.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('') : '';
 
   const profDetailsRows = [];
+  if (type === 'agent') profDetailsRows.push(`<div style="margin-bottom:15px;"><div class="contact-label">Agent ID</div><div class="contact-value">${escapeHtml(agentId || profile.id || 'Not provided')}</div></div>`);
   if (licenseNum) profDetailsRows.push(`<div style="margin-bottom:15px;"><div class="contact-label">Broker License Number</div><div class="contact-value">${escapeHtml(licenseNum)}</div></div>`);
   if (agency) profDetailsRows.push(`<div style="margin-bottom:15px;"><div class="contact-label">Agency/Company</div><div class="contact-value">${escapeHtml(agency)}</div></div>`);
   if (languages) profDetailsRows.push(`<div style="margin-bottom:15px;"><div class="contact-label">Languages Spoken</div><div class="contact-value">${escapeHtml(languages)}</div></div>`);
   if (availability) profDetailsRows.push(`<div style="margin-bottom:15px;"><div class="contact-label">Availability</div><div class="contact-value">${escapeHtml(availability)}</div></div>`);
   if (memberSinceStr) profDetailsRows.push(`<div><div class="contact-label">Member Since</div><div class="contact-value">${escapeHtml(memberSinceStr)}</div></div>`);
 
-  const hasSpecializations = (type === 'broker' && (propertyTypes.length || servicesOffered.length || serviceAreas.length));
-  const hasProfDetails = (type === 'broker' && profDetailsRows.length > 0);
+  const hasSpecializations = ((type === 'broker' || type === 'agent') && (propertyTypes.length || servicesOffered.length || serviceAreas.length));
+  const hasProfDetails = ((type === 'broker' || type === 'agent') && profDetailsRows.length > 0);
 
   return `
     <div class="profile-header">
       <div class="profile-badges">${badgesHtml}</div>
       <div class="profile-main">
-        <div class="profile-photo">${avatarHtml}</div>
+        <div class="profile-photo" ${photoURL ? `data-fallback="${safeInitials.replace(/"/g, '&quot;')}"` : ''}>${avatarHtml}</div>
         <div class="profile-details">
           <h1 class="profile-name">${escapeHtml(fullName)}</h1>
-          <div class="profile-title"><i class="fas fa-crown"></i>${escapeHtml(role)}</div>
+          <div class="profile-title"><i class="fas ${type === 'agent' ? 'fa-user-tie' : type === 'broker' ? 'fa-crown' : 'fa-home'}"></i>${escapeHtml(role)}</div>
           <div class="profile-location">
             <i class="fas fa-map-marker-alt"></i>
             <span>${escapeHtml(location)}</span>
@@ -413,7 +451,7 @@ function renderProfile(profile, type, properties) {
           ${bio ? `<div class="profile-bio">${escapeHtml(bio).replace(/\n/g, '<br>')}</div>` : ''}
           <div class="profile-stats">
             <div class="stat-card"><div class="stat-value">${properties.length}</div><div class="stat-label">Properties</div></div>
-            ${type === 'broker' ? `<div class="stat-card"><div class="stat-value">${yearsExp}</div><div class="stat-label">Years Experience</div></div>` : ''}
+            ${(type === 'broker' || type === 'agent') ? `<div class="stat-card"><div class="stat-value">${yearsExp}</div><div class="stat-label">Years Experience</div></div>` : ''}
             ${type === 'broker' ? `<div class="stat-card"><div class="stat-value">${clientsServed}</div><div class="stat-label">Clients Served</div></div>` : ''}
             ${type === 'broker' ? `<div class="stat-card"><div class="stat-value">${successRate}</div><div class="stat-label">Success Rate</div></div>` : ''}
           </div>
@@ -479,7 +517,7 @@ onAuthStateChanged(auth, async (user) => {
   }
   const [profile, properties] = await Promise.all([
     loadProfile(type, id),
-    loadProperties(id)
+    loadProperties(id, type)
   ]);
   if (!profile || Object.keys(profile).length === 0) {
     showError('This profile could not be loaded.');
