@@ -10,8 +10,12 @@
       --primary: #0b2e52;
       --primary-dark: #001F3F;
       --primary-light: #002f3f;
-      --secondary: #1976d2;
-      --accent: #ff9800;
+      /* Match sidebar theme: navy + gold */
+      --accent: #d4af37;
+      --accent-dark: #b8860b;
+      --accent-gradient: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+      /* Back-compat token used in a few places */
+      --secondary: #d4af37;
       --text-dark: #1a202c;
       --text-light: #718096;
       --bg-light: #f8fafc;
@@ -38,27 +42,57 @@
       padding: 20px;
     }
 
-    /* Header */
-    .header {
-      width: 100%;
-      max-width: 1000px;
-      text-align: center;
-      margin-bottom: 40px;
-      padding-top: 20px;
-    }
+/* Header */
+.header {
+  width: 100%;
+  max-width: 1000px;
+  margin-bottom: 40px;
+  padding-top: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
 
-    .logo {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--primary);
-      text-decoration: none;
-      display: inline-block;
-      margin-bottom: 20px;
-    }
+.logo {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+  display: inline-block;
+}
 
-    .logo span {
-      color: var(--secondary);
-    }
+.logo span {
+  color: var(--accent);
+}
+
+.top-back-button {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-white);
+  color: var(--text-dark);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.top-back-button:hover {
+  background: var(--bg-light);
+  border-color: rgba(212, 175, 55, 0.6);
+  transform: translateY(-1px);
+}
 
     .page-header h1 {
       font-size: 32px;
@@ -141,9 +175,9 @@
     }
     
     .status-pending { 
-      background: #dbeafe;
-      color: #1e40af;
-      border: 1px solid #93c5fd;
+      background: rgba(212, 175, 55, 0.20);
+      color: var(--primary-dark);
+      border: 1px solid rgba(212, 175, 55, 0.45);
     }
     
     .status-verifying { 
@@ -198,12 +232,12 @@
     }
 
     .info-box {
-      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-      border: 1px solid #bae6fd;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.10) 0%, rgba(11, 46, 82, 0.04) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.25);
       border-radius: 16px;
       padding: 25px;
       margin-bottom: 30px;
-      border-left: 5px solid var(--secondary);
+      border-left: 5px solid var(--accent);
     }
 
     .info-box h3 {
@@ -305,7 +339,7 @@
 
     .form-input.file-input:hover {
       border-color: var(--primary);
-      background: #f0f9ff;
+      background: rgba(212, 175, 55, 0.08);
     }
 
     .help-text {
@@ -368,7 +402,7 @@
     
     .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, var(--secondary), var(--primary));
+      background: linear-gradient(90deg, var(--accent), var(--primary));
       transition: width 0.3s ease;
       border-radius: 6px;
     }
@@ -499,6 +533,7 @@
     .back-btn:hover {
       background: var(--bg-light);
       transform: translateY(-2px);
+      border-color: rgba(212, 175, 55, 0.6);
     }
 
     /* Message Box */
@@ -628,6 +663,7 @@
     <h1>KYC Verification</h1>
     <p>Complete your identity verification to access all features</p>
   </div>
+  <a href="#" id="topBackButton" class="top-back-button">← Back</a>
 </header>
 
 <!-- Main Content -->
@@ -845,6 +881,7 @@ const verificationResults = document.getElementById("verificationResults");
 const faceScore = document.getElementById("faceScore");
 const verificationResult = document.getElementById("verificationResult");
 const processingTime = document.getElementById("processingTime");
+const topBackButton = document.getElementById("topBackButton");
 
 let currentUser = null;
 let userRole = null;
@@ -1163,6 +1200,30 @@ onAuthStateChanged(auth, async (user) => {
         };
         const backLink = document.getElementById("backLink");
         backLink.href = dashboardMap[userRole] || 'dashboard.html';
+
+        // Top header back button: prefer browser history, fallback to role dashboard
+        if (topBackButton) {
+            topBackButton.addEventListener("click", (e) => {
+                e.preventDefault();
+                if (document.referrer && document.referrer !== window.location.href) {
+                    window.history.back();
+                } else {
+                    window.location.href = backLink.href;
+                }
+            });
+        }
+
+        // Bottom "Back to Dashboard" button: behave like a real back button first
+        if (backLink) {
+            backLink.addEventListener("click", (e) => {
+                e.preventDefault();
+                if (document.referrer && document.referrer !== window.location.href) {
+                    window.history.back();
+                } else {
+                    window.location.href = backLink.href;
+                }
+            });
+        }
 
         // Show role-specific info and fields
         showRoleSpecificContent(userRole);
