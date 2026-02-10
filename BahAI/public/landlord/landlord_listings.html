@@ -31,33 +31,69 @@
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body { font-family: 'Inter', Arial, sans-serif; background: #f1f5f9; color: var(--text-dark); display: flex; min-height: 100vh; }
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: #f1f5f9;
+      color: var(--text-dark);
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
     .mobile-menu-toggle {
       display: none;
       position: fixed;
-      top: 20px;
-      left: 20px;
+      top: 16px;
+      left: 16px;
       z-index: 1001;
       background: var(--primary-gradient);
       color: white;
       border: none;
-      width: 50px;
-      height: 50px;
-      border-radius: var(--border-radius-sm);
-      font-size: 24px;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      font-size: 22px;
       cursor: pointer;
-      box-shadow: var(--card-hover-shadow);
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+    }
+    .mobile-menu-toggle:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
     }
 
-    .container { flex: 1; margin-left: 280px; padding: 30px; transition: margin-left 0.3s ease; }
+    /* Layout - match broker listings */
+    .container {
+      flex: 1;
+      margin-left: 280px;
+      padding-top: 15px;
+      padding-right: 24px;
+      padding-bottom: 24px;
+      padding-left: 24px;
+    }
 
-    /* Hero Section - matches landlord dashboard */
+    /* Sidebar overlay (activated in mobile breakpoint) */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Hero Section - match broker listings */
     .hero-section {
       background: var(--primary-gradient);
       color: white;
       border-radius: var(--border-radius-lg);
-      padding: 50px 40px;
+      padding: 28px 40px;
       margin-bottom: 40px;
       position: relative;
       overflow: hidden;
@@ -89,24 +125,6 @@
 
     /* Properties Section */
     .properties-section { margin-bottom: 40px; }
-    .properties-section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-    .section-title {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--text-dark);
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .section-title i { color: #d4af37; font-size: 1.3rem; }
 
     .add-button {
       background: var(--primary-gradient);
@@ -129,7 +147,58 @@
       box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
     }
 
-    /* Listings Grid - broker-style cards */
+    /* Listings header row (match broker listings) */
+    .listings-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .listings-filter {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .filter-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    .filter-select {
+      padding: 10px 36px 10px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: 2px solid #e5e7eb;
+      background: white;
+      color: var(--text-dark);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23718096' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      transition: border-color 0.2s ease;
+    }
+    .filter-select:hover,
+    .filter-select:focus {
+      border-color: var(--primary-dark);
+      outline: none;
+    }
+    .listings-header-meta {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .properties-count {
+      color: var(--text-light);
+      font-size: 15px;
+    }
+
+    /* Listings Grid - match broker listings */
     .listings-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -155,6 +224,19 @@
       position: relative;
       height: 220px;
       overflow: hidden;
+    }
+    .listing-status-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      z-index: 2;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
     .listing-image {
       width: 100%;
@@ -233,18 +315,24 @@
       color: var(--text-light);
       font-size: 0.9rem;
     }
-    .listing-status {
-      display: inline-block;
-      padding: 6px 15px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-bottom: 15px;
+    .listing-status { display: none; } /* status shown as badge on image */
+    .status-active, .status-available,
+    .listing-status-badge.status-active, .listing-status-badge.status-available {
+      background: #10b981 !important;
+      color: white !important;
     }
-    .status-active, .status-available { background: #10b981 !important; color: white !important; }
-    .status-pending { background: var(--accent-gradient) !important; color: white !important; }
-    .status-sold, .status-rented { background: #ef4444 !important; color: white !important; }
-    .status-uploading { background: #e0e7ff; color: #3730a3; }
+    .status-pending, .listing-status-badge.status-pending {
+      background: var(--accent-gradient) !important;
+      color: white !important;
+    }
+    .status-sold, .listing-status-badge.status-sold {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+      color: white !important;
+    }
+    .status-rented, .listing-status-badge.status-rented {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+      color: white !important;
+    }
 
     .listing-actions {
       display: flex;
@@ -318,406 +406,93 @@
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* Enhanced Modal Styles */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 20px;
-      backdrop-filter: blur(5px);
-    }
-
-    .modal-content {
-      background: white;
-      border-radius: 20px;
-      width: 100%;
-      max-width: 900px;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: var(--shadow-lg);
-      display: flex;
-      flex-direction: column;
-      box-sizing: border-box;
-    }
-
-    .modal-header {
-      padding: 30px 40px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(135deg, #f8fafc 0%, #e9ecef 100%);
-    }
-
-    .modal-title-section {
-      flex: 1;
-    }
-
-    .modal-title {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--text-dark);
-      margin-bottom: 8px;
-      line-height: 1.3;
-    }
-
-    .modal-subtitle {
-      font-size: 16px;
-      color: var(--text-light);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .modal-price {
-      font-size: 32px;
-      font-weight: 700;
-      color: var(--primary);
-      text-align: right;
-      margin-bottom: 8px;
-    }
-
-    .modal-status {
-      display: inline-block;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 14px;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .close-modal {
-      background: none;
-      border: none;
-      font-size: 28px;
-      cursor: pointer;
-      color: var(--text-light);
-      padding: 5px;
-      transition: all 0.3s ease;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-    }
-
-    .close-modal:hover {
-      color: var(--text-dark);
-      background: var(--bg-light);
-    }
-
-    .modal-body {
-      padding: 0;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Enhanced Gallery */
-    .listing-gallery {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 15px;
-      padding: 30px 40px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .main-image {
-      border-radius: 16px;
-      overflow: hidden;
-      background: var(--bg-light);
-      position: relative;
-    }
-
-    .main-image img {
-      width: 100%;
-      height: 400px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .thumbnails {
-      display: grid;
-      grid-template-rows: repeat(2, 1fr);
-      gap: 15px;
-    }
-
-    .thumbnail {
-      border-radius: 12px;
-      overflow: hidden;
-      cursor: pointer;
-      background: var(--bg-light);
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
-    }
-
-    .thumbnail:hover {
-      transform: scale(1.05);
-      border-color: var(--primary);
-    }
-
-    .thumbnail.active {
-      border-color: var(--primary);
-    }
-
-    .thumbnail img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* Enhanced Details Layout */
-    .details-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 40px;
-      padding: 30px 40px;
-    }
-
-    .detail-section {
-      margin-bottom: 30px;
-    }
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 2px solid var(--border);
-    }
-
-    .section-header h3 {
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--text-dark);
-    }
-
-    .section-icon {
-      width: 40px;
-      height: 40px;
-      background: var(--primary-gradient);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      color: white;
-    }
-
-    .details-grid {
-      display: grid;
-      gap: 16px;
-    }
-
-    .detail-card {
-      background: var(--bg-light);
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      transition: all 0.3s ease;
-    }
-
-    .detail-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-    }
-
-    .detail-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
-    }
-
-    .detail-row:last-child {
-      border-bottom: none;
-    }
-
-    .detail-label {
-      color: var(--text-light);
-      font-weight: 500;
-      font-size: 14px;
-    }
-
-    .detail-value {
-      color: var(--text-dark);
-      font-weight: 600;
-      text-align: right;
-    }
-
-    .highlight-value {
-      color: var(--primary);
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    /* Amenities Styles */
-    .amenities-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
-      margin-top: 15px;
-    }
-
-    .amenity-item {
-      background: white;
-      padding: 12px 16px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.3s ease;
-    }
-
-    .amenity-item:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-      border-color: var(--primary);
-    }
-
-    .amenity-icon {
-      width: 24px;
-      height: 24px;
-      background: var(--primary-light);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      color: white;
-    }
-
-    /* Description Styles */
-    .description-content {
-      background: var(--bg-light);
-      padding: 25px;
-      border-radius: 12px;
-      line-height: 1.7;
-      color: var(--text-dark);
-      border: 1px solid var(--border);
-    }
-
-    /* Modal Actions */
-    .modal-actions {
-      display: flex;
-      gap: 15px;
-      padding: 25px 40px;
-      border-top: 1px solid var(--border);
-      background: var(--bg-light);
-    }
-
-    .modal-btn {
-      flex: 1;
-      padding: 16px 24px;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .modal-edit-btn {
-      background: var(--primary-gradient);
-      color: white;
-      box-shadow: var(--shadow);
-    }
-
-    .modal-edit-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .modal-close-btn {
-      background: white;
-      color: var(--text-dark);
-      border: 2px solid var(--border);
-    }
-
-    .modal-close-btn:hover {
-      background: var(--bg-light);
-      border-color: var(--text-light);
-    }
-
-    /* Photo Counter */
-    .photo-counter {
-      position: absolute;
-      bottom: 15px;
-      right: 15px;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 14px;
-      font-weight: 500;
-      backdrop-filter: blur(10px);
-    }
-
-    /* Responsive */
+    /* Responsive - match broker listings breakpoints */
     @media (max-width: 1024px) {
-      .container { margin-left: 0; padding: 25px; padding-top: 80px; }
-      .mobile-menu-toggle { display: flex; align-items: center; justify-content: center; }
-      .hero-stats { gap: 20px; }
-      .hero-section { padding: 40px 30px; }
+      .container { margin-left: 0; padding: 24px; padding-top: 70px; }
+      .mobile-menu-toggle { display: flex !important; align-items: center; justify-content: center; }
+      .hero-stats { gap: 20px; flex-wrap: wrap; }
+      .hero-section { padding: 24px 28px; margin-bottom: 30px; }
       .hero-section h1 { font-size: 2.2rem; }
-      .details-container { grid-template-columns: 1fr; gap: 30px; }
-      .listing-gallery { grid-template-columns: 1fr; }
-      .thumbnails { grid-template-columns: repeat(4, 1fr); grid-template-rows: auto; }
+      .hero-section p { font-size: 1rem; max-width: 100%; }
+      .listings-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+      .listing-card-image-container { height: 210px; }
     }
 
     @media (max-width: 768px) {
-      .container { padding: 20px; padding-top: 75px; }
-      .listings-grid { grid-template-columns: 1fr; gap: 15px; }
-      .hero-section h1 { font-size: 1.8rem; }
-      .hero-section { padding: 30px 24px; }
-      .hero-stats { flex-direction: column; gap: 20px; }
-      .modal-header { flex-direction: column; gap: 15px; text-align: center; }
-      .modal-price { text-align: center; }
-      .modal-actions { flex-direction: column; }
-      .listing-gallery, .details-container { padding: 20px; }
-      .main-image img { height: 300px; }
-      .properties-section-header { flex-direction: column; align-items: stretch; }
+      .container { margin-left: 0; padding: 16px; padding-top: 56px; }
+      .mobile-menu-toggle { display: flex !important; }
+      .listings-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+      .hero-section h1 { font-size: 1.6rem; }
+      .hero-section { padding: 16px 18px; margin-bottom: 20px; }
+      .hero-section p { font-size: 0.9rem; margin-bottom: 14px; }
+      .hero-stats { flex-direction: column; gap: 14px; margin-top: 18px; }
+      .hero-stat-item { width: 100%; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.15); }
+      .hero-stat-item:last-child { border-bottom: none; }
+      .hero-stat-value { font-size: 1.3rem; }
+      .hero-stat-label { font-size: 0.85rem; }
+      .hero-stat-icon { width: 44px; height: 44px; font-size: 1.2rem; }
+      .listing-content { padding: 10px; }
+      .listing-header { flex-direction: column; align-items: flex-start; gap: 6px; width: 100%; }
+      .listing-price { text-align: left; max-width: none; width: 100%; }
+      .listing-details { gap: 8px; margin-bottom: 10px; padding-bottom: 10px; }
+      .listing-card-image-container { height: 150px; }
+      .listing-status-badge { padding: 4px 10px; font-size: 10px; border-radius: 16px; top: 8px; right: 8px; }
+      .listing-title { font-size: 0.95rem; line-height: 1.25; }
+      .listing-actions { padding-top: 8px; gap: 8px; }
+      .action-btn { padding: 10px 12px; font-size: 0.8rem; }
+
+      /* Sidebar slides over content on mobile */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 260px;
+        max-width: 80%;
+        height: 100vh;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+      }
+      body.sidebar-open { overflow: hidden; }
+      body.sidebar-open .sidebar { transform: translateX(0); z-index: 1001; }
+      body.sidebar-open .sidebar-overlay { opacity: 1; pointer-events: auto; }
+
+      .listings-header-row { flex-direction: column; align-items: stretch; }
+      .listings-filter { justify-content: flex-start; }
+      .filter-select { min-width: 140px; }
+      .listings-header-meta { flex-direction: column; align-items: stretch; }
+      .properties-section .add-button { width: 100%; justify-content: center; }
     }
 
     @media (max-width: 480px) {
-      .container { padding: 15px; padding-top: 70px; }
-      .hero-section { padding: 24px 18px; }
-      .hero-section h1 { font-size: 1.5rem; }
-      .listing-actions { flex-direction: column; }
-      .modal-content {
-        width: 100%;
-        border-radius: 0;
-        max-height: 100vh;
-      }
-      .modal-overlay {
-        padding: 0;
-      }
+      .container { padding: 12px; padding-top: 54px; }
+      .mobile-menu-toggle { top: 12px; left: 12px; width: 44px; height: 44px; font-size: 20px; }
+      .hero-section { padding: 14px 14px; margin-bottom: 18px; }
+      .hero-section h1 { font-size: 1.35rem; }
+      .hero-section p { font-size: 0.85rem; margin-bottom: 12px; }
+      .hero-stat-value { font-size: 1.1rem; }
+      .hero-stat-label { font-size: 0.78rem; }
+      .hero-stat-icon { width: 36px; height: 36px; font-size: 1rem; }
+      .listing-content { padding: 10px; }
+      .listing-title { font-size: 0.9rem; }
+      .listing-price { font-size: 0.9rem; }
+      .listing-details { gap: 6px; margin-bottom: 8px; padding-bottom: 8px; }
+      .detail { font-size: 0.8rem; }
+      .listing-card-image-container { height: 120px; }
+      .listing-status-badge { padding: 3px 8px; font-size: 9px; border-radius: 14px; top: 6px; right: 6px; }
+      .listing-actions { padding-top: 6px; gap: 6px; }
+      .action-btn { padding: 8px 10px; font-size: 0.75rem; }
     }
 </style>
 </head>
 
 <body>
 <!-- Mobile Menu Toggle -->
-<button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu"><i class="fas fa-bars"></i></button>
+<button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">☰</button>
 
 <!-- Include Sidebar -->
 <div id="sidebar-container"></div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <!-- Main -->
 <div class="container">
@@ -737,21 +512,7 @@
         <div class="hero-stat-icon"><i class="fas fa-check-circle"></i></div>
         <div>
           <div class="hero-stat-value" id="activeListings">0</div>
-          <div class="hero-stat-label">Active</div>
-        </div>
-      </div>
-      <div class="hero-stat-item">
-        <div class="hero-stat-icon"><i class="fas fa-clock"></i></div>
-        <div>
-          <div class="hero-stat-value" id="pendingListings">0</div>
-          <div class="hero-stat-label">Pending</div>
-        </div>
-      </div>
-      <div class="hero-stat-item">
-        <div class="hero-stat-icon"><i class="fas fa-key"></i></div>
-        <div>
-          <div class="hero-stat-value" id="rentedListings">0</div>
-          <div class="hero-stat-label">Rented</div>
+          <div class="hero-stat-label">Available</div>
         </div>
       </div>
     </div>
@@ -759,19 +520,23 @@
 
   <!-- Properties Section -->
   <div class="properties-section">
-    <div class="properties-section-header">
-      <div>
-        <h2 class="section-title">
-          <i class="fas fa-list"></i>
-          My Listings
-        </h2>
-        <p style="color: var(--text-light); margin-bottom: 0; font-size: 15px;" id="listingsCount">Loading...</p>
+    <div class="listings-header-row">
+      <div class="listings-filter">
+        <label for="listingsFilter" class="filter-label">Status</label>
+        <select id="listingsFilter" class="filter-select" aria-label="Filter by status">
+          <option value="all">All</option>
+          <option value="available">Available</option>
+          <option value="rented">Rented</option>
+        </select>
       </div>
-      <a href="add_property.html" class="add-button">
-        <i class="fas fa-plus"></i> Add New Property
-      </a>
+      <div class="listings-header-meta">
+        <span class="properties-count" id="propertiesCount">Your listed properties</span>
+        <a href="add_property.html" class="add-button" style="text-decoration: none;">
+          <i class="fas fa-plus"></i> Add New Property
+        </a>
+      </div>
     </div>
-  <!-- Listings Grid -->
+    <!-- Listings Grid -->
     <div class="listings-grid" id="listingsContainer">
       <div class="loading-state">
         <div class="spinner"></div>
@@ -784,12 +549,21 @@
 <!-- Sidebar Loader -->
 <script src="../sidebar-user.js"></script>
 <script>
-// Mobile menu
-document.getElementById('mobileMenuToggle').addEventListener('click', function() {
-  const sidebar = document.querySelector('.sidebar');
-  if (sidebar) {
-    sidebar.style.transform = sidebar.style.transform === 'translateX(0px)' ? 'translateX(-100%)' : 'translateX(0px)';
-  }
+// Mobile menu - match broker listings
+var mobileMenuBtn = document.getElementById('mobileMenuToggle');
+if (mobileMenuBtn) {
+  mobileMenuBtn.addEventListener('click', function() {
+    document.body.classList.toggle('sidebar-open');
+  });
+}
+var overlayEl = document.getElementById('sidebarOverlay');
+if (overlayEl) {
+  overlayEl.addEventListener('click', function() {
+    document.body.classList.remove('sidebar-open');
+  });
+}
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 768) document.body.classList.remove('sidebar-open');
 });
 
 // Load sidebar
@@ -842,6 +616,46 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 let currentListings = [];
+let currentFilter = 'all';
+
+function isActiveListing(listing) {
+  const s = (listing.status || '').toLowerCase();
+  return s === 'active' || s === 'available' || s === 'published' ||
+    !listing.status || listing.status === true || listing.status === 'true';
+}
+
+function getFilteredListings() {
+  if (currentFilter === 'all') return currentListings;
+  if (currentFilter === 'available') return currentListings.filter(isActiveListing);
+  if (currentFilter === 'rented')
+    return currentListings.filter(l => {
+      const s = (l.status || '').toLowerCase();
+      return s === 'rented' || s === 'sold';
+    });
+  return currentListings;
+}
+
+function applyFilter() {
+  const filtered = getFilteredListings();
+  displayListings(filtered);
+  const countEl = document.getElementById('propertiesCount');
+  if (countEl) {
+    const n = filtered.length;
+    if (currentFilter === 'all') countEl.textContent = n === 0 ? 'No properties listed' : n + ' propert' + (n === 1 ? 'y' : 'ies') + ' listed';
+    else if (currentFilter === 'available') countEl.textContent = n === 0 ? 'No available properties' : n + ' available';
+    else countEl.textContent = n === 0 ? 'No rented properties' : n + ' rented';
+  }
+  const selectEl = document.getElementById('listingsFilter');
+  if (selectEl) selectEl.value = currentFilter;
+}
+
+var filterSelect = document.getElementById('listingsFilter');
+if (filterSelect) {
+  filterSelect.addEventListener('change', function() {
+    currentFilter = this.value;
+    applyFilter();
+  });
+}
 
 // Load current landlord profile (from users collection)
 async function loadCurrentUserProfile(user) {
@@ -882,8 +696,8 @@ async function loadListings() {
       currentListings.push({ id: doc.id, ...doc.data() });
     });
 
-    displayListings(currentListings);
     updateStats(currentListings);
+    applyFilter();
    
   } catch (error) {
     console.error("Error loading listings:", error);
@@ -892,8 +706,6 @@ async function loadListings() {
 
 function displayListings(listings) {
   const container = document.getElementById('listingsContainer');
-  const countEl = document.getElementById('listingsCount');
-  if (countEl) countEl.textContent = listings.length === 0 ? 'No properties' : `${listings.length} propert${listings.length === 1 ? 'y' : 'ies'}`;
 
   if (listings.length === 0) {
     container.innerHTML = `
@@ -913,19 +725,22 @@ function displayListings(listings) {
     const photos = listing.photos || listing.imageUrls || [];
     const mainPhoto = photos.length > 0 ? photos[0] : 'https://via.placeholder.com/400x200/0b2e52/white?text=No+Image';
     const type = (listing.type || listing.listingType || 'rent').toLowerCase();
-    const price = type === 'sale' ? (listing.salePrice || listing.pricing || listing.price || 0) : (listing.monthlyRent || listing.annualRent || listing.pricing || listing.price || 0);
-    const priceLabel = type === 'sale' ? '₱' + price.toLocaleString() : '₱' + price.toLocaleString() + '/mo';
-    const badgeClass = type === 'sale' ? 'sale' : (type === 'rent' || type === 'lease') ? 'rent' : 'rent';
-    const typeLabel = type === 'sale' ? 'For Sale' : type === 'lease' ? 'For Lease' : 'For Rent';
-    const status = listing.status || 'active';
-    const statusClass = status === 'pending' ? 'status-pending' : (status === 'rented' || status === 'sold') ? 'status-rented' : 'status-active';
+    const price = type === 'sale'
+      ? (listing.salePrice || listing.pricing || listing.price || 0)
+      : (listing.monthlyRent || listing.annualRent || listing.pricing || listing.price || 0);
+    const priceLabel = '₱' + price.toLocaleString();
+    const rawStatus = listing.status;
+    const statusLower = (rawStatus || '').toLowerCase();
+    const isAvailableStatus = isActiveListing(listing);
+    const statusLabel = isAvailableStatus ? 'Available' : 'Rented';
+    const statusClass = isAvailableStatus ? 'status-available' : 'status-rented';
 
     return `
     <div class="listing-card-wrapper">
       <div class="listing-card" data-listing-id="${listing.id}">
         <a href="property_details.html?id=${listing.id}" class="card-link-overlay" aria-label="View ${(listing.title || '').replace(/"/g, '&quot;')}"></a>
         <div class="listing-card-image-container">
-          <span class="listing-type-badge ${badgeClass}">${typeLabel}</span>
+          <span class="listing-status-badge ${statusClass}">${statusLabel}</span>
           <img src="${mainPhoto}" alt="${(listing.title || '').replace(/"/g, '&quot;')}" class="listing-image">
         </div>
         <div class="listing-content">
@@ -944,7 +759,6 @@ function displayListings(listings) {
             <div class="detail"><i class="fas fa-bath"></i> ${listing.bathrooms || 0} baths</div>
             <div class="detail"><i class="fas fa-ruler-combined"></i> ${listing.floorArea || listing.squareFootage || 'N/A'} sqm</div>
           </div>
-          <div class="listing-status ${statusClass}">${status}</div>
           <div class="listing-actions">
             <button class="action-btn edit-btn"><i class="fas fa-edit"></i> Edit</button>
             <button class="action-btn delete-btn"><i class="fas fa-trash-alt"></i> Delete</button>
@@ -958,14 +772,10 @@ function displayListings(listings) {
 
 function updateStats(listings) {
   const total = listings.length;
-  const active = listings.filter(l => l.status === 'active').length;
-  const pending = listings.filter(l => l.status === 'pending').length;
-  const rented = listings.filter(l => l.status === 'rented' || l.status === 'sold').length;
+  const active = listings.filter(isActiveListing).length;
 
   document.getElementById('totalListings').textContent = total;
   document.getElementById('activeListings').textContent = active;
-  document.getElementById('pendingListings').textContent = pending;
-  document.getElementById('rentedListings').textContent = rented;
 }
 
 // Global functions for buttons

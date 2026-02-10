@@ -32,6 +32,7 @@
       color: var(--text-dark);
       display: flex;
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
     .container {
@@ -174,17 +175,9 @@
       font-style: italic;
     }
 
+    /* Profile statistics section (hidden per latest design) */
     .profile-stats {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
-    @media (max-width: 480px) {
-      .profile-stats {
-        grid-template-columns: 1fr;
-      }
+      display: none;
     }
 
     .stat-card {
@@ -267,6 +260,64 @@
     @media (max-width: 1024px) {
       .profile-content {
         grid-template-columns: 1fr;
+      }
+    }
+
+    /* Additional mobile refinements for profile layout */
+    @media (max-width: 768px) {
+      .profile-header {
+        padding: 20px;
+      }
+      .profile-photo {
+        width: 140px;
+        height: 140px;
+      }
+      .profile-name {
+        font-size: 24px;
+      }
+      .profile-title {
+        font-size: 16px;
+      }
+      .profile-location {
+        font-size: 14px;
+      }
+      .profile-card {
+        padding: 20px;
+      }
+      .properties-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .profile-header {
+        padding: 18px;
+        margin-bottom: 20px;
+      }
+      .profile-name {
+        font-size: 20px;
+      }
+      .profile-title {
+        font-size: 14px;
+      }
+      .profile-photo {
+        width: 120px;
+        height: 120px;
+      }
+      .profile-content {
+        gap: 20px;
+      }
+      .profile-card {
+        padding: 18px;
+      }
+      .action-btn {
+        width: 100%;
+        justify-content: center;
+      }
+      .properties-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
       }
     }
 
@@ -449,35 +500,110 @@
     .mobile-menu-toggle {
       display: none;
       position: fixed;
-      top: 20px;
-      left: 20px;
-      z-index: 1000;
+      top: 16px;
+      left: 16px;
+      z-index: 1001;
       background: var(--primary-gradient);
       color: white;
       border: none;
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-size: 20px;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      font-size: 22px;
       cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--card-hover-shadow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .mobile-menu-toggle:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
     }
 
     @media (max-width: 1024px) {
-      .container { margin-left: 0; padding: 25px; }
-      .mobile-menu-toggle { display: flex; align-items: center; justify-content: center; }
+      .container {
+        margin-left: 0;
+        padding: 25px;
+        padding-top: 70px;
+      }
+      .mobile-menu-toggle {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+        padding-top: 56px;
+      }
+      /* Sidebar slides over content on mobile */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 260px;
+        max-width: 80%;
+        height: 100vh;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+      }
+      .sidebar-overlay {
+        display: block;
+      }
+      body.sidebar-open { overflow: hidden; }
+      body.sidebar-open .sidebar {
+        transform: translateX(0);
+        z-index: 1001;
+      }
+      body.sidebar-open .sidebar-overlay {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 15px;
+        padding-top: 54px;
+      }
+      .mobile-menu-toggle {
+        top: 10px;
+        left: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+      }
     }
 </style>
 </head>
 <body>
-<button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
+<button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle sidebar">☰</button>
 <div id="sidebar-container"></div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="container">
   <div class="page-header">
     <h1>My Profile</h1>
     <p>Manage your profile and view your property listings</p>
-    <a href="landlord_dashboard.html" class="action-btn btn-secondary" style="margin-top: 15px; display: inline-flex;">
-      <i class="fas fa-arrow-left"></i> Back to Dashboard
-    </a>
   </div>
 
   <div id="profileContent">
@@ -582,13 +708,27 @@
 
 <script src="../sidebar-user.js"></script>
 <script>
-document.getElementById('mobileMenuToggle').addEventListener('click', function() {
-  const sidebar = document.querySelector('.sidebar');
-  if (sidebar) {
-    sidebar.style.transform = sidebar.style.transform === 'translateX(0px)' ? 'translateX(-100%)' : 'translateX(0px)';
-  }
+// Mobile menu: toggle body class so sidebar slides in (match other landlord pages)
+var mobileMenuBtn = document.getElementById('mobileMenuToggle');
+var overlayEl = document.getElementById('sidebarOverlay');
+
+if (mobileMenuBtn) {
+  mobileMenuBtn.addEventListener('click', function() {
+    document.body.classList.toggle('sidebar-open');
+  });
+}
+
+if (overlayEl) {
+  overlayEl.addEventListener('click', function() {
+    document.body.classList.remove('sidebar-open');
+  });
+}
+
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 768) document.body.classList.remove('sidebar-open');
 });
 
+// Load sidebar
 fetch('sidebar.html')
   .then(response => response.text())
   .then(html => {

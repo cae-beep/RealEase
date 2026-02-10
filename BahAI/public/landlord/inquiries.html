@@ -50,25 +50,65 @@
       color: var(--text-dark);
       display: flex;
       min-height: 100vh;
+  overflow-x: hidden;
     }
 
-    /* Mobile Menu Toggle */
+/* Mobile Menu Toggle - match broker inquiries */
     .mobile-menu-toggle {
       display: none;
       position: fixed;
-      top: 20px;
-      left: 20px;
+  top: 16px;
+  left: 16px;
       z-index: 1001;
       background: var(--primary-gradient);
       color: white;
       border: none;
-      width: 50px;
-      height: 50px;
-      border-radius: var(--border-radius-sm);
-      font-size: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  font-size: 22px;
       cursor: pointer;
-      box-shadow: var(--card-hover-shadow);
-    }
+  box-shadow: var(--card-hover-shadow);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mobile-menu-toggle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Chat back button inside header (visible on mobile like broker) */
+.chat-back-to-list {
+  display: none;
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1001;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  color: var(--text-dark);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  align-items: center;
+  gap: 6px;
+  box-shadow: var(--card-hover-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chat-back-to-list i {
+  font-size: 12px;
+}
+
+.chat-back-to-list:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
 
     .container {
       flex: 1;
@@ -855,17 +895,19 @@
       background: var(--primary-dark);
     }
 
-    /* ===== RESPONSIVE DESIGN ===== */
+/* ===== RESPONSIVE DESIGN (match broker inquiries layout) ===== */
     
     /* Tablet */
     @media (max-width: 1024px) {
       .container {
         margin-left: 0;
         padding: 25px;
+        padding-top: 70px;
       }
       
-      .mobile-menu-toggle {
-        display: flex;
+      .mobile-menu-toggle,
+      .chat-back-to-list {
+        display: flex !important;
         align-items: center;
         justify-content: center;
       }
@@ -895,27 +937,48 @@
       }
     }
 
-    /* Large Mobile */
+    /* Large Mobile - list only by default; chat full screen when opened */
     @media (max-width: 768px) {
       .container {
         padding: 20px;
+        padding-top: 56px;
       }
       
-      .mobile-menu-toggle {
-        top: 15px;
-        left: 15px;
-        width: 45px;
-        height: 45px;
-        font-size: 20px;
+      .mobile-menu-toggle,
+      .chat-back-to-list {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
       }
       
-      .page-header h1 {
-        font-size: 24px;
+      /* Sidebar slides over content on mobile (same as broker inquiries) */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 260px;
+        max-width: 80%;
+        height: 100vh;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
       }
-      
-      .page-header p {
-        font-size: 14px;
+      .sidebar-overlay {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.35);
+        z-index: 999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
       }
+      body.sidebar-open { overflow: hidden; }
+      body.sidebar-open .sidebar { transform: translateX(0); z-index: 1001; }
+      body.sidebar-open .sidebar-overlay { opacity: 1; pointer-events: auto; }
       
       .message-bubble {
         max-width: 85%;
@@ -923,6 +986,17 @@
       
       .filter-buttons {
         flex-wrap: wrap;
+      }
+      
+      /* Inbox-only view on mobile: hide chat container until deep-linked */
+      body:not(.mobile-chat-view) .chat-container {
+        display: none;
+      }
+      body.mobile-chat-view .conversations-sidebar {
+        display: none;
+      }
+      body.mobile-chat-view .chat-container {
+        display: flex;
       }
     }
 
@@ -990,9 +1064,10 @@
 </head>
 
 <body>
-<button class="mobile-menu-toggle" id="mobileMenuToggle"><i class="fas fa-bars"></i></button>
+<button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle sidebar"><i class="fas fa-bars"></i></button>
 
 <div id="sidebar-container"></div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="container">
   <div class="inquiries-container">
@@ -1051,6 +1126,9 @@
     <!-- Chat Container -->
     <div class="chat-container">
       <div class="chat-header">
+        <button type="button" class="chat-back-to-list" id="chatBackToList" aria-label="Back to conversations">
+          <i class="fas fa-arrow-left"></i> Back
+        </button>
         <div class="chat-user-info">
           <div class="chat-user-avatar" id="chatUserAvatar">BU</div>
           <div class="chat-user-details">
@@ -1082,15 +1160,6 @@
         </div>
         
         <div class="quick-actions" id="quickActions" style="display: none;">
-          <button class="action-btn" id="sendEmailBtn">
-            <i class="fas fa-envelope"></i> Send Email
-          </button>
-          <button class="action-btn" id="makeCallBtn">
-            <i class="fas fa-phone"></i> Make Call
-          </button>
-          <button class="action-btn primary" id="scheduleViewingBtn">
-            <i class="fas fa-calendar-check"></i> Schedule Viewing
-          </button>
           <button class="action-btn" id="deleteConversationBtn" style="background: var(--error); color: white; border-color: var(--error);">
             <i class="fas fa-trash"></i> Delete Chat
           </button>
@@ -1103,24 +1172,55 @@
 <!-- Sidebar Loader -->
 <script src="../sidebar-user.js"></script>
 <script>
-// Mobile menu functionality
-document.getElementById('mobileMenuToggle').addEventListener('click', function() {
-  const sidebar = document.querySelector('.sidebar');
-  if (sidebar) {
-    sidebar.style.transform = sidebar.style.transform === 'translateX(0px)' ? 
-      'translateX(-100%)' : 'translateX(0px)';
-  }
+// Mobile menu & back button
+var mobileMenuBtn = document.getElementById('mobileMenuToggle');
+var chatBackBtn = document.getElementById('chatBackToList');
+var overlayEl = document.getElementById('sidebarOverlay');
+
+if (mobileMenuBtn) {
+  mobileMenuBtn.addEventListener('click', function() {
+    document.body.classList.toggle('sidebar-open');
+  });
+}
+
+if (chatBackBtn) {
+  chatBackBtn.addEventListener('click', function() {
+    // On mobile, behave like broker inquiries: go back to conversation list view.
+    // If we navigated here directly (deep link), use history.back; otherwise just reload without conversationId.
+    if (window.innerWidth <= 768) {
+      try {
+        const url = new URL(window.location.href);
+        if (url.searchParams.has('conversationId') && window.history.length > 1) {
+          window.history.back();
+          return;
+        }
+        url.searchParams.delete('conversationId');
+        window.location.href = url.toString();
+      } catch (e) {
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = 'inquiries.html';
+        }
+      }
+    }
+  });
+}
+
+if (overlayEl) {
+  overlayEl.addEventListener('click', function() {
+    document.body.classList.remove('sidebar-open');
+  });
+}
+
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 768) document.body.classList.remove('sidebar-open');
 });
 
 // Close sidebar when clicking on a link (mobile)
 document.addEventListener('click', function(e) {
-  if (window.innerWidth <= 1024) {
-    if (e.target.closest('.sidebar-link')) {
-      const sidebar = document.querySelector('.sidebar');
-      if (sidebar) {
-        sidebar.style.transform = 'translateX(-100%)';
-      }
-    }
+  if (window.innerWidth <= 768 && e.target.closest('.sidebar-link')) {
+    document.body.classList.remove('sidebar-open');
   }
 });
 
@@ -1154,16 +1254,6 @@ function setupLogoutButton() {
     }
   });
 }
-
-// Handle window resize
-window.addEventListener('resize', function() {
-  const sidebar = document.querySelector('.sidebar');
-  if (window.innerWidth > 1024 && sidebar) {
-    sidebar.style.transform = 'translateX(0)';
-  } else if (window.innerWidth <= 1024 && sidebar) {
-    sidebar.style.transform = 'translateX(-100%)';
-  }
-});
 </script>
 
 <script type="module">
@@ -1217,6 +1307,7 @@ let allConversations = [];
 let activeFilter = 'all';
 let searchTerm = '';
 let isLoadingMessages = false;
+let initialConversationIdFromUrl = null;
 
 // Debug mode
 const DEBUG = true;
@@ -1290,6 +1381,22 @@ async function loadCurrentUserProfile(user) {
 async function initPage() {
   debugLog('🚀 Initializing inquiries page...');
   
+  // Check if a specific conversation should be opened (e.g. on mobile deep link)
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const convId = params.get('conversationId');
+    if (convId && typeof convId === 'string' && convId.trim().length > 0) {
+      initialConversationIdFromUrl = convId.trim();
+      // Mark body so CSS shows chat full screen on mobile and hides list
+      document.body.classList.add('mobile-chat-view');
+    } else {
+      document.body.classList.remove('mobile-chat-view');
+    }
+  } catch (e) {
+    initialConversationIdFromUrl = null;
+    document.body.classList.remove('mobile-chat-view');
+  }
+  
   // Update notice text
   const noticeEl = document.getElementById('noticeText');
   if (noticeEl) {
@@ -1301,6 +1408,18 @@ async function initPage() {
   
   // Load conversations
   await loadConversations();
+  
+  // If URL contains a specific conversation id, open it after conversations are loaded
+  if (initialConversationIdFromUrl) {
+    const conv = allConversations.find(c => c.id === initialConversationIdFromUrl);
+    if (conv && conv.buyerId) {
+      try {
+        await selectConversation(conv.id, conv.buyerId, conv.propertyId || null);
+      } catch (e) {
+        debugLog('⚠️ Failed to auto-open conversation from URL:', e.message);
+      }
+    }
+  }
 }
 
 // Setup event listeners
@@ -1344,9 +1463,6 @@ function setupEventListeners() {
   });
   
   // Quick actions
-  document.getElementById('sendEmailBtn').addEventListener('click', sendEmailToBuyer);
-  document.getElementById('makeCallBtn').addEventListener('click', makeCallToBuyer);
-  document.getElementById('scheduleViewingBtn').addEventListener('click', scheduleViewing);
   document.getElementById('deleteConversationBtn').addEventListener('click', deleteCurrentConversation);
   
   // Property info click
@@ -1568,7 +1684,7 @@ function updateStats() {
 }
 
 // Filter and display conversations
-function filterConversations() {
+async function filterConversations() {
   let filteredConversations = [...allConversations];
   
   // Apply search filter
@@ -1603,8 +1719,8 @@ function filterConversations() {
     // 'all' filter doesn't need additional filtering
   }
   
-  // Load user data for filtered conversations
-  loadUserDataForConversations(filteredConversations);
+  // Load user data for filtered conversations (await so names are ready)
+  await loadUserDataForConversations(filteredConversations);
   
   // Display filtered conversations
   displayConversations(filteredConversations);
@@ -1722,9 +1838,14 @@ function displayConversations(conversations) {
   conversationsList.innerHTML = '';
   
   conversations.forEach(conversation => {
-    const buyerId = conversation.buyerId;
+    // Determine buyer id from conversation (other participant)
+    const buyerId = conversation.buyerId || (
+      Array.isArray(conversation.participants)
+        ? conversation.participants.find(id => id !== currentUser?.uid)
+        : null
+    );
     const buyerInfo = userMap.get(buyerId) || {
-      displayName: `Buyer ${buyerId ? buyerId.substring(0, 8) : 'Unknown'}`,
+      displayName: buyerId ? `Buyer ${buyerId.substring(0, 8)}` : 'Buyer',
       initials: 'BU',
       email: 'No email',
       phone: 'No phone',
@@ -1775,7 +1896,21 @@ function displayConversations(conversations) {
     conversationElement.addEventListener('click', (e) => {
       // Don't trigger conversation selection if delete button is clicked
       if (!e.target.closest('.delete-conversation-btn')) {
-        selectConversation(conversation.id, buyerId, conversation.propertyId);
+        // On mobile, open as a separate page with conversationId in query string
+        if (window.innerWidth <= 768) {
+          try {
+            const url = new URL(window.location.href);
+            url.searchParams.set('conversationId', conversation.id);
+            window.location.href = url.toString();
+          } catch (err) {
+            // Fallback if URL constructor is not available
+            const sep = window.location.href.includes('?') ? '&' : '?';
+            window.location.href = window.location.href.split('#')[0] + sep + 'conversationId=' + encodeURIComponent(conversation.id);
+          }
+        } else {
+          // Desktop: keep inline chat behavior
+          selectConversation(conversation.id, buyerId, conversation.propertyId);
+        }
       }
     });
     
@@ -1899,8 +2034,26 @@ async function selectConversation(conversationId, buyerId, propertyId = null) {
     return;
   }
   
+  // Derive buyerId if missing or inconsistent by looking up the conversation
+  let effectiveBuyerId = buyerId;
+  const conv = allConversations.find(c => c.id === conversationId);
+  if (!effectiveBuyerId && conv) {
+    // Prefer explicit buyerId, otherwise infer the other participant
+    effectiveBuyerId = conv.buyerId;
+    if (!effectiveBuyerId && Array.isArray(conv.participants)) {
+      effectiveBuyerId = conv.participants.find(id => id !== currentUser?.uid);
+    }
+  }
+  if (!effectiveBuyerId && conv && conv.userId) {
+    effectiveBuyerId = conv.userId;
+  }
+  if (!effectiveBuyerId) {
+    debugLog('⚠️ Could not determine buyerId for conversation:', conversationId);
+    effectiveBuyerId = '';
+  }
+  
   currentConversationId = conversationId;
-  currentBuyerId = buyerId;
+  currentBuyerId = effectiveBuyerId;
   currentPropertyId = propertyId;
   
   // Update UI to show active conversation
@@ -1911,9 +2064,18 @@ async function selectConversation(conversationId, buyerId, propertyId = null) {
     }
   });
   
+  // Ensure buyer info is loaded
+  if (effectiveBuyerId && !userMap.has(effectiveBuyerId)) {
+    try {
+      await loadUserData(effectiveBuyerId);
+    } catch (e) {
+      debugLog('⚠️ Error loading buyer data on selectConversation:', e.message);
+    }
+  }
+
   // Get buyer info
-  const buyerInfo = userMap.get(buyerId) || {
-    displayName: `Buyer ${buyerId.substring(0, 8)}`,
+  const buyerInfo = userMap.get(effectiveBuyerId) || {
+    displayName: effectiveBuyerId ? `Buyer ${effectiveBuyerId.substring(0, 8)}` : 'Buyer',
     email: 'No email',
     phone: 'No phone',
     role: 'buyer'
@@ -1951,23 +2113,6 @@ async function selectConversation(conversationId, buyerId, propertyId = null) {
   // Show chat input and quick actions
   document.getElementById('chatInputContainer').style.display = 'block';
   document.getElementById('quickActions').style.display = 'flex';
-  
-  // Update quick action buttons
-  if (buyerInfo.email && buyerInfo.email !== 'No email') {
-    document.getElementById('sendEmailBtn').disabled = false;
-    document.getElementById('sendEmailBtn').title = `Send email to ${buyerInfo.email}`;
-  } else {
-    document.getElementById('sendEmailBtn').disabled = true;
-    document.getElementById('sendEmailBtn').title = 'No email available';
-  }
-  
-  if (buyerInfo.phone && buyerInfo.phone !== 'No phone') {
-    document.getElementById('makeCallBtn').disabled = false;
-    document.getElementById('makeCallBtn').title = `Call ${buyerInfo.phone}`;
-  } else {
-    document.getElementById('makeCallBtn').disabled = true;
-    document.getElementById('makeCallBtn').title = 'No phone number available';
-  }
   
   // Load messages for this conversation
   await loadMessages(conversationId, buyerId);
