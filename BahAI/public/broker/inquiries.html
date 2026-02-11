@@ -467,26 +467,36 @@
       transform: scale(1.1);
     }
 
-    /* Back to list button - hidden on desktop, shown on mobile when in chat */
+    /* Back to list button - hidden on desktop; on mobile fixed right, in line with burger menu */
     .chat-back-to-list {
       display: none;
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 1001;
       align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      margin-right: 12px;
-      background: var(--bg-light);
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: var(--bg-white);
       border: 1px solid var(--border);
-      border-radius: var(--border-radius-sm);
+      border-radius: 999px;
       color: var(--text-dark);
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 13px;
+      font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
       font-family: inherit;
+      box-shadow: var(--shadow-lg);
     }
     .chat-back-to-list:hover {
-      background: var(--border);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+      background: var(--bg-light);
       color: var(--primary);
+    }
+    .chat-back-to-list i {
+      font-size: 12px;
     }
 
     /* Chat Container - same card style as broker dashboard */
@@ -1396,8 +1406,9 @@
       }
       
       .chat-back-to-list {
-        display: inline-flex;
-        flex-shrink: 0;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
       }
       
       .message-bubble {
@@ -1425,6 +1436,7 @@
       }
       
       .mobile-menu-toggle { top: 12px; left: 12px; width: 44px; height: 44px; font-size: 20px; }
+      .chat-back-to-list { top: 12px; right: 12px; }
       
       .sidebar { width: 260px; max-width: 85%; }
       

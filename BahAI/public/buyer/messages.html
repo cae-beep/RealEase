@@ -3703,18 +3703,18 @@ function renderScheduleMessage(message) {
           <i class="fas fa-clock"></i> Suggest Alternative
         </button>
       </div>
-    ` : scheduleStatus === 'alternative' && isSent ? `
+    ` : scheduleStatus === 'alternative' && !isSent ? `
       <div class="schedule-actions">
         <button class="schedule-action-btn primary" onclick="acceptAlternativeFromMessage('${scheduleId}', '${message.conversationId}')">
           <i class="fas fa-check"></i> Accept Alternative
         </button>
-        <button class="schedule-action-btn secondary" onclick="suggestNewTimeFromMessage('${message.conversationId}')">
+        <button class="schedule-action-btn secondary" onclick="suggestNewTimeFromMessage('${message.conversationId}', '${message.senderId}', '${message.propertyId || ''}')">
           <i class="fas fa-clock"></i> Suggest Another Time
         </button>
       </div>
-    ` : scheduleStatus === 'declined' && isSent ? `
+    ` : scheduleStatus === 'declined' && !isSent ? `
       <div class="schedule-actions">
-        <button class="schedule-action-btn primary" onclick="suggestNewTimeFromMessage('${message.conversationId}')">
+        <button class="schedule-action-btn primary" onclick="suggestNewTimeFromMessage('${message.conversationId}', '${message.senderId}', '${message.propertyId || ''}')">
           <i class="fas fa-clock"></i> Suggest Another Time
         </button>
       </div>
@@ -3934,21 +3934,24 @@ window.acceptAlternativeFromMessage = async function(scheduleId, conversationId)
   }
 };
 
-window.suggestNewTimeFromMessage = function(conversationId) {
-  if (!currentPropertyId || !currentBrokerId) {
+window.suggestNewTimeFromMessage = function(conversationId, brokerIdFromMessage, propertyIdFromMessage) {
+  const effectiveBrokerId = brokerIdFromMessage || currentBrokerId;
+  const effectivePropertyId = propertyIdFromMessage || currentPropertyId;
+
+  if (!effectivePropertyId || !effectiveBrokerId) {
     showError('Please select a conversation with a property');
     return;
   }
   
-  const brokerInfo = userMap.get(currentBrokerId);
-  const propertyInfo = propertyMap.get(currentPropertyId);
+  const brokerInfo = userMap.get(effectiveBrokerId);
+  const propertyInfo = propertyMap.get(effectivePropertyId);
   
   if (!brokerInfo || !propertyInfo) {
     showError('Unable to schedule viewing');
     return;
   }
   
-  const scheduleUrl = `schedule_viewing.html?buyerId=${currentUser.uid}&brokerId=${currentBrokerId}&propertyId=${currentPropertyId}&brokerName=${encodeURIComponent(brokerInfo.displayName)}&propertyName=${encodeURIComponent(propertyInfo.title)}`;
+  const scheduleUrl = `schedule_viewing.html?buyerId=${currentUser.uid}&brokerId=${effectiveBrokerId}&propertyId=${effectivePropertyId}&brokerName=${encodeURIComponent(brokerInfo.displayName)}&propertyName=${encodeURIComponent(propertyInfo.title)}`;
   
   window.open(scheduleUrl, '_blank', 'width=800,height=700,scrollbars=yes');
 };

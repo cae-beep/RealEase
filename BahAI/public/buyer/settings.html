@@ -61,7 +61,7 @@
       box-shadow: var(--shadow-lg);
     }
     @media (max-width: 1024px) {
-      .mobile-menu-toggle { display: flex; align-items: center; justify-content: center; }
+      .mobile-menu-toggle { display: flex; align-items: center; justify-content: center; top: 76px; left: 16px; z-index: 1003; }
     }
 
     .container {
@@ -74,7 +74,20 @@
       transition: margin-left 0.3s ease;
     }
     @media (max-width: 1024px) {
-      .container { margin-left: 0; }
+      .container { margin-left: 0; padding-top: 64px; }
+      /* Hide top nav menu on mobile until hamburger opens it */
+      .top-nav-menu {
+        max-height: 0 !important;
+        overflow: hidden !important;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .top-nav-menu.open {
+        max-height: 400px !important;
+        overflow-y: auto;
+        opacity: 1;
+        pointer-events: auto;
+      }
     }
 
     /* Hero Section - matches buyer dashboard */
@@ -474,7 +487,8 @@
     /* Responsive Design */
     @media (max-width: 1024px) {
       .container {
-        margin-left: 50px;
+        margin-left: 0;
+        padding-top: 64px;
       }
     }
 
@@ -482,6 +496,7 @@
       .container {
         margin-left: 0;
         padding: 20px;
+        padding-top: 64px;
       }
       
       .settings-grid {
@@ -495,6 +510,10 @@
       
       .form-grid {
         grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .field {
+        margin-bottom: 12px;
       }
       
       .profile-header {
@@ -510,10 +529,18 @@
     @media (max-width: 480px) {
       .container {
         padding: 15px;
+        padding-top: 64px;
       }
       
       .settings-content {
         padding: 20px;
+      }
+      
+      .form-grid {
+        gap: 8px;
+      }
+      .field {
+        margin-bottom: 10px;
       }
     }
 </style>
@@ -527,10 +554,6 @@
 
 <div class="container">
   <!-- Page context: purpose above profile card -->
-  <header class="settings-page-header">
-    <h1>Profile & Preferences</h1>
-    <p>Your information helps BahAI personalize recommendations and insights</p>
-  </header>
 
   <div class="success-message" id="successMessage">
     <i class="fas fa-check-circle"></i>
@@ -539,10 +562,6 @@
 
   <div class="settings-content">
     <div class="settings-section active" id="profile-section">
-        <div class="section-header">
-          <h2><i class="fas fa-user"></i> Profile</h2>
-          <p>Manage your personal information and account details</p>
-        </div>
 
         <div class="profile-header">
           <div class="profile-avatar-wrapper">
@@ -583,14 +602,6 @@
               <label>Address</label>
               <p class="profile-value" id="viewAddress">—</p>
             </div>
-            <div class="field">
-              <label>Preferred Location</label>
-              <p class="profile-value" id="viewPreferredLocation">—</p>
-            </div>
-            <div class="field">
-              <label>Budget Range</label>
-              <p class="profile-value" id="viewBudgetRange">—</p>
-            </div>
             <div class="field field-full">
               <label>Bio</label>
               <p class="profile-value" id="viewBio">—</p>
@@ -626,16 +637,6 @@
             <div class="field field-full">
               <label for="address">Address</label>
               <input type="text" id="address" placeholder="Your residential address">
-            </div>
-            <div class="field">
-              <label for="preferredLocation">Preferred Location</label>
-              <input type="text" id="preferredLocation" placeholder="e.g. Manila, Cebu">
-              <div class="field-hint">City or area where you're looking for properties</div>
-            </div>
-            <div class="field">
-              <label for="budgetRange">Budget Range</label>
-              <input type="text" id="budgetRange" placeholder="e.g. ₱2M - ₱5M">
-              <div class="field-hint">Your budget for purchase or rent</div>
             </div>
             <div class="field field-full">
               <label for="bio">Bio</label>
@@ -787,8 +788,6 @@ function updateProfileView() {
   document.getElementById('viewPhone').textContent = userData.phone || userData.phoneNumber || '—';
   document.getElementById('viewCompany').textContent = userData.company || '—';
   document.getElementById('viewAddress').textContent = userData.address || '—';
-  document.getElementById('viewPreferredLocation').textContent = userData.preferredLocation || '—';
-  document.getElementById('viewBudgetRange').textContent = userData.budgetRange || '—';
   document.getElementById('viewBio').textContent = userData.bio || '—';
 }
 
@@ -799,8 +798,6 @@ function populateForm(data) {
   document.getElementById('phone').value = data.phone || data.phoneNumber || '';
   document.getElementById('company').value = data.company || '';
   document.getElementById('address').value = data.address || '';
-  document.getElementById('preferredLocation').value = data.preferredLocation || '';
-  document.getElementById('budgetRange').value = data.budgetRange || '';
   document.getElementById('bio').value = data.bio || '';
 }
 
@@ -888,15 +885,13 @@ document.getElementById('profileForm').addEventListener('submit', async function
       phone: document.getElementById('phone').value,
       company: document.getElementById('company').value,
       address: document.getElementById('address').value,
-      preferredLocation: document.getElementById('preferredLocation').value,
-      budgetRange: document.getElementById('budgetRange').value,
       bio: document.getElementById('bio').value,
       updatedAt: new Date()
     };
     await setDoc(userDocRef, updateData, { merge: true });
 
     // Update local userData
-    userData = { ...userData, firstName, lastName, fullName, email: document.getElementById('email').value, phone: document.getElementById('phone').value, company: document.getElementById('company').value, address: document.getElementById('address').value, preferredLocation: document.getElementById('preferredLocation').value, budgetRange: document.getElementById('budgetRange').value, bio: document.getElementById('bio').value };
+    userData = { ...userData, firstName, lastName, fullName, email: document.getElementById('email').value, phone: document.getElementById('phone').value, company: document.getElementById('company').value, address: document.getElementById('address').value, bio: document.getElementById('bio').value };
 
     // Refresh UI
     document.getElementById('settingsUserName').textContent = fullName;
