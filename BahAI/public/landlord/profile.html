@@ -403,6 +403,42 @@
       margin-top: 20px;
     }
 
+    /* Mobile: always show 2 cards per row */
+    @media (max-width: 768px) {
+      .properties-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .listing-card-image-container {
+        height: 150px;
+      }
+      .listing-content {
+        padding: 14px;
+      }
+      .listing-title {
+        font-size: 0.98rem;
+      }
+      .listing-price {
+        font-size: 1.05rem;
+      }
+      .listing-location {
+        font-size: 0.85rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .properties-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .listing-card-image-container {
+        height: 120px;
+      }
+      .listing-content {
+        padding: 12px;
+      }
+    }
+
     .listing-card-wrapper {
       transition: all 0.3s ease;
     }
