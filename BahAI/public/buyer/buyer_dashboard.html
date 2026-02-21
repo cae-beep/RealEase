@@ -369,23 +369,42 @@
     position: absolute;
     top: 12px;
     right: 12px;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.95);
+    width: auto;
+    height: auto;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     z-index: 3;
-    opacity: 0;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    opacity: 1;
+    transition: transform 0.2s ease;
+    box-shadow: none;
 }
-.listing-save-btn:hover { transform: scale(1.1); opacity: 1 !important; }
+.listing-save-btn:hover { transform: scale(1.08); }
 .listing-save-btn.saved { opacity: 1; }
+.listing-save-btn .save-icon {
+    color: #ffffff;
+    line-height: 1;
+    transition: color 0.2s ease, filter 0.2s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+.listing-save-btn:hover .save-icon {
+    color: #2563eb;
+    filter: drop-shadow(0 2px 4px rgba(29, 78, 216, 0.28));
+}
+.listing-save-btn.saved .save-icon {
+    color: #d4af37;
+    filter: drop-shadow(0 2px 4px rgba(212, 175, 55, 0.35));
+}
+.listing-save-btn.saved:hover .save-icon {
+    color: #b8860b;
+    filter: drop-shadow(0 2px 5px rgba(184, 134, 11, 0.38));
+}
 .listing-card-image-container {
     position: relative;
     height: 220px;
@@ -2487,10 +2506,9 @@ async function displayListings(listings) {
     }
     
     // Save button with heart icon
-    const saveIcon = isSaved ? '❤️' : '🤍';
     const saveBtnClass = isSaved ? 'listing-save-btn saved' : 'listing-save-btn';
     const saveButton = `<button type="button" class="${saveBtnClass}" data-listing-id="${listing.id}" data-is-saved="${isSaved}" aria-label="${isSaved ? 'Remove from saved' : 'Save property'}" onclick="event.preventDefault();event.stopPropagation();toggleSaveProperty('${listing.id}',this)">
-        <span class="save-icon">${saveIcon}</span>
+        <i class="${isSaved ? 'fas' : 'far'} fa-heart save-icon" aria-hidden="true"></i>
     </button>`;
     
     // Determine contact button text and behavior based on auth state and KYC
@@ -2651,7 +2669,7 @@ async function toggleSaveProperty(propertyId, buttonElement) {
             return;
         }
         
-        const isSaved = buttonElement.querySelector('.save-icon').textContent.includes('❤️');
+        const isSaved = buttonElement.getAttribute('data-is-saved') === 'true';
         
         if (isSaved) {
             // Remove from saved
@@ -2664,9 +2682,10 @@ async function toggleSaveProperty(propertyId, buttonElement) {
             
             if (!snapshot.empty) {
                 await deleteDoc(snapshot.docs[0].ref);
-                buttonElement.innerHTML = '<span class="save-icon">🤍</span>';
+                buttonElement.innerHTML = '<i class="far fa-heart save-icon" aria-hidden="true"></i>';
                 buttonElement.setAttribute('data-is-saved', 'false');
                 buttonElement.setAttribute('aria-label', 'Save property');
+                buttonElement.classList.remove('saved');
                 console.log(`Property ${propertyId} removed from saved`);
                 showSaveToast('Removed from saved', false);
             }
@@ -2682,9 +2701,10 @@ async function toggleSaveProperty(propertyId, buttonElement) {
             // Log save event
             await logSaveEvent(currentUser.uid, propertyId);
             
-            buttonElement.innerHTML = '<span class="save-icon">❤️</span>';
+            buttonElement.innerHTML = '<i class="fas fa-heart save-icon" aria-hidden="true"></i>';
             buttonElement.setAttribute('data-is-saved', 'true');
             buttonElement.setAttribute('aria-label', 'Remove from saved');
+            buttonElement.classList.add('saved');
             console.log(`Property ${propertyId} saved`);
             showSaveToast('Property saved!', false);
         }
@@ -4034,10 +4054,9 @@ function displayRecommendedListingsPython(recommendations, type = 'personalized'
             const typeBadge = `<div class="listing-type-badge ${typeBadgeClass}">${typeBadgeText}</div>`;
             
             // Save button with heart icon
-            const saveIcon = isSaved ? '❤️' : '🤍';
             const saveBtnClass = isSaved ? 'listing-save-btn saved' : 'listing-save-btn';
             const saveButton = `<button type="button" class="${saveBtnClass}" data-listing-id="${property.id}" data-is-saved="${isSaved}" aria-label="${isSaved ? 'Remove from saved' : 'Save property'}" onclick="event.preventDefault();event.stopPropagation();toggleSaveProperty('${property.id}',this)">
-                <span class="save-icon">${saveIcon}</span>
+                <i class="${isSaved ? 'fas' : 'far'} fa-heart save-icon" aria-hidden="true"></i>
             </button>`;
             
             // Optional recommendation label
