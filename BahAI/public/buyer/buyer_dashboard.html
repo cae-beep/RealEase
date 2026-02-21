@@ -576,6 +576,81 @@
         box-shadow: var(--card-shadow);
         border: 1px solid rgba(0, 0, 0, 0.05);
     }
+    .ai-chatbot-fab {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        z-index: 1300;
+        border: none;
+        border-radius: 999px;
+        background: var(--primary-gradient);
+        color: #fff;
+        padding: 12px 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 10px 28px rgba(11, 46, 82, 0.35);
+        cursor: pointer;
+        font-weight: 600;
+    }
+    .ai-chatbot-popup {
+        position: fixed;
+        right: 20px;
+        bottom: 78px;
+        width: min(380px, calc(100vw - 28px));
+        z-index: 1299;
+        display: none;
+    }
+    .ai-chatbot-popup.open {
+        display: block;
+    }
+    .ai-chatbot-popup .ai-chatbot-section {
+        margin-bottom: 0;
+        padding: 18px;
+        border-radius: 14px;
+    }
+    .ai-chatbot-popup-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+    .ai-chatbot-popup-header .section-title {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+    .ai-chatbot-close {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: #fff;
+        color: #334155;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .ai-chatbot-popup .chatbot-container {
+        min-height: auto;
+    }
+    .ai-chatbot-popup .chat-messages {
+        min-height: 220px;
+        max-height: 280px;
+        margin-bottom: 10px;
+    }
+    .ai-chatbot-popup .chat-input {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 8px;
+        width: 100%;
+    }
+    .ai-chatbot-popup .chat-input input {
+        width: 100%;
+        min-width: 0;
+    }
+    .ai-chatbot-popup .chat-input button {
+        width: auto;
+        padding: 10px 12px;
+    }
     @media (max-width: 768px) {
     .ai-chatbot-section {
         padding: 20px 15px;
@@ -742,6 +817,24 @@
         }
         .ai-chatbot-section { padding: 16px 14px; margin-bottom: 24px; }
         .chat-messages { min-height: 260px; max-height: 320px; }
+        .ai-chatbot-fab {
+            right: 12px;
+            bottom: 14px;
+            padding: 10px 12px;
+            font-size: 0.9rem;
+        }
+        .ai-chatbot-popup {
+            right: 8px;
+            bottom: 64px;
+            width: calc(100vw - 16px);
+        }
+        .ai-chatbot-popup .chat-messages {
+            min-height: 180px;
+            max-height: 240px;
+        }
+        .ai-chatbot-popup .chat-input {
+            grid-template-columns: 1fr;
+        }
         #recommendedSection > div[style*="justify-content: space-between"] {
             align-items: flex-start !important;
             gap: 10px !important;
@@ -953,42 +1046,53 @@
     </div>
 </div>
 
-<!-- AI Chatbot Section -->
-<div id="ai-chatbot-section" class="ai-chatbot-section">
-    <h2 class="section-title">
-        <i class="fas fa-robot"></i> AI Property Assistant
-    </h2>
-    <p style="color: var(--text-light); margin-bottom: 25px; font-size: 15px;">
-        Ask me anything about properties in Batangas! Try: "Find apartments in Batangas City" or "Tell me about Lipa City"
-    </p>
-    
-    <div class="chatbot-container">
-        <!-- Chat Messages -->
-        <div class="chat-messages" id="chatMessages">
-            <div class="message bot">
-                <div class="avatar">🤖</div>
-                <div class="content">
-                    <p>Hello! I'm your AI property assistant. How can I help you find properties in Batangas today?</p>
-                    <p>Try asking me:</p>
-                    <ul style="margin: 10px 0; padding-left: 20px;">
-                        <li>"Find apartments in Batangas City"</li>
-                        <li>"Show me houses under 3M with 3 bedrooms"</li>
-                        <li>"Tell me about Lipa City"</li>
-                        <li>"Properties that accept bank financing"</li>
-                    </ul>
+<!-- AI Chatbot Floating -->
+<button id="aiChatbotToggle" class="ai-chatbot-fab" type="button" aria-label="Open AI Property Assistant">
+    <i class="fas fa-robot"></i>
+    <span>AI Assistant</span>
+</button>
+<div id="aiChatbotPopup" class="ai-chatbot-popup" aria-hidden="true">
+    <div id="ai-chatbot-section" class="ai-chatbot-section">
+        <div class="ai-chatbot-popup-header">
+            <h2 class="section-title">
+                <i class="fas fa-robot"></i> AI Property Assistant
+            </h2>
+            <button id="aiChatbotClose" class="ai-chatbot-close" type="button" aria-label="Close AI Property Assistant">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <p style="color: var(--text-light); margin: 10px 0 14px; font-size: 14px;">
+            Ask me anything about properties in Batangas.
+        </p>
+        
+        <div class="chatbot-container">
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot">
+                    <div class="avatar">🤖</div>
+                    <div class="content">
+                        <p>Hello! I'm your AI property assistant. How can I help you find properties in Batangas today?</p>
+                        <p>Try asking me:</p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>"Find apartments in Batangas City"</li>
+                            <li>"Show me houses under 3M with 3 bedrooms"</li>
+                            <li>"Tell me about Lipa City"</li>
+                            <li>"Properties that accept bank financing"</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Chat Input -->
-        <div class="chat-input">
-            <input type="text" id="chatInput" placeholder="Type your property question here..." />
-            <button id="sendChatBtn">
-                <i class="fas fa-paper-plane"></i> Send
-            </button>
-            <button id="voiceInputBtn" class="voice-btn">
-                <i class="fas fa-microphone"></i>
-            </button>
+
+            <!-- Chat Input -->
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Type your property question here..." />
+                <button id="sendChatBtn">
+                    <i class="fas fa-paper-plane"></i> Send
+                </button>
+                <button id="voiceInputBtn" class="voice-btn">
+                    <i class="fas fa-microphone"></i>
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -1045,11 +1149,35 @@
 <script src="buyer-sidebar-loader.js"></script>
 <script>
 function scrollToAiChatbot() {
-    const el = document.getElementById('ai-chatbot-section');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const popup = document.getElementById('aiChatbotPopup');
+    if (popup) {
+        popup.classList.add('open');
+        popup.setAttribute('aria-hidden', 'false');
+    }
+}
+
+function setupAiChatbotFloatingUI() {
+    const toggleBtn = document.getElementById('aiChatbotToggle');
+    const closeBtn = document.getElementById('aiChatbotClose');
+    const popup = document.getElementById('aiChatbotPopup');
+
+    if (!toggleBtn || !popup) return;
+
+    toggleBtn.addEventListener('click', () => {
+        const isOpen = popup.classList.toggle('open');
+        popup.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+    });
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            popup.classList.remove('open');
+            popup.setAttribute('aria-hidden', 'true');
+        });
+    }
 }
 document.addEventListener('DOMContentLoaded', function() {
     loadBuyerSidebar('buyer_dashboard.html');
+    setupAiChatbotFloatingUI();
     // Scroll to AI chatbot section when navigated via sidebar AI Assistant link
     if (window.location.hash === '#ai-chatbot-section') scrollToAiChatbot();
 });
@@ -4171,6 +4299,30 @@ function setupRecommendationsEventListeners() {
                 if (userId) {
                     window.contactBroker(userId);
                 }
+            });
+        });
+
+        // Make recommendation cards clickable (same behavior as main listings)
+        recoContainer.querySelectorAll('.listing-card[data-listing-id]').forEach(card => {
+            if (card.dataset.clickBound === 'true') return;
+            card.dataset.clickBound = 'true';
+            card.style.cursor = 'pointer';
+
+            card.addEventListener('click', function(e) {
+                if (
+                    e.target.closest('.action-btn') ||
+                    e.target.closest('.listing-save-btn') ||
+                    e.target.closest('button')
+                ) {
+                    e.stopPropagation();
+                    return;
+                }
+
+                const listingId = this.getAttribute('data-listing-id');
+                if (!listingId) return;
+
+                trackPropertyBehavior(listingId);
+                window.location.href = `new_property_details.html?id=${listingId}`;
             });
         });
     }
