@@ -1,7 +1,4 @@
-/**
- * Shared sidebar user profile update - used by buyer and broker pages.
- * Call after sidebar HTML is injected, and when user data is loaded from Firestore.
- */
+
 window.updateSidebarUserProfile = function(userData) {
   if (!userData) {
     userData = (function() {
