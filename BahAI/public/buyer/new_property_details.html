@@ -20,6 +20,8 @@
   --bg-white: #ffffff;
   --border: #e2e8f0;
   --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
   --radius: 12px;
   --radius-lg: 16px;
   --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
@@ -42,23 +44,140 @@ body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: var(--text-
 .gallery-hero { position: relative; border-radius: var(--radius-lg); overflow: hidden; background: var(--primary); margin-bottom: 24px; }
 .gallery-hero .main-media-wrap { width: 100%; height: 420px; position: relative; }
 .gallery-hero .main-media-wrap img, .gallery-hero .main-media-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gallery-hero .main-media-wrap img { cursor: zoom-in; }
+.gallery-hero .main-media-wrap video { cursor: pointer; }
 .gallery-hero .main-media-wrap video { background: #000; }
+.gallery-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.gallery-nav-btn:hover { background: rgba(0, 0, 0, 0.72); }
+.gallery-nav-btn:active { transform: translateY(-50%) scale(0.96); }
+.gallery-nav-prev { left: 14px; }
+.gallery-nav-next { right: 14px; }
 .gallery-badges { position: absolute; top: 20px; left: 20px; display: flex; gap: 10px; flex-wrap: wrap; z-index: 2; }
 .badge { padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 .badge-sale { background: var(--accent); color: white; }
 .badge-rent { background: #059669; color: white; }
 .badge-lease { background: #0ea5e9; color: white; }
-.badge-active { background: white; color: var(--primary); }
-.save-btn-float { position: absolute; top: 20px; right: 20px; padding: 12px 24px; border-radius: 12px;
-  border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
-  background: white; color: var(--primary); box-shadow: var(--shadow-lg); transition: all 0.2s; z-index: 2; }
-.save-btn-float:hover { transform: translateY(-2px); }
-.save-btn-float.saved { background: var(--success); color: white; border: none; }
+.save-btn-float {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: auto;
+  height: auto;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  z-index: 3;
+  opacity: 1;
+  transition: transform 0.2s ease;
+  box-shadow: none;
+}
+.save-btn-float:hover { transform: scale(1.08); }
+.save-btn-float .save-icon {
+  color: #ffffff;
+  line-height: 1;
+  transition: color 0.2s ease, filter 0.2s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+.save-btn-float:hover .save-icon {
+  color: #2563eb;
+  filter: drop-shadow(0 2px 4px rgba(29, 78, 216, 0.28));
+}
+.save-btn-float.saved .save-icon {
+  color: #d4af37;
+  filter: drop-shadow(0 2px 4px rgba(212, 175, 55, 0.35));
+}
+.save-btn-float.saved:hover .save-icon {
+  color: #b8860b;
+  filter: drop-shadow(0 2px 5px rgba(184, 134, 11, 0.38));
+}
 .gallery-thumbs { display: flex; gap: 8px; padding: 12px; background: rgba(0,0,0,0.5); overflow-x: auto; }
 .gallery-thumbs .thumb-item { width: 80px; height: 60px; border-radius: 8px; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; flex-shrink: 0; overflow: hidden; position: relative; }
 .gallery-thumbs .thumb-item:hover, .gallery-thumbs .thumb-item.active { opacity: 1; border: 2px solid white; }
 .gallery-thumbs .thumb-item img, .gallery-thumbs .thumb-item video { width: 100%; height: 100%; object-fit: cover; }
 .video-badge { position: absolute; bottom: 4px; left: 4px; background: rgba(0,0,0,0.7); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; }
+
+/* Fullscreen media lightbox */
+.media-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+.media-lightbox.show { display: flex; }
+.media-lightbox-content {
+  position: relative;
+  width: min(96vw, 1200px);
+  height: min(90vh, 760px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.media-lightbox-media {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 10px;
+  object-fit: contain;
+  background: #000;
+}
+.media-lightbox-close {
+  position: absolute;
+  top: -44px;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.16);
+  color: white;
+  cursor: pointer;
+}
+.media-lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  color: white;
+  cursor: pointer;
+}
+.media-lightbox-nav.prev { left: 12px; }
+.media-lightbox-nav.next { right: 12px; }
+.media-lightbox-counter {
+  position: absolute;
+  bottom: -34px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #e5e7eb;
+  font-size: 0.85rem;
+}
 
 /* Content Grid */
 .content-grid { display: grid; grid-template-columns: 1fr 420px; gap: 24px; align-items: start; }
@@ -84,11 +203,10 @@ body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: var(--text-
 .detail-label { font-size: 13px; color: var(--text-light); font-weight: 500; }
 .detail-value { font-size: 15px; font-weight: 600; color: var(--text-dark); text-align: right; }
 
-/* Contact Card - info fills the card, no save button */
+/* Contact Card */
 .contact-card { background: var(--primary-gradient); color: white; border-radius: var(--radius-lg); padding: 28px; display: flex; flex-direction: column; width: 100%; }
 .contact-header { font-size: 20px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
 .contact-profile { display: flex; align-items: center; gap: 20px; margin-bottom: 24px; }
-/* Clickable profile area: avatar, name, role - links to broker/landlord profile */
 .contact-profile-link {
   display: flex;
   align-items: center;
@@ -131,34 +249,290 @@ body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: var(--text-
 /* Description */
 .desc-text { font-size: 15px; line-height: 1.7; color: var(--text-dark); white-space: pre-wrap; }
 
-/* Map */
-.map-container { height: 280px; border-radius: var(--radius); overflow: hidden; background: var(--bg-light); }
+/* Map Container - Updated for interactive map */
+.map-container { 
+  height: 280px; 
+  border-radius: var(--radius); 
+  overflow: hidden; 
+  background: var(--bg-light);
+  position: relative;
+}
+
+#propertyMap {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.map-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: var(--bg-light);
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.map-placeholder i {
+  font-size: 48px;
+  color: var(--primary);
+}
 
 /* Loading */
-/* Loading state: AI-aware messaging */
 .loading-state { text-align: center; padding: 80px 20px; color: var(--text-light); }
 .loading-state .spinner { width: 48px; height: 48px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
 .loading-state .loading-ai-note { font-size: 0.9rem; margin-top: 12px; color: var(--text-light); }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Recommended by BahAI badge */
-.badge-bahai { background: linear-gradient(135deg, var(--accent) 0%, #b8860b 100%); color: white; }
 .gallery-image-count { position: absolute; bottom: 70px; right: 20px; background: rgba(0,0,0,0.6); color: white; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; z-index: 2; }
-
-/* AI Insights panel */
-.bahai-insights-panel { background: linear-gradient(135deg, rgba(11,46,82,0.04) 0%, rgba(212,175,55,0.08) 100%); border: 1px solid rgba(212,175,55,0.25); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 24px; }
-.bahai-insights-label { font-size: 0.75rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-.bahai-insights-label i { color: var(--accent); }
-.bahai-insights-list { list-style: none; padding: 0; margin: 0; }
-.bahai-insights-list li { font-size: 0.95rem; color: var(--text-dark); padding: 6px 0; padding-left: 20px; position: relative; line-height: 1.4; }
-.bahai-insights-list li::before { content: '•'; color: var(--accent); font-weight: 700; position: absolute; left: 0; }
-.bahai-insights-footer { font-size: 0.7rem; color: var(--text-light); margin-top: 12px; font-style: italic; }
 
 /* Trust microcopy */
 .trust-note { font-size: 0.8rem; color: var(--text-light); margin-top: 12px; display: flex; align-items: center; gap: 6px; }
 .trust-note i { color: var(--success); }
 
-/* Contact card: no sticky - scrolls with content so calc widget stays visible */
+/* HYBRID CALCULATOR WIDGETS - Best of both worlds */
+.calculator-widget { 
+  background: white; 
+  border-radius: var(--radius-lg); 
+  padding: 20px; 
+  margin-top: 20px; 
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.calc-header {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.calc-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.calc-header p {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+.calc-input-group {
+  margin-bottom: 16px;
+}
+
+.calc-input-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+.calc-input-group input[type="number"],
+.calc-input-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+}
+
+.calc-input-group input:focus,
+.calc-input-group select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(11, 46, 82, 0.1);
+}
+
+.calc-range-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.calc-range-row input[type="range"] {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  outline: none;
+}
+
+.calc-range-row input[type="range"]::-webkit-slider-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+}
+
+.calc-range-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  min-width: 50px;
+  text-align: right;
+}
+
+.calc-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+  margin-top: 8px;
+}
+
+.calc-btn.mortgage {
+  background: var(--primary-gradient);
+  color: white;
+}
+
+.calc-btn.rent {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: white;
+}
+
+.calc-btn.lease {
+  background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+  color: white;
+}
+
+.calc-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+/* CALCULATOR RESULTS - Detailed from old code */
+.calc-results {
+  background: linear-gradient(135deg, #0b2e52 0%, #1e3a5f 100%);
+  color: white;
+  padding: 16px;
+  border-radius: var(--radius);
+  margin-top: 16px;
+  display: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.calc-results.show {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.result-highlight {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.result-amount {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.result-label {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.result-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.result-item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.result-item-label {
+  font-size: 11px;
+  opacity: 0.8;
+  margin-bottom: 4px;
+}
+
+.result-item-value {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.affordability-status {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.affordability-good {
+  background: rgba(16, 185, 129, 0.2);
+  border-left: 4px solid var(--success);
+  color: var(--success);
+}
+
+.affordability-moderate {
+  background: rgba(245, 158, 11, 0.2);
+  border-left: 4px solid var(--warning);
+  color: var(--warning);
+}
+
+.affordability-stressed {
+  background: rgba(239, 68, 68, 0.2);
+  border-left: 4px solid var(--danger);
+  color: var(--danger);
+}
+
+.calc-note {
+  font-size: 11px;
+  opacity: 0.8;
+  margin-top: 12px;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Similar properties section */
+.similar-properties-section { margin-top: 40px; }
+.similar-properties-title { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+.similar-properties-title i { color: var(--accent); }
+.similar-properties-label { font-size: 0.75rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+.similar-properties-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.similar-property-card { background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); cursor: pointer; transition: all 0.2s; text-decoration: none; color: inherit; display: block; }
+.similar-property-card:hover { border-color: var(--accent); box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.similar-property-card img { width: 100%; height: 160px; object-fit: cover; display: block; }
+.similar-property-card-content { padding: 16px; }
+.similar-property-card-title { font-size: 1rem; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.similar-property-card-loc { font-size: 0.85rem; color: var(--text-light); margin-bottom: 8px; }
+.similar-property-card-price { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+@media (max-width: 600px) { .similar-properties-grid { grid-template-columns: 1fr; } }
 
 /* Message Modal */
 .message-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 9999; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; padding: 20px; }
@@ -185,7 +559,6 @@ body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: var(--text-
 .message-input-area { padding: 20px 28px; background: white; border-top: 1px solid var(--border); }
 .message-textarea { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: var(--radius); font-size: 0.95rem; resize: none; min-height: 80px; max-height: 140px; margin-bottom: 14px; }
 .message-textarea:focus { outline: none; border-color: var(--primary); }
-/* Property context: "Inquiring about" section - clickable, navigates to property */
 .message-property-context { padding: 16px 20px; background: linear-gradient(135deg, rgba(11,46,82,0.04) 0%, rgba(212,175,55,0.06) 100%); border-bottom: 1px solid var(--border); cursor: pointer; transition: all 0.2s ease; display: flex; gap: 16px; align-items: center; }
 .message-property-context:hover { border-color: #d4af37; box-shadow: inset 0 0 0 2px rgba(212,175,55,0.2); }
 .message-property-context-label { font-size: 0.75rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
@@ -200,7 +573,6 @@ body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: var(--text-
   .message-property-context-thumb { width: 48px; height: 48px; min-width: 48px; }
   .message-property-context-title { font-size: 0.9rem; white-space: normal; }
 }
-/* BahAI suggestions in modal */
 .message-bahai-suggestions { padding: 12px 20px; background: rgba(212,175,55,0.06); border-bottom: 1px solid rgba(212,175,55,0.2); }
 .message-bahai-suggestions-label { font-size: 0.75rem; font-weight: 600; color: var(--text-light); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
 .message-bahai-suggestions-label i { color: #d4af37; }
@@ -216,39 +588,8 @@ body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: var(--text-
 .email-btn { background: #f0f9ff; color: #0ea5e9; border: 1px solid #bae6fd; }
 .call-btn { background: #f0fdf4; color: #059669; border: 1px solid #bbf7d0; }
 
-/* Compact Mortgage Calculator */
-.calc-widget { background: white; border-radius: var(--radius-lg); padding: 20px; margin-top: 20px; box-shadow: var(--shadow); }
-.calc-widget h3 { font-size: 15px; font-weight: 700; color: var(--text-dark); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-.calc-input-group { margin-bottom: 12px; }
-.calc-input-group label { display: block; font-size: 12px; font-weight: 500; color: var(--text-light); margin-bottom: 4px; }
-.calc-input-group input[type="number"], .calc-input-group select { width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 14px; }
-.calc-input-group input[type="range"] { width: 100%; height: 6px; margin: 4px 0; }
-.calc-range-row { display: flex; align-items: center; gap: 10px; }
-.calc-range-row .range-val { font-size: 13px; font-weight: 600; color: var(--primary); min-width: 40px; }
-.calc-btn { width: 100%; padding: 12px; border: none; border-radius: var(--radius); font-weight: 600; font-size: 14px; cursor: pointer; background: var(--primary-gradient); color: white; margin-top: 8px; }
-.calc-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
-.calc-results { background: var(--primary-gradient); color: white; padding: 16px; border-radius: var(--radius); margin-top: 12px; font-size: 13px; }
-.calc-results .monthly { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
-.calc-results .note { font-size: 11px; opacity: 0.9; margin-top: 8px; }
-
-/* Similar properties section */
-.similar-properties-section { margin-top: 40px; }
-.similar-properties-title { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
-.similar-properties-title i { color: var(--accent); }
-.similar-properties-label { font-size: 0.75rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
-.similar-properties-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-.similar-property-card { background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); cursor: pointer; transition: all 0.2s; text-decoration: none; color: inherit; display: block; }
-.similar-property-card:hover { border-color: var(--accent); box-shadow: var(--shadow-lg); transform: translateY(-2px); }
-.similar-property-card img { width: 100%; height: 160px; object-fit: cover; display: block; }
-.similar-property-card-content { padding: 16px; }
-.similar-property-card-title { font-size: 1rem; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.similar-property-card-loc { font-size: 0.85rem; color: var(--text-light); margin-bottom: 8px; }
-.similar-property-card-price { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
-@media (max-width: 600px) { .similar-properties-grid { grid-template-columns: 1fr; } }
-
-/* Mobile: stack AI insights, disable sticky sidebar */
+/* Mobile: disable sticky sidebar */
 @media (max-width: 900px) {
-  .bahai-insights-panel { padding: 16px 18px; }
 }
 </style>
 </head>
@@ -344,12 +685,160 @@ window.firebaseApp = app;
 
 const urlParams = new URLSearchParams(window.location.search);
 const propertyId = urlParams.get('id');
-const isFromAI = urlParams.get('source') === 'ai';
 
 let currentListing = null;
 let currentUserInfo = null;
 let currentConversationId = null;
 let messageListener = null;
+
+// ========== KYC CHECK FUNCTIONS (ADDED) ==========
+
+// Check if user can message based on KYC status
+async function canUserMessage() {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return false;
+    
+    try {
+        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+        if (!userDoc.exists()) return false;
+        
+        const userData = userDoc.data();
+        const kycStatus = userData.kycStatus || "not_submitted";
+        
+        // Only approved buyers can message
+        return kycStatus === "approved";
+    } catch (error) {
+        console.error("Error checking KYC status:", error);
+        return false;
+    }
+}
+
+// Show KYC required modal
+function showKYCRequiredModal() {
+    // Create modal if it doesn't exist
+    let modal = document.getElementById('kycRequiredModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'kycRequiredModal';
+        modal.className = 'message-modal';
+        modal.innerHTML = `
+            <div class="message-modal-content" style="max-width: 500px; text-align: center;">
+                <div class="message-header" style="background: var(--primary);">
+                    <h2 style="color: white;">KYC Verification Required</h2>
+                    <button class="message-close" id="closeKYCModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div style="padding: 30px;">
+                    <div style="font-size: 64px; margin-bottom: 20px; color: var(--accent);">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                    
+                    <h3 style="margin-bottom: 15px; color: var(--text-dark);">
+                        Verify Your Identity to Message Providers
+                    </h3>
+                    
+                    <p style="color: var(--text-light); margin-bottom: 25px; line-height: 1.6;">
+                        To ensure a safe and trustworthy community, buyers need to complete 
+                        KYC (Know Your Customer) verification before messaging property owners or brokers.
+                    </p>
+                    
+                    <div style="background: var(--bg-light); padding: 20px; border-radius: var(--radius); margin-bottom: 25px; text-align: left;">
+                        <h4 style="margin-bottom: 15px; color: var(--primary);">Benefits of Verification:</h4>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                Message property owners and brokers directly
+                            </li>
+                            <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                Schedule property viewings
+                            </li>
+                            <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                Make formal offers on properties
+                            </li>
+                            <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                Build trust with sellers
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; justify-content: center;">
+                        <a href="buyer-kyc.html" class="search-button" style="min-width: 150px; background: var(--primary-gradient); color: white; padding: 12px 24px; border-radius: var(--radius); text-decoration: none; font-weight: 600;">
+                            <i class="fas fa-id-card"></i> Verify Now
+                        </a>
+                        <button class="reset-button" id="closeKYCModalBtn" style="min-width: 150px; background: white; border: 2px solid var(--border); padding: 12px 24px; border-radius: var(--radius); font-weight: 600; cursor: pointer;">
+                            <i class="fas fa-times"></i> Later
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Add close handlers
+        document.getElementById('closeKYCModal').addEventListener('click', () => {
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        });
+        
+        document.getElementById('closeKYCModalBtn').addEventListener('click', () => {
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        });
+        
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('show');
+                document.body.style.overflow = 'auto';
+            }
+        });
+    }
+    
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+// Handle contact button clicks with KYC check
+async function handleContactClick(contactId, propertyId) {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+        window.location.href = '../login.html?redirect=buyer/new_property_details.html?id=' + propertyId;
+        return;
+    }
+    
+    // Check KYC status
+    try {
+        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const kycStatus = userData.kycStatus || "not_submitted";
+            
+            if (kycStatus !== "approved") {
+                showKYCRequiredModal();
+                return;
+            }
+        } else {
+            showKYCRequiredModal();
+            return;
+        }
+    } catch (error) {
+        console.error("Error checking KYC:", error);
+        showKYCRequiredModal();
+        return;
+    }
+    
+    // If verified, proceed with opening message modal
+    openMessageModal(contactId, propertyId);
+}
+
+// ========== END OF KYC CHECK FUNCTIONS ==========
+
+// Google Maps API Key
+const GOOGLE_MAPS_API_KEY = "AIzaSyBwwAkIEixeUysaGrMb9BtTsMwz_C9Noxk";
 
 const labels = {
   propertyCategory: { residential: "Residential", commercial: "Commercial", land: "Land", condo: "Condominium", special: "Special Purpose" },
@@ -386,7 +875,6 @@ function getAddress(l) {
 async function loadUserInfo(userId) {
   if (!userId) return { displayName: 'Unknown', email: 'N/A', phone: 'N/A', role: 'user', photoURL: null };
   try {
-    // Match profile_agent: agents first (where agent photo is saved), then authUid fallback for invited agents
     let agentDoc = await getDoc(doc(db, "agents", userId));
     if (!agentDoc.exists()) {
       const agentsQuery = query(collection(db, "agents"), where("authUid", "==", userId));
@@ -452,29 +940,103 @@ async function loadProperty() {
       return;
     }
     currentListing = { id: propDoc.id, ...propDoc.data() };
-    // Prefer agentId for contact; brokerId for broker-listed; fallback to userId/landlordId
     const contactId = currentListing.agentId || currentListing.brokerId || currentListing.userId || currentListing.landlordId;
     currentUserInfo = await loadUserInfo(contactId);
     renderProperty();
     setupSaveButton();
+    
+    // Load Google Maps if coordinates exist
+    if (currentListing.latitude && currentListing.longitude) {
+      setTimeout(async () => {
+        try {
+          await loadGoogleMapsAPI();
+          initPropertyMap(currentListing.latitude, currentListing.longitude, currentListing.title);
+        } catch (error) {
+          console.error("Failed to load Google Maps:", error);
+          showMapPlaceholder(currentListing.latitude, currentListing.longitude);
+        }
+      }, 500);
+    }
   } catch (e) {
     console.error(e);
     document.getElementById('propertyContent').innerHTML = '<div class="card"><p style="padding:40px;text-align:center;color:red;">Error loading property.</p></div>';
   }
 }
 
-function populateBahaiInsights(l, type) {
-  const list = document.getElementById('bahaiInsightsList');
-  if (!list) return;
-  const insights = [];
-  const loc = l.location || l.address || l.city;
-  if (loc) insights.push(`Located in ${loc}`);
-  const price = l.pricing || l.salePrice || l.monthlyRent || (l.annualRent || 0) / 12;
-  if (price > 0) insights.push('Matches typical budget ranges for this area');
-  const pt = (l.propertyType || l.propertyCategory || '').replace(/_/g, ' ');
-  if (pt) insights.push(`Similar to other ${pt} properties you may like`);
-  if (insights.length === 0) insights.push('This property meets common search criteria');
-  list.innerHTML = insights.map(i => `<li>${i}</li>`).join('');
+// Google Maps Functions from old code
+async function loadGoogleMapsAPI() {
+  return new Promise((resolve, reject) => {
+    if (window.google && window.google.maps) {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      if (window.google && window.google.maps) {
+        resolve();
+      } else {
+        reject(new Error("Google Maps API failed to initialize"));
+      }
+    };
+    script.onerror = () => reject(new Error("Failed to load Google Maps script"));
+    document.head.appendChild(script);
+  });
+}
+
+function initPropertyMap(lat, lng, title) {
+  const mapElement = document.getElementById("propertyMap");
+  if (!mapElement) {
+    console.error("Map element not found");
+    return;
+  }
+
+  try {
+    const latitude = parseFloat(lat);
+    const longitude = parseFloat(lng);
+
+    if (isNaN(latitude) || isNaN(longitude)) {
+      console.error("Invalid coordinates:", lat, lng);
+      showMapPlaceholder(lat, lng);
+      return;
+    }
+
+    const map = new google.maps.Map(mapElement, {
+      center: { lat: latitude, lng: longitude },
+      zoom: 16,
+      mapTypeControl: true,
+      streetViewControl: true,
+      fullscreenControl: true
+    });
+
+    // Add marker
+    new google.maps.Marker({
+      position: { lat: latitude, lng: longitude },
+      map: map,
+      title: title || "Property Location",
+      animation: google.maps.Animation.DROP
+    });
+  } catch (error) {
+    console.error("Error initializing map:", error);
+    showMapPlaceholder(lat, lng);
+  }
+}
+
+function showMapPlaceholder(lat, lng) {
+  const mapElement = document.getElementById("propertyMap");
+  if (!mapElement) return;
+
+  mapElement.innerHTML = `
+    <div class="map-placeholder">
+      <i class="fas fa-map-marked-alt"></i>
+      <p>Map could not be loaded</p>
+      <a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--primary); color: white; border-radius: 6px; text-decoration: none; font-weight: 500; margin-top: 8px;">
+        <i class="fas fa-external-link-alt"></i> Open in Google Maps
+      </a>
+    </div>`;
 }
 
 async function loadSimilarProperties(current) {
@@ -551,11 +1113,330 @@ function isVideoFile(url) {
          urlLower.includes('video/');
 }
 
+// CALCULATOR FUNCTIONS FROM OLD CODE (but integrated into sidebar)
+function initializePropertyCalculator(listing) {
+  const listingType = getListingType(listing);
+  
+  if (listingType === 'sale') {
+    // Auto-fill property price
+    const price = listing.pricing || listing.salePrice;
+    if (price) {
+      document.getElementById('calc-property-price').value = price;
+      updateDownpaymentAmount();
+      setTimeout(() => { calculateMortgage(); }, 300);
+    }
+  } else if (listingType === 'rent') {
+    // Auto-fill monthly rent
+    const rent = listing.monthlyRent;
+    if (rent) {
+      document.getElementById('calc-monthly-rent').value = rent;
+      setTimeout(() => { calculateRentAffordability(); }, 300);
+    }
+  } else if (listingType === 'lease') {
+    // Auto-fill annual rent
+    const annualRent = listing.annualRent;
+    if (annualRent) {
+      document.getElementById('calc-annual-rent').value = annualRent;
+      setTimeout(() => { calculateLeaseCost(); }, 300);
+    }
+  }
+  
+  setupCalculatorEventListeners();
+}
+
+function updateDownpaymentAmount() {
+  const price = parseFloat(document.getElementById('calc-property-price').value) || 0;
+  const downpaymentPercent = parseFloat(document.getElementById('calc-downpayment').value) || 20;
+  const downpaymentAmount = (price * downpaymentPercent / 100);
+  
+  const downpaymentAmountEl = document.getElementById('downpayment-amount');
+  if (downpaymentAmountEl) {
+    downpaymentAmountEl.textContent = 
+      `₱${downpaymentAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+}
+
+function calculateMortgage() {
+  const price = parseFloat(document.getElementById('calc-property-price').value);
+  const downpaymentPercent = parseFloat(document.getElementById('calc-downpayment').value);
+  const loanTerm = parseInt(document.getElementById('calc-loan-term').value);
+  const interestRate = parseFloat(document.getElementById('calc-interest-rate').value);
+  
+  if (!price || price <= 0) {
+    showCalculatorError('Please enter a valid property price');
+    return;
+  }
+  
+  const downpaymentAmount = price * downpaymentPercent / 100;
+  const loanAmount = price - downpaymentAmount;
+  const monthlyRate = interestRate / 100 / 12;
+  const numberOfPayments = loanTerm * 12;
+  
+  // Mortgage formula: M = P [ i(1 + i)^n ] / [ (1 + i)^n - 1]
+  const monthlyPayment = loanAmount * 
+    (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / 
+    (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+  
+  const totalPayment = monthlyPayment * numberOfPayments;
+  const totalInterest = totalPayment - loanAmount;
+  
+  const results = `
+    <div class="result-highlight">
+      <div class="result-amount">₱${monthlyPayment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+      <div class="result-label">Monthly Payment</div>
+    </div>
+    
+    <div class="result-details">
+      <div class="result-item">
+        <div class="result-item-label">Loan Amount</div>
+        <div class="result-item-value">₱${loanAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+      </div>
+      <div class="result-item">
+        <div class="result-item-label">Down Payment</div>
+        <div class="result-item-value">₱${downpaymentAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${downpaymentPercent}%)</div>
+      </div>
+      <div class="result-item">
+        <div class="result-item-label">Total Interest</div>
+        <div class="result-item-value">₱${totalInterest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+      </div>
+      <div class="result-item">
+        <div class="result-item-label">Total Payment</div>
+        <div class="result-item-value">₱${totalPayment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+      </div>
+    </div>
+    
+    <div class="calc-note">
+      *Calculation based on ${loanTerm} years at ${interestRate}% interest rate. Actual payments may vary based on credit score, additional fees, and lender terms.
+    </div>
+  `;
+  
+  showCalculatorResults(results, 'mortgage');
+}
+
+function calculateRentAffordability() {
+  const monthlyRent = parseFloat(document.getElementById('calc-monthly-rent').value);
+  const monthlyIncome = parseFloat(document.getElementById('calc-income').value);
+  const otherExpenses = parseFloat(document.getElementById('calc-expenses').value) || 0;
+  
+  if (!monthlyRent || monthlyRent <= 0) {
+    showCalculatorError('Please enter a valid monthly rent');
+    return;
+  }
+  
+  if (!monthlyIncome || monthlyIncome <= 0) {
+    showCalculatorError('Please enter your monthly income');
+    return;
+  }
+  
+  const rentPercentage = (monthlyRent / monthlyIncome) * 100;
+  const disposableIncome = monthlyIncome - monthlyRent - otherExpenses;
+  
+  let affordabilityStatus, statusText, statusColor, recommendation;
+  
+  if (rentPercentage <= 30) {
+    affordabilityStatus = 'good';
+    statusText = 'Within Budget ✓';
+    statusColor = '#10b981';
+    recommendation = 'This rent is comfortably within the recommended 30% of income.';
+  } else if (rentPercentage <= 40) {
+    affordabilityStatus = 'moderate';
+    statusText = 'Moderate Budget ⚠';
+    statusColor = '#f59e0b';
+    recommendation = 'This rent exceeds the 30% guideline but may be manageable depending on other expenses.';
+  } else {
+    affordabilityStatus = 'stressed';
+    statusText = 'Above Budget ✗';
+    statusColor = '#ef4444';
+    recommendation = 'This rent exceeds 40% of income, which may cause financial strain.';
+  }
+  
+  const results = `
+    <div class="result-highlight" style="border-left: 4px solid ${statusColor};">
+      <div class="result-amount" style="color: ${statusColor};">${rentPercentage.toFixed(1)}%</div>
+      <div class="result-label">of your income</div>
+    </div>
+    
+    <div class="result-details">
+      <div class="result-item">
+        <div class="result-item-label">Monthly Rent</div>
+        <div class="result-item-value">₱${monthlyRent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+      </div>
+      <div class="result-item">
+        <div class="result-item-label">Monthly Income</div>
+        <div class="result-item-value">₱${monthlyIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+      </div>
+      <div class="result-item">
+        <div class="result-item-label">Disposable Income</div>
+        <div class="result-item-value">₱${disposableIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+      </div>
+    </div>
+    
+    <div class="affordability-status affordability-${affordabilityStatus}">
+      ${statusText}
+    </div>
+    
+    <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+      <div style="font-size: 13px; line-height: 1.4; opacity: 0.95;">
+        ${recommendation}
+      </div>
+    </div>
+    
+    <div class="calc-note">
+      *General guideline: Rent should not exceed 30% of your monthly income. Your disposable income after rent and other expenses is ₱${disposableIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.
+    </div>
+  `;
+  
+  showCalculatorResults(results, 'rent');
+}
+
+function calculateLeaseCost() {
+  const annualRent = parseFloat(document.getElementById('calc-annual-rent').value);
+  const leaseTerm = parseInt(document.getElementById('calc-lease-term').value);
+  const annualIncrease = parseFloat(document.getElementById('calc-lease-increase').value);
+  
+  if (!annualRent || annualRent <= 0) {
+    showCalculatorError('Please enter a valid annual rent');
+    return;
+  }
+  
+  let totalCost = 0;
+  let currentRent = annualRent;
+  let yearDetails = [];
+  
+  for (let year = 1; year <= leaseTerm; year++) {
+    totalCost += currentRent;
+    yearDetails.push({
+      year: year,
+      rent: currentRent,
+      monthly: currentRent / 12
+    });
+    currentRent *= (1 + annualIncrease / 100);
+  }
+  
+  const avgMonthlyCost = totalCost / leaseTerm / 12;
+  const finalMonthlyRent = yearDetails[yearDetails.length - 1].monthly;
+  
+  const results = `
+    <div class="result-highlight">
+      <div class="result-amount">₱${totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+      <div class="result-label">Total ${leaseTerm}-Year Cost</div>
+    </div>
+    
+    <div class="result-details">
+      <div class="result-item">
+        <div class="result-item-label">Average Monthly</div>
+        <div class="result-item-value">₱${avgMonthlyCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+      </div>
+      <div class="result-item">
+        <div class="result-item-label">Final Monthly (Year ${leaseTerm})</div>
+        <div class="result-item-value">₱${finalMonthlyRent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+      </div>
+      <div class="result-item">
+        <div class="result-item-label">Annual Increase</div>
+        <div class="result-item-value">${annualIncrease}%</div>
+      </div>
+      <div class="result-item">
+        <div class="result-item-label">Lease Term</div>
+        <div class="result-item-value">${leaseTerm} years</div>
+      </div>
+    </div>
+    
+    <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+      <div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">
+        Year-by-Year Breakdown
+      </div>
+      <div style="max-height: 120px; overflow-y: auto; font-size: 12px;">
+        ${yearDetails.map(y => `
+          <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <span>Year ${y.year}:</span>
+            <span>₱${y.rent.toLocaleString()}/yr (₱${y.monthly.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo)</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    
+    <div class="calc-note">
+      *Assumes annual rent increase of ${annualIncrease}%. Final monthly rent in year ${leaseTerm} will be ₱${finalMonthlyRent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.
+    </div>
+  `;
+  
+  showCalculatorResults(results, 'lease');
+}
+
+function showCalculatorResults(htmlContent, calculatorType) {
+  const resultsId = `calc-results-${calculatorType}`;
+  const resultsContainer = document.getElementById(resultsId);
+  if (!resultsContainer) return;
+  
+  resultsContainer.innerHTML = htmlContent;
+  resultsContainer.classList.add('show');
+  
+  // Scroll to results
+  resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function showCalculatorError(message) {
+  const results = `
+    <div style="color: #ef4444; padding: 12px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border-left: 4px solid #ef4444; font-size: 13px;">
+      <i class="fas fa-exclamation-circle"></i> ${message}
+    </div>
+  `;
+  // Show error in first available results container
+  const containers = document.querySelectorAll('.calc-results');
+  if (containers.length > 0) {
+    containers[0].innerHTML = results;
+    containers[0].classList.add('show');
+  }
+}
+
+function setupCalculatorEventListeners() {
+  // Mortgage calculator sliders
+  const downpaymentSlider = document.getElementById('calc-downpayment');
+  const interestSlider = document.getElementById('calc-interest-rate');
+  
+  if (downpaymentSlider) {
+    downpaymentSlider.addEventListener('input', function() {
+      document.getElementById('downpayment-value').textContent = this.value + '%';
+      updateDownpaymentAmount();
+    });
+  }
+  
+  if (interestSlider) {
+    interestSlider.addEventListener('input', function() {
+      document.getElementById('interest-rate-value').textContent = this.value + '%';
+    });
+  }
+  
+  // Lease calculator slider
+  const leaseIncreaseSlider = document.getElementById('calc-lease-increase');
+  if (leaseIncreaseSlider) {
+    leaseIncreaseSlider.addEventListener('input', function() {
+      document.getElementById('lease-increase-value').textContent = this.value + '%';
+    });
+  }
+  
+  // Calculate buttons
+  const mortgageBtn = document.getElementById('calc-mortgage-btn');
+  const rentBtn = document.getElementById('calc-rent-btn');
+  const leaseBtn = document.getElementById('calc-lease-btn');
+  
+  if (mortgageBtn) {
+    mortgageBtn.addEventListener('click', calculateMortgage);
+  }
+  
+  if (rentBtn) {
+    rentBtn.addEventListener('click', calculateRentAffordability);
+  }
+  
+  if (leaseBtn) {
+    leaseBtn.addEventListener('click', calculateLeaseCost);
+  }
+}
+
 function renderProperty() {
   const l = currentListing;
   const u = currentUserInfo;
   const type = getListingType(l);
-  // Build allMedia: images first, then videos (same as property_details)
   let allMedia = [];
   if (l.photos && l.photos.length > 0) allMedia = [...l.photos];
   else if (l.imageUrls && l.imageUrls.length > 0) allMedia = [...l.imageUrls];
@@ -627,7 +1508,6 @@ function renderProperty() {
   ].filter(([, v]) => v);
 
   const contactId = l.agentId || l.brokerId || l.userId || l.landlordId || '';
-  // Derive contactType from property hierarchy so broker profiles show "Verified Broker" not "Broker Affiliated"
   const contactType = l.agentId ? 'agent' : l.brokerId ? 'broker' : l.landlordId ? 'landlord' : 'broker';
   const roleText = u.role === 'landlord' ? 'Property Owner' : u.role === 'agent' ? 'Property Agent' : u.role === 'broker' ? 'Licensed Broker' : 'Posted by';
 
@@ -635,23 +1515,148 @@ function renderProperty() {
   const mediaCountLabel = allMedia.length > 0
     ? `${allMedia.length} ${hasVideos ? 'media' : 'photo'}${allMedia.length === 1 ? '' : 's'}`
     : '';
+
+  // Determine which calculator to show
+  let calculatorHtml = '';
+  if (type === 'sale') {
+    calculatorHtml = `
+      <div class="calculator-widget">
+        <div class="calc-header">
+          <h3><i class="fas fa-home"></i> Mortgage Calculator</h3>
+          <p>Calculate your monthly payments</p>
+        </div>
+        <div class="calc-input-group">
+          <label>Property Price (₱)</label>
+          <input type="number" id="calc-property-price" placeholder="0" min="0" value="${l.pricing || l.salePrice || ''}">
+        </div>
+        <div class="calc-input-group">
+          <label>Down Payment (%)</label>
+          <div class="calc-range-row">
+            <input type="range" id="calc-downpayment" min="0" max="100" value="20">
+            <span class="calc-range-val" id="downpayment-value">20%</span>
+          </div>
+          <div id="downpayment-amount" style="font-size: 12px; color: var(--text-light); margin-top: 4px;">Amount: ₱0</div>
+        </div>
+        <div class="calc-input-group">
+          <label>Loan Term (years)</label>
+          <select id="calc-loan-term">
+            <option value="5">5 years</option>
+            <option value="10">10 years</option>
+            <option value="15" selected>15 years</option>
+            <option value="20">20 years</option>
+            <option value="25">25 years</option>
+            <option value="30">30 years</option>
+          </select>
+        </div>
+        <div class="calc-input-group">
+          <label>Interest Rate (%)</label>
+          <div class="calc-range-row">
+            <input type="range" id="calc-interest-rate" min="1" max="15" step="0.1" value="6.5">
+            <span class="calc-range-val" id="interest-rate-value">6.5%</span>
+          </div>
+        </div>
+        <button id="calc-mortgage-btn" class="calc-btn mortgage">Calculate Monthly Payment</button>
+        <div class="calc-results" id="calc-results-mortgage"></div>
+      </div>
+    `;
+  } else if (type === 'rent') {
+    calculatorHtml = `
+      <div class="calculator-widget">
+        <div class="calc-header">
+          <h3><i class="fas fa-money-bill-wave"></i> Rent Affordability</h3>
+          <p>Check if this rent fits your budget</p>
+        </div>
+        <div class="calc-input-group">
+          <label>Monthly Rent (₱)</label>
+          <input type="number" id="calc-monthly-rent" placeholder="0" min="0" value="${l.monthlyRent || ''}">
+        </div>
+        <div class="calc-input-group">
+          <label>Your Monthly Income (₱)</label>
+          <input type="number" id="calc-income" placeholder="0" min="0">
+        </div>
+        <div class="calc-input-group">
+          <label>Other Monthly Expenses (₱)</label>
+          <input type="number" id="calc-expenses" placeholder="0" min="0" value="0">
+        </div>
+        <button id="calc-rent-btn" class="calc-btn rent">Check Affordability</button>
+        <div class="calc-results" id="calc-results-rent"></div>
+      </div>
+    `;
+  } else if (type === 'lease') {
+    calculatorHtml = `
+      <div class="calculator-widget">
+        <div class="calc-header">
+          <h3><i class="fas fa-file-contract"></i> Lease Cost Calculator</h3>
+          <p>Calculate total lease cost over time</p>
+        </div>
+        <div class="calc-input-group">
+          <label>Annual Rent (₱)</label>
+          <input type="number" id="calc-annual-rent" placeholder="0" min="0" value="${l.annualRent || ''}">
+        </div>
+        <div class="calc-input-group">
+          <label>Lease Term (years)</label>
+          <select id="calc-lease-term">
+            <option value="1">1 year</option>
+            <option value="2">2 years</option>
+            <option value="3" selected>3 years</option>
+            <option value="5">5 years</option>
+            <option value="10">10 years</option>
+          </select>
+        </div>
+        <div class="calc-input-group">
+          <label>Annual Increase (%)</label>
+          <div class="calc-range-row">
+            <input type="range" id="calc-lease-increase" min="0" max="10" step="0.5" value="3">
+            <span class="calc-range-val" id="lease-increase-value">3.0%</span>
+          </div>
+        </div>
+        <button id="calc-lease-btn" class="calc-btn lease">Calculate Total Lease Cost</button>
+        <div class="calc-results" id="calc-results-lease"></div>
+      </div>
+    `;
+  }
+
+  // Map section
+  let mapHtml = '';
+  if (l.latitude && l.longitude) {
+    mapHtml = `
+      <div class="card">
+        <h3 class="card-title"><i class="fas fa-map-marked-alt"></i> Property Location</h3>
+        <div class="map-container">
+          <div id="propertyMap"></div>
+        </div>
+        <div style="margin-top: 12px; font-size: 12px; color: var(--text-light); display: flex; justify-content: space-between;">
+          <span>Coordinates: ${parseFloat(l.latitude).toFixed(6)}, ${parseFloat(l.longitude).toFixed(6)}</span>
+          <a href="https://www.google.com/maps?q=${l.latitude},${l.longitude}" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">
+            <i class="fas fa-external-link-alt"></i> Open in Google Maps
+          </a>
+        </div>
+      </div>
+    `;
+  }
+
   const html = `
     <div class="gallery-hero">
       <div class="main-media-wrap">
-        <img src="${isFirstVideo ? 'https://via.placeholder.com/800x400/0b2e52/white?text=Video+Thumbnail' : firstMedia}" alt="${l.title}" id="mainGalleryImg" style="${isFirstVideo ? 'display:none;' : 'display:block;'}">
+        <img src="${isFirstVideo ? 'https://via.placeholder.com/800x400/0b2e52/white?text=Video+Thumbnail' : firstMedia}" alt="${l.title}" id="mainGalleryImg" title="Click to open full image" style="${isFirstVideo ? 'display:none;' : 'display:block;'}">
         <video id="mainGalleryVideo" controls style="${isFirstVideo ? 'display:block;' : 'display:none;'}">
           ${isFirstVideo ? `<source src="${firstMedia}" type="video/mp4">Your browser does not support the video tag.` : ''}
         </video>
+        ${allMedia.length > 1 ? `
+        <button type="button" class="gallery-nav-btn gallery-nav-prev" id="galleryPrevBtn" aria-label="Previous media">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button type="button" class="gallery-nav-btn gallery-nav-next" id="galleryNextBtn" aria-label="Next media">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+        ` : ''}
       </div>
       <div class="gallery-badges">
-        ${isFromAI ? '<span class="badge badge-bahai"><i class="fas fa-robot" style="margin-right:4px;"></i> Recommended by BahAI</span>' : ''}
         <span class="badge ${badgeClass}">${badgeText}</span>
-        <span class="badge badge-active">${l.status === 'active' ? 'Available' : (l.status || 'Available')}</span>
       </div>
       ${mediaCountLabel ? `<span class="gallery-image-count">${mediaCountLabel}</span>` : ''}
-      <button class="save-btn-float" id="saveBtnFloat">
-        <i class="far fa-heart" id="saveIcon"></i>
-        <span id="saveText">Save Property</span>
+      <button type="button" class="save-btn-float" id="saveBtnFloat" aria-label="Save property">
+        <i class="far fa-heart save-icon" aria-hidden="true"></i>
       </button>
       ${allMedia.length > 1 ? `
       <div class="gallery-thumbs">
@@ -679,12 +1684,6 @@ function renderProperty() {
           </div>
         </div>
 
-        <div class="bahai-insights-panel" id="bahaiInsightsPanel">
-          <div class="bahai-insights-label"><i class="fas fa-robot"></i> BahAI Insights</div>
-          <ul class="bahai-insights-list" id="bahaiInsightsList"></ul>
-          <div class="bahai-insights-footer">Insights improve as you interact with the system</div>
-        </div>
-
         ${l.description ? `
         <div class="card">
           <h3 class="card-title"><i class="fas fa-align-left"></i> Description</h3>
@@ -706,16 +1705,7 @@ function renderProperty() {
         </div>
         ` : ''}
 
-        ${l.latitude && l.longitude ? `
-        <div class="card">
-          <h3 class="card-title"><i class="fas fa-map"></i> Map</h3>
-          <div class="map-container" id="mapContainer">
-            <a href="https://www.google.com/maps?q=${l.latitude},${l.longitude}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;height:100%;background:var(--bg-light);color:var(--primary);font-weight:600;text-decoration:none;">
-              <i class="fas fa-map-marker-alt" style="margin-right:8px;"></i> View on Google Maps
-            </a>
-          </div>
-        </div>
-        ` : ''}
+        ${mapHtml}
 
         <div class="trust-note"><i class="fas fa-check-circle"></i> Verified listing · Information provided by the seller</div>
         <div class="trust-note" style="margin-top: 4px; font-style: italic;">Some details may be unavailable</div>
@@ -741,58 +1731,8 @@ function renderProperty() {
           </div>
           <button class="contact-btn" id="contactBtn"><i class="fas fa-comment"></i> Message</button>
         </div>
-        ${type === 'sale' ? `
-        <div class="calc-widget">
-          <h3><i class="fas fa-calculator"></i> Mortgage Calculator</h3>
-          <div class="calc-input-group">
-            <label>Property Price (₱)</label>
-            <input type="number" id="calc-price" placeholder="0" min="0" value="${l.pricing || l.salePrice || ''}">
-          </div>
-          <div class="calc-input-group">
-            <label>Down Payment</label>
-            <div class="calc-range-row">
-              <input type="range" id="calc-down" min="0" max="50" value="20">
-              <span class="range-val" id="calc-down-val">20%</span>
-            </div>
-          </div>
-          <div class="calc-input-group">
-            <label>Term / Rate</label>
-            <div style="display:flex;gap:10px;">
-              <select id="calc-term" style="flex:1;">
-                <option value="5">5 yrs</option>
-                <option value="10">10 yrs</option>
-                <option value="15" selected>15 yrs</option>
-                <option value="20">20 yrs</option>
-                <option value="30">30 yrs</option>
-              </select>
-              <select id="calc-rate" style="flex:1;">
-                <option value="5">5%</option>
-                <option value="6">6%</option>
-                <option value="6.5" selected>6.5%</option>
-                <option value="7">7%</option>
-                <option value="8">8%</option>
-                <option value="10">10%</option>
-              </select>
-            </div>
-          </div>
-          <button class="calc-btn" id="calc-mortgage-btn">Calculate</button>
-          <div class="calc-results" id="calc-results-mortgage" style="display:none;"></div>
-        </div>
-        ` : type === 'rent' ? `
-        <div class="calc-widget">
-          <h3><i class="fas fa-calculator"></i> Rent Affordability</h3>
-          <div class="calc-input-group">
-            <label>Monthly Rent (₱)</label>
-            <input type="number" id="calc-rent" placeholder="0" min="0" value="${l.monthlyRent || ''}">
-          </div>
-          <div class="calc-input-group">
-            <label>Your Monthly Income (₱)</label>
-            <input type="number" id="calc-income" placeholder="0" min="0">
-          </div>
-          <button class="calc-btn" id="calc-rent-btn">Check</button>
-          <div class="calc-results" id="calc-results-rent" style="display:none;"></div>
-        </div>
-        ` : ''}
+        
+        ${calculatorHtml}
       </div>
     </div>
 
@@ -801,11 +1741,27 @@ function renderProperty() {
       <div class="similar-properties-label">Suggested by BahAI</div>
       <div class="similar-properties-grid" id="similarPropertiesGrid"></div>
     </div>
+
+    <div class="media-lightbox" id="mediaLightbox" aria-hidden="true">
+      <div class="media-lightbox-content">
+        <button type="button" class="media-lightbox-close" id="mediaLightboxClose" aria-label="Close media viewer">
+          <i class="fas fa-times"></i>
+        </button>
+        <button type="button" class="media-lightbox-nav prev" id="mediaLightboxPrev" aria-label="Previous media">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <img class="media-lightbox-media" id="mediaLightboxImage" alt="Property media preview" style="display:none;">
+        <video class="media-lightbox-media" id="mediaLightboxVideo" controls style="display:none;"></video>
+        <button type="button" class="media-lightbox-nav next" id="mediaLightboxNext" aria-label="Next media">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+        <div class="media-lightbox-counter" id="mediaLightboxCounter"></div>
+      </div>
+    </div>
   `;
 
   document.getElementById('propertyContent').innerHTML = html;
 
-  populateBahaiInsights(l, type);
   loadSimilarProperties(l).then(similar => {
     if (similar && similar.length > 0) {
       document.getElementById('similarPropertiesSection').style.display = 'block';
@@ -813,118 +1769,209 @@ function renderProperty() {
     }
   });
 
+  let currentMediaIndex = 0;
   if (allMedia.length > 1) {
-    document.querySelectorAll('.gallery-thumbs .thumb-item').forEach(thumb => {
+    const thumbs = document.querySelectorAll('.gallery-thumbs .thumb-item');
+    const mainImg = document.getElementById('mainGalleryImg');
+    const mainVideo = document.getElementById('mainGalleryVideo');
+    const prevBtn = document.getElementById('galleryPrevBtn');
+    const nextBtn = document.getElementById('galleryNextBtn');
+
+    const showMediaAt = (index) => {
+      currentMediaIndex = (index + allMedia.length) % allMedia.length;
+      const mediaUrl = allMedia[currentMediaIndex];
+      if (!mediaUrl) return;
+
+      if (isVideoFile(mediaUrl)) {
+        mainImg.style.display = 'none';
+        mainVideo.style.display = 'block';
+        mainVideo.src = mediaUrl;
+        mainVideo.load();
+      } else {
+        mainVideo.pause();
+        mainVideo.style.display = 'none';
+        mainImg.style.display = 'block';
+        mainImg.src = mediaUrl;
+      }
+
+      thumbs.forEach(t => t.classList.remove('active'));
+      const activeThumb = document.querySelector(`.gallery-thumbs .thumb-item[data-index="${currentMediaIndex}"]`);
+      if (activeThumb) {
+        activeThumb.classList.add('active');
+        activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+      }
+    };
+
+    thumbs.forEach(thumb => {
       thumb.addEventListener('click', () => {
         const idx = parseInt(thumb.dataset.index, 10);
-        const mediaUrl = allMedia[idx];
-        if (!mediaUrl) return;
-        const isVideo = isVideoFile(mediaUrl);
-        const mainImg = document.getElementById('mainGalleryImg');
-        const mainVideo = document.getElementById('mainGalleryVideo');
-        if (isVideo) {
-          mainImg.style.display = 'none';
-          mainVideo.style.display = 'block';
-          mainVideo.src = mediaUrl;
-          mainVideo.load();
-        } else {
-          mainVideo.style.display = 'none';
-          mainImg.style.display = 'block';
-          mainImg.src = mediaUrl;
-        }
-        document.querySelectorAll('.gallery-thumbs .thumb-item').forEach(t => t.classList.remove('active'));
-        thumb.classList.add('active');
+        if (!Number.isNaN(idx)) showMediaAt(idx);
       });
     });
+
+    prevBtn?.addEventListener('click', () => showMediaAt(currentMediaIndex - 1));
+    nextBtn?.addEventListener('click', () => showMediaAt(currentMediaIndex + 1));
   }
+
+  // Click main media to open a full-screen viewer with left/right navigation
+  const mainImgEl = document.getElementById('mainGalleryImg');
+  const mainVideoEl = document.getElementById('mainGalleryVideo');
+  const lightbox = document.getElementById('mediaLightbox');
+  const lightboxImg = document.getElementById('mediaLightboxImage');
+  const lightboxVideo = document.getElementById('mediaLightboxVideo');
+  const lightboxCounter = document.getElementById('mediaLightboxCounter');
+  const lightboxPrev = document.getElementById('mediaLightboxPrev');
+  const lightboxNext = document.getElementById('mediaLightboxNext');
+  const lightboxClose = document.getElementById('mediaLightboxClose');
+
+  const renderLightboxMedia = () => {
+    if (!allMedia.length) return;
+    const mediaUrl = allMedia[(currentMediaIndex + allMedia.length) % allMedia.length];
+    const mediaIsVideo = isVideoFile(mediaUrl);
+
+    if (mediaIsVideo) {
+      lightboxImg.style.display = 'none';
+      lightboxVideo.style.display = 'block';
+      lightboxVideo.src = mediaUrl;
+      lightboxVideo.load();
+    } else {
+      lightboxVideo.pause();
+      lightboxVideo.style.display = 'none';
+      lightboxImg.style.display = 'block';
+      lightboxImg.src = mediaUrl;
+    }
+
+    if (lightboxCounter) lightboxCounter.textContent = `${currentMediaIndex + 1} / ${allMedia.length}`;
+    const showNav = allMedia.length > 1;
+    if (lightboxPrev) lightboxPrev.style.display = showNav ? 'flex' : 'none';
+    if (lightboxNext) lightboxNext.style.display = showNav ? 'flex' : 'none';
+  };
+
+  const openLightboxAt = (index) => {
+    if (!allMedia.length || !lightbox) return;
+    currentMediaIndex = (index + allMedia.length) % allMedia.length;
+    renderLightboxMedia();
+    lightbox.classList.add('show');
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeLightbox = () => {
+    if (!lightbox) return;
+    lightbox.classList.remove('show');
+    lightbox.setAttribute('aria-hidden', 'true');
+    if (lightboxVideo) {
+      lightboxVideo.pause();
+      lightboxVideo.removeAttribute('src');
+      lightboxVideo.load();
+    }
+    document.body.style.overflow = '';
+  };
+
+  mainImgEl?.addEventListener('click', () => openLightboxAt(currentMediaIndex));
+  mainVideoEl?.addEventListener('click', () => openLightboxAt(currentMediaIndex));
+  lightboxPrev?.addEventListener('click', () => {
+    currentMediaIndex = (currentMediaIndex - 1 + allMedia.length) % allMedia.length;
+    renderLightboxMedia();
+  });
+  lightboxNext?.addEventListener('click', () => {
+    currentMediaIndex = (currentMediaIndex + 1) % allMedia.length;
+    renderLightboxMedia();
+  });
+  lightboxClose?.addEventListener('click', closeLightbox);
+  lightbox?.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (!lightbox || !lightbox.classList.contains('show')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft' && allMedia.length > 1) {
+      currentMediaIndex = (currentMediaIndex - 1 + allMedia.length) % allMedia.length;
+      renderLightboxMedia();
+    }
+    if (e.key === 'ArrowRight' && allMedia.length > 1) {
+      currentMediaIndex = (currentMediaIndex + 1) % allMedia.length;
+      renderLightboxMedia();
+    }
+  });
+
+  if (isFirstVideo && allMedia.length > 0) {
+    currentMediaIndex = 0;
+  }
+
   if (isFirstVideo && allMedia.length > 0) {
     const mainVideo = document.getElementById('mainGalleryVideo');
     if (mainVideo) mainVideo.src = firstMedia;
   }
 
+  // UPDATED: Use handleContactClick instead of directly opening message modal
   document.getElementById('contactBtn').addEventListener('click', () => {
-    if (auth.currentUser) {
-      openMessageModal(contactId, l.id);
-    } else {
-      window.location.href = '../login.html?redirect=buyer/new_property_details.html?id=' + propertyId;
-    }
+    const contactId = l.agentId || l.brokerId || l.userId || l.landlordId || '';
+    handleContactClick(contactId, l.id);
   });
 
-  initMortgageCalc(l, type);
+  // Initialize calculator
+  setTimeout(() => {
+    initializePropertyCalculator(l);
+  }, 100);
 }
 
-function initMortgageCalc(l, type) {
-  if (type === 'sale') {
-    const downEl = document.getElementById('calc-down');
-    const downVal = document.getElementById('calc-down-val');
-    if (downEl) downEl.addEventListener('input', () => { if (downVal) downVal.textContent = downEl.value + '%'; });
-    const btn = document.getElementById('calc-mortgage-btn');
-    const price = l.pricing || l.salePrice;
-    if (btn) btn.addEventListener('click', () => {
-      const priceInput = document.getElementById('calc-price');
-      if (priceInput && price && !priceInput.value) priceInput.value = price;
-      calculateMortgage();
-    });
-    if (price) setTimeout(() => calculateMortgage(), 200);
-  } else if (type === 'rent') {
-    const btn = document.getElementById('calc-rent-btn');
-    if (btn) btn.addEventListener('click', calculateRentAffordability);
-  }
+// Save button functions
+function setupSaveButton() {
+  const updateSaveUI = (isSaved) => {
+    const btn = document.getElementById('saveBtnFloat');
+    if (!btn) return;
+    btn.classList.toggle('saved', isSaved);
+    const icon = btn.querySelector('i');
+    if (icon) icon.className = isSaved ? 'fas fa-heart save-icon' : 'far fa-heart save-icon';
+    btn.setAttribute('aria-label', isSaved ? 'Remove from saved' : 'Save property');
+  };
+
+  const checkSaved = async () => {
+    if (!auth.currentUser) return false;
+    const q = query(collection(db, 'savedProperties'), where('userId', '==', auth.currentUser.uid), where('propertyId', '==', propertyId));
+    const snap = await getDocs(q);
+    return !snap.empty;
+  };
+
+  const toggleSave = async () => {
+    if (!auth.currentUser) {
+      window.location.href = '../login.html?redirect=buyer/new_property_details.html?id=' + propertyId;
+      return;
+    }
+    try {
+      const isSaved = await checkSaved();
+      if (isSaved) {
+        const q = query(collection(db, 'savedProperties'), where('userId', '==', auth.currentUser.uid), where('propertyId', '==', propertyId));
+        const snap = await getDocs(q);
+        if (!snap.empty) await deleteDoc(snap.docs[0].ref);
+        updateSaveUI(false);
+        showToast('Removed from saved');
+      } else {
+        await addDoc(collection(db, 'savedProperties'), { userId: auth.currentUser.uid, propertyId, savedAt: new Date(), createdAt: new Date() });
+        updateSaveUI(true);
+        showToast('Property saved!');
+      }
+      if (typeof window.updateSidebarStats === 'function') window.updateSidebarStats();
+    } catch (e) {
+      showToast('Error saving', true);
+    }
+  };
+
+  // Initialize
+  checkSaved().then(saved => updateSaveUI(saved));
+  document.getElementById('saveBtnFloat')?.addEventListener('click', toggleSave);
 }
 
-function calculateMortgage() {
-  const priceEl = document.getElementById('calc-price');
-  const downEl = document.getElementById('calc-down');
-  const termEl = document.getElementById('calc-term');
-  const rateEl = document.getElementById('calc-rate');
-  const resultsEl = document.getElementById('calc-results-mortgage');
-  if (!priceEl || !resultsEl) return;
-  const price = parseFloat(priceEl.value) || 0;
-  if (price <= 0) {
-    resultsEl.style.display = 'block';
-    resultsEl.innerHTML = '<span style="color:#fecaca;">Enter a valid price</span>';
-    return;
-  }
-  const downPct = parseFloat(downEl?.value) || 20;
-  const term = parseInt(termEl?.value) || 15;
-  const rate = parseFloat(rateEl?.value) || 6.5;
-  const downAmt = price * downPct / 100;
-  const loan = price - downAmt;
-  const r = rate / 100 / 12;
-  const n = term * 12;
-  const monthly = loan * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-  const totalInt = monthly * n - loan;
-  resultsEl.style.display = 'block';
-  resultsEl.innerHTML = `
-    <div class="monthly">₱${monthly.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}<span style="font-size:12px;font-weight:400;">/mo</span></div>
-    <div>Down: ₱${downAmt.toLocaleString(0)} (${downPct}%)</div>
-    <div>Total interest: ₱${totalInt.toLocaleString(0)}</div>
-    <div class="note">Estimate only. Actual terms may vary.</div>
-  `;
+function showToast(msg, isError = false) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = `position:fixed;top:20px;right:20px;padding:14px 24px;border-radius:12px;z-index:9999;font-weight:600;background:${isError ? '#ef4444' : '#10b981'};color:white;box-shadow:0 10px 25px rgba(0,0,0,0.2);`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
 }
 
-function calculateRentAffordability() {
-  const rentEl = document.getElementById('calc-rent');
-  const incomeEl = document.getElementById('calc-income');
-  const resultsEl = document.getElementById('calc-results-rent');
-  if (!rentEl || !incomeEl || !resultsEl) return;
-  const rent = parseFloat(rentEl.value) || 0;
-  const income = parseFloat(incomeEl.value) || 0;
-  if (rent <= 0 || income <= 0) {
-    resultsEl.style.display = 'block';
-    resultsEl.innerHTML = '<span style="color:#fecaca;">Enter rent and income</span>';
-    return;
-  }
-  const pct = (rent / income * 100).toFixed(1);
-  const status = pct <= 30 ? 'Within budget ✓' : pct <= 40 ? 'Moderate' : 'May be tight';
-  resultsEl.style.display = 'block';
-  resultsEl.innerHTML = `
-    <div class="monthly">${pct}% of income</div>
-    <div>${status}</div>
-    <div class="note">Rent under 30% of income is recommended.</div>
-  `;
-}
-
+// Message modal functions
 function formatMessageTime(date) {
   const now = new Date();
   const diffMs = now - date;
@@ -1129,62 +2176,7 @@ async function openMessageModal(userId, propId) {
   setTimeout(() => document.getElementById('messageInput').focus(), 300);
 }
 
-async function setupSaveButton() {
-  const updateSaveUI = (isSaved) => {
-    const btn = document.getElementById('saveBtnFloat');
-    if (!btn) return;
-    btn.classList.toggle('saved', isSaved);
-    const icon = btn.querySelector('i');
-    if (icon) icon.className = isSaved ? 'fas fa-heart' : 'far fa-heart';
-    const text = btn.querySelector('span');
-    if (text) text.textContent = isSaved ? 'Saved' : 'Save Property';
-  };
-
-  const checkSaved = async () => {
-    if (!auth.currentUser) return false;
-    const q = query(collection(db, 'savedProperties'), where('userId', '==', auth.currentUser.uid), where('propertyId', '==', propertyId));
-    const snap = await getDocs(q);
-    return !snap.empty;
-  };
-
-  const toggleSave = async () => {
-    if (!auth.currentUser) {
-      window.location.href = '../login.html?redirect=buyer/new_property_details.html?id=' + propertyId;
-      return;
-    }
-    try {
-      const isSaved = await checkSaved();
-      if (isSaved) {
-        const q = query(collection(db, 'savedProperties'), where('userId', '==', auth.currentUser.uid), where('propertyId', '==', propertyId));
-        const snap = await getDocs(q);
-        if (!snap.empty) await deleteDoc(snap.docs[0].ref);
-        updateSaveUI(false);
-        showToast('Removed from saved');
-      } else {
-        await addDoc(collection(db, 'savedProperties'), { userId: auth.currentUser.uid, propertyId, savedAt: new Date(), createdAt: new Date() });
-        updateSaveUI(true);
-        showToast('Property saved!');
-      }
-      if (typeof window.updateSidebarStats === 'function') window.updateSidebarStats();
-    } catch (e) {
-      showToast('Error saving', true);
-    }
-  };
-
-  const saved = await checkSaved();
-  updateSaveUI(saved);
-
-  document.getElementById('saveBtnFloat')?.addEventListener('click', toggleSave);
-}
-
-function showToast(msg, isError = false) {
-  const t = document.createElement('div');
-  t.textContent = msg;
-  t.style.cssText = `position:fixed;top:20px;right:20px;padding:14px 24px;border-radius:12px;z-index:9999;font-weight:600;background:${isError ? '#ef4444' : '#10b981'};color:white;box-shadow:0 10px 25px rgba(0,0,0,0.2);`;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
-}
-
+// window.contactBroker is kept for backward compatibility but we'll use handleContactClick for the button
 window.contactBroker = openMessageModal;
 
 document.getElementById('backBtn').addEventListener('click', function(e) {
