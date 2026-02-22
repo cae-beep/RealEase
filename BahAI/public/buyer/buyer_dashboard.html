@@ -3865,6 +3865,24 @@ async function loadUserPreferenceData(userId, propertyMap) {
     };
 }
 
+async function getSavedPropertyIdsSet(userId) {
+    if (!userId) return new Set();
+
+    try {
+        const savedSnap = await getDocs(query(collection(db, 'savedProperties'), where('userId', '==', userId)));
+        const savedIds = new Set();
+        savedSnap.forEach(itemDoc => {
+            const data = itemDoc.data() || {};
+            const propertyId = data.propertyId || data.listingId;
+            if (propertyId) savedIds.add(String(propertyId));
+        });
+        return savedIds;
+    } catch (error) {
+        console.error('Error loading saved property IDs:', error);
+        return new Set();
+    }
+}
+
 function buildRecentBehaviorSignals(behaviorData, propertyMap) {
     const viewedTypes = new Set();
     const viewedLocations = new Set();
@@ -3961,6 +3979,7 @@ async function generateSuperSmartRecommendations(currentUser) {
     const properties = await getPropertiesForRecommendations();
     const propertyMap = new Map(properties.map(p => [String(p.id), p]));
     const userPrefs = await loadUserPreferenceData(userId, propertyMap);
+    const savedPropertyIds = await getSavedPropertyIdsSet(userId);
     const locationResult = await getLocationBasedRecommendations(userId);
     const recentSignals = buildRecentBehaviorSignals(behaviorData, propertyMap);
 
@@ -3977,10 +3996,13 @@ async function generateSuperSmartRecommendations(currentUser) {
         recentSignals.viewedLocations.size === 0;
 
     const activeProperties = properties.filter(listing =>
-        listing.status === 'active' ||
-        listing.status === 'available' ||
-        listing.status === 'Active' ||
-        (listing.status === undefined && listing.isActive !== false)
+        (
+            listing.status === 'active' ||
+            listing.status === 'available' ||
+            listing.status === 'Active' ||
+            (listing.status === undefined && listing.isActive !== false)
+        ) &&
+        !savedPropertyIds.has(String(listing.id))
     );
 
     const scored = activeProperties
@@ -4041,42 +4063,12 @@ async function loadRecommendationsFromPython() {
 async function showGuestRecommendations() {
     try {
         console.log('Showing properties to guest user');
+        const existingPrompt = document.querySelector('#recommendedSection .guest-prompt');
+        if (existingPrompt) existingPrompt.remove();
         const result = await generateSuperSmartRecommendations(null);
 
         if (result.recommendations.length > 0) {
             displayRecommendedListingsPython(result.recommendations, 'super_smart');
-            
-            // Add a prompt message below the section
-            setTimeout(() => {
-                const section = document.getElementById('recommendedSection');
-                if (section) {
-                    let promptDiv = section.querySelector('.guest-prompt');
-                    if (!promptDiv) {
-                        promptDiv = document.createElement('div');
-                        promptDiv.className = 'guest-prompt';
-                        promptDiv.style.cssText = `
-                            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-                            color: white;
-                            padding: 15px 20px;
-                            border-radius: 8px;
-                            margin-top: 20px;
-                            text-align: center;
-                            animation: fadeIn 0.5s ease;
-                        `;
-                        promptDiv.innerHTML = `
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                                <div style="flex: 1; max-width: 600px;">
-                                    <strong>🔓 Unlock AI Recommendations!</strong>
-                                    <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.9;">
-                                        <a href="../login.html" style="color: white; text-decoration: underline; font-weight: 600;">Sign in</a> to save properties and get personalized AI recommendations based on your preferences.
-                                    </p>
-                                </div>
-                            </div>
-                        `;
-                        section.appendChild(promptDiv);
-                    }
-                }
-            }, 100);
         } else {
             // If no recent listings, show a message
             const recoContainer = document.getElementById('recommendedListingsContainer');
