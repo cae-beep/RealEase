@@ -774,6 +774,10 @@ let searchFilters = {};
 let isUserAuthenticated = false;
 let currentConversationId = null;
 let messageListener = null;
+const SEARCH_RESULTS_PER_PAGE = 24;
+let currentSearchListings = [];
+let currentSearchSavedMap = new Map();
+let currentSearchPage = 1;
 
 // ========== KYC CHECK FUNCTIONS (ADDED) ==========
 
@@ -1007,7 +1011,7 @@ const BATANGAS_PROPERTY_CATEGORIES = [
     }
 ];
 
-// Property category and type mappings based on transaction type (for dropdowns)
+// Property category and type mappings based on transaction type (for dropdowns - kept for future use)
 const PROPERTY_CATEGORIES = {
     'rent': [
         { 
@@ -1586,71 +1590,6 @@ function getCompleteAddress(listing) {
     return fullAddress || 'Batangas, Philippines';
 }
 
-// ============================= CATEGORY DROPDOWN FUNCTIONS ============================
-
-// Update category dropdown based on selected transaction type
-function updateCategoryDropdown() {
-    const transactionType = document.getElementById('filterListingType').value;
-    const categorySelect = document.getElementById('filterPropertyCategory');
-    const typeSelect = document.getElementById('filterPropertyType');
-
-    // Reset both dropdowns
-    categorySelect.innerHTML = '<option value="">All Categories</option>';
-    typeSelect.innerHTML = '<option value="">All Types</option>';
-
-    if (transactionType && PROPERTY_CATEGORIES[transactionType]) {
-        // Populate categories based on transaction type
-        PROPERTY_CATEGORIES[transactionType].forEach(cat => {
-            const option = document.createElement('option');
-            option.value = cat.category;
-            option.textContent = cat.category;
-            categorySelect.appendChild(option);
-        });
-        categorySelect.disabled = false;
-    } else {
-        // If no transaction type selected, show all possible categories
-        const allCategories = new Set();
-        Object.values(PROPERTY_CATEGORIES).forEach(cats => {
-            cats.forEach(cat => allCategories.add(cat.category));
-        });
-        allCategories.forEach(category => {
-            const option = document.createElement('option');
-            option.value = category;
-            option.textContent = category;
-            categorySelect.appendChild(option);
-        });
-        categorySelect.disabled = false;
-    }
-
-    // Update type dropdown
-    updateTypeDropdown();
-}
-
-// Update type dropdown based on selected category
-function updateTypeDropdown() {
-    const transactionType = document.getElementById('filterListingType').value;
-    const category = document.getElementById('filterPropertyCategory').value;
-    const typeSelect = document.getElementById('filterPropertyType');
-
-    typeSelect.innerHTML = '<option value="">All Types</option>';
-
-    if (transactionType && category && PROPERTY_CATEGORIES[transactionType]) {
-        const categoryData = PROPERTY_CATEGORIES[transactionType].find(cat =>
-            cat.category === category);
-        if (categoryData && categoryData.types) {
-            categoryData.types.forEach(type => {
-                const option = document.createElement('option');
-                option.value = type;
-                option.textContent = type;
-                typeSelect.appendChild(option);
-            });
-        }
-        typeSelect.disabled = false;
-    } else {
-        typeSelect.disabled = false;
-    }
-}
-
 // --- CATEGORY DETECTION FUNCTION (FROM BUYER DASHBOARD) ---
 function propertyBelongsToCategory(listing, category) {
     const propertyType = (listing.propertyType || '').toLowerCase();
@@ -1737,12 +1676,18 @@ function loadFiltersFromURL() {
 // Update active filters display
 function updateActiveFiltersDisplay() {
     const activeFiltersContainer = document.getElementById('activeFilters');
+    const resultsBadge = document.getElementById('resultsBadge');
+    const resultsNumber = document.getElementById('resultsNumber');
     
     if (Object.keys(searchFilters).length > 0) {
         activeFiltersContainer.innerHTML = '';
         
         Object.entries(searchFilters).forEach(([key, value]) => {
             if (value) {
+                // Internal/system filters from chatbot should not show as raw chips
+                if (key === 'propertyIds' || key === 'source' || key === 'amenity') return;
+                if (key === 'searchTerm' && searchFilters.source === 'chatbot') return;
+                
                 const filterTag = document.createElement('div');
                 filterTag.className = 'filter-tag';
                 filterTag.style.cssText = `
@@ -2069,6 +2014,12 @@ function displayFilteredListings() {
 
     // Apply filters if any
     if (Object.keys(searchFilters).length > 0) {
+        // If coming from chatbot, first constrain to chatbot-provided property IDs
+        if (Array.isArray(searchFilters.propertyIds) && searchFilters.propertyIds.length > 0) {
+            const allowedIds = new Set(searchFilters.propertyIds.map(String));
+            filtered = filtered.filter(listing => allowedIds.has(String(listing.id)));
+        }
+
         // Apply location filter
         if (searchFilters.location) {
             filtered = filtered.filter(listing =>
@@ -2086,13 +2037,64 @@ function displayFilteredListings() {
         }
         
         // Apply name/keyword filter
-        if (searchFilters.searchTerm) {
-            const searchTerm = searchFilters.searchTerm.toLowerCase().trim();
-            filtered = filtered.filter(listing =>
-                (listing.title || "").toLowerCase().includes(searchTerm) ||
-                (listing.description || "").toLowerCase().includes(searchTerm) ||
-                (listing.location || "").toLowerCase().includes(searchTerm)
-            );
+        // For chatbot-driven deep links, searchTerm is context text only.
+        // Do not re-apply keyword filtering on top of explicit propertyIds.
+        const shouldApplyKeywordFilter = searchFilters.searchTerm &&
+            !(searchFilters.source === 'chatbot' &&
+              Array.isArray(searchFilters.propertyIds) &&
+              searchFilters.propertyIds.length > 0);
+
+        if (shouldApplyKeywordFilter) {
+            const rawSearch = searchFilters.searchTerm.toLowerCase().trim();
+            const tokens = rawSearch.split(/[\s,]+/).filter(Boolean);
+
+            filtered = filtered.filter(listing => {
+                if (tokens.length === 0) return true;
+
+                const textParts = [
+                    listing.title,
+                    listing.description,
+                    listing.location,
+                    listing.city,
+                    listing.province,
+                    listing.propertyType,
+                    getListingType(listing)
+                ].map(v => (v || '').toString().toLowerCase());
+
+                const haystack = textParts.join(' ');
+
+                const rawPrice =
+                    listing.pricing ??
+                    listing.salePrice ??
+                    listing.monthlyRent ??
+                    listing.annualRent ??
+                    listing.price ??
+                    0;
+                const priceValue = typeof rawPrice === 'number'
+                    ? rawPrice
+                    : parseFloat(String(rawPrice).replace(/[^\d.]/g, '')) || 0;
+
+                return tokens.every(token => {
+                    // Try to interpret token as a price (e.g. "3m", "500k", "2500000")
+                    const numericMatch = token.match(/^([\d,.]+)(k|m)?$/i);
+                    if (numericMatch && priceValue > 0) {
+                        let num = parseFloat(numericMatch[1].replace(/,/g, '')) || 0;
+                        const suffix = numericMatch[2]?.toLowerCase();
+                        if (suffix === 'k') num *= 1_000;
+                        if (suffix === 'm') num *= 1_000_000;
+                        if (num > 0) {
+                            const low = num * 0.8;
+                            const high = num * 1.2;
+                            if (priceValue >= low && priceValue <= high) {
+                                return true;
+                            }
+                        }
+                    }
+
+                    // Fallback: treat token as a regular keyword
+                    return haystack.includes(token);
+                });
+            });
         }
     }
 
@@ -2109,7 +2111,12 @@ function displayFilteredListings() {
 
         if (searchFilters.location) filterParts.push(`Location: ${searchFilters.location}`);
         if (searchFilters.transactionType) filterParts.push(`Type: ${searchFilters.transactionType}`);
-        if (searchFilters.searchTerm) filterParts.push(`Keyword: "${searchFilters.searchTerm}"`);
+        if (searchFilters.searchTerm && searchFilters.source !== 'chatbot') {
+            filterParts.push(`Keyword: "${searchFilters.searchTerm}"`);
+        }
+        if (Array.isArray(searchFilters.propertyIds) && searchFilters.propertyIds.length > 0) {
+            filterParts.push(`Source: Chatbot`);
+        }
 
         if (filterParts.length > 0) {
             summaryText += ` matching ${filterParts.join(', ')}`;
@@ -2159,7 +2166,7 @@ function displayFilteredListings() {
     if (filtered.length === 0) {
         displayNoListings();
     } else {
-        displayListings(filtered);
+        displayListings(filtered, 1, true);
     }
 }
 
@@ -2183,13 +2190,27 @@ async function checkSavedStatus(listings) {
     }
 }
 
-async function displayListings(listings) {
+async function displayListings(listings, page = 1, refreshData = true) {
     const container = document.getElementById('listingsContainer');
-    // Check which properties are already saved (only if user is logged in)
-    const savedMap = await checkSavedStatus(listings);
+    if (refreshData) {
+        currentSearchListings = Array.isArray(listings) ? listings : [];
+        currentSearchPage = 1;
+        // Check which properties are already saved (only if user is logged in)
+        currentSearchSavedMap = await checkSavedStatus(currentSearchListings);
+    }
     
-    container.innerHTML = listings.map(listing => {
-        const isSaved = savedMap.has(listing.id);
+    const totalPages = Math.max(1, Math.ceil(currentSearchListings.length / SEARCH_RESULTS_PER_PAGE));
+    currentSearchPage = Math.max(1, Math.min(page, totalPages));
+    const startIndex = (currentSearchPage - 1) * SEARCH_RESULTS_PER_PAGE;
+    const pageListings = currentSearchListings.slice(startIndex, startIndex + SEARCH_RESULTS_PER_PAGE);
+    
+    // Add amenity suffix for chatbot integration
+    const amenitySuffix = searchFilters.amenity
+        ? `&amenity=${encodeURIComponent(searchFilters.amenity)}&source=ai`
+        : '';
+    
+    container.innerHTML = pageListings.map(listing => {
+        const isSaved = currentSearchSavedMap.has(listing.id);
         const ownerId = listing.userId || listing.ownerId || null;
         const userInfo = userMap.get(ownerId) || {
             displayName: ownerId ? `User ${ownerId.substring(0, 8)}` : 'Unknown',
@@ -2237,7 +2258,7 @@ async function displayListings(listings) {
         return `
         <div class="listing-card-wrapper">
             <div class="listing-card" data-listing-id="${listing.id}">
-                <a href="new_property_details.html?id=${listing.id}" class="card-link-overlay" aria-label="View ${title}"></a>
+                <a href="new_property_details.html?id=${listing.id}${amenitySuffix}" class="card-link-overlay" aria-label="View ${title}"></a>
                 <div class="listing-card-image-container">
                     <button type="button" class="${isSaved ? 'listing-save-btn saved' : 'listing-save-btn'}"
                             data-property-id="${listing.id}"
@@ -2279,12 +2300,62 @@ async function displayListings(listings) {
         </div>`;
     }).join('');
     
+    renderSearchResultsPagination(totalPages, currentSearchPage);
+
     // Add event listeners to the newly created elements
     setupListingEventListeners();
     makePropertyCardsClickable();
     
     // Force badges to be visible
     setTimeout(forceBadgeVisibility, 100);
+}
+
+function renderSearchResultsPagination(totalPages, currentPage) {
+    const paginationContainer = document.getElementById('pagination');
+    if (!paginationContainer) return;
+
+    if (!currentSearchListings.length || totalPages <= 1) {
+        paginationContainer.style.display = 'none';
+        paginationContainer.innerHTML = '';
+        return;
+    }
+
+    const pagesToRender = [];
+    for (let page = 1; page <= totalPages; page += 1) {
+        if (
+            page === 1 ||
+            page === totalPages ||
+            Math.abs(page - currentPage) <= 1
+        ) {
+            pagesToRender.push(page);
+        }
+    }
+    const dedupedPages = Array.from(new Set(pagesToRender)).sort((a, b) => a - b);
+
+    let html = `<button type="button" class="pagination-btn" data-page="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''}>Prev</button>`;
+
+    dedupedPages.forEach((page, index) => {
+        if (index > 0 && page - dedupedPages[index - 1] > 1) {
+            html += `<span style="padding: 0 2px; color: #6b7280;">...</span>`;
+        }
+        html += `<button type="button" class="pagination-btn ${page === currentPage ? 'active' : ''}" data-page="${page}">${page}</button>`;
+    });
+
+    html += `<button type="button" class="pagination-btn" data-page="${currentPage + 1}" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>`;
+
+    paginationContainer.innerHTML = html;
+    paginationContainer.style.display = 'flex';
+
+    paginationContainer.querySelectorAll('.pagination-btn[data-page]').forEach(button => {
+        if (button.disabled) return;
+        button.addEventListener('click', () => {
+            const targetPage = Number(button.getAttribute('data-page'));
+            if (!Number.isFinite(targetPage)) return;
+            displayListings(currentSearchListings, targetPage, false);
+            const section = document.querySelector('.properties-section');
+            if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
 }
 
 function setupListingEventListeners() {
@@ -2304,22 +2375,6 @@ function setupListingEventListeners() {
             }
         });
     });
-
-    // Contact buttons - prevent card click when clicking contact button
-    document.querySelectorAll('.action-btn.contact-btn:not([onclick])').forEach(btn => {
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(newBtn, btn);
-        
-        newBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            const userId = this.getAttribute('data-user-id');
-            if (userId) {
-                window.contactBroker(userId);
-            }
-        });
-    });
 }
 
 function makePropertyCardsClickable() {
@@ -2331,7 +2386,6 @@ function makePropertyCardsClickable() {
 
         card.addEventListener('click', function(e) {
             if (
-                e.target.closest('.action-btn') ||
                 e.target.closest('.listing-save-btn') ||
                 e.target.closest('button')
             ) {
@@ -2349,6 +2403,7 @@ function makePropertyCardsClickable() {
 
 function displayNoListings() {
     const container = document.getElementById('listingsContainer');
+    const paginationContainer = document.getElementById('pagination');
     const resultsTitle = document.getElementById('resultsTitle');
     const resultsCount = document.getElementById('resultsCount');
     const resultsBadge = document.getElementById('resultsBadge');
@@ -2388,10 +2443,15 @@ function displayNoListings() {
         resultsCount.textContent = "No properties available";
         resultsBadge.style.display = 'none';
     }
+    if (paginationContainer) {
+        paginationContainer.style.display = 'none';
+        paginationContainer.innerHTML = '';
+    }
 }
 
 function displayError(error) {
     const container = document.getElementById('listingsContainer');
+    const paginationContainer = document.getElementById('pagination');
     const resultsBadge = document.getElementById('resultsBadge');
     
     container.innerHTML = `
@@ -2406,6 +2466,10 @@ function displayError(error) {
     </div>`;
     
     resultsBadge.style.display = 'none';
+    if (paginationContainer) {
+        paginationContainer.style.display = 'none';
+        paginationContainer.innerHTML = '';
+    }
 }
 
 // ====================== EVENT HANDLERS ============================
@@ -2431,6 +2495,7 @@ async function toggleSaveProperty(propertyId, buttonElement) {
 
             if (!snapshot.empty) {
                 await deleteDoc(snapshot.docs[0].ref);
+                currentSearchSavedMap.delete(propertyId);
                 buttonElement.innerHTML = '<i class="far fa-heart save-icon" aria-hidden="true"></i>';
                 buttonElement.setAttribute('data-is-saved', 'false');
                 buttonElement.setAttribute('aria-label', 'Save property');
@@ -2449,6 +2514,7 @@ async function toggleSaveProperty(propertyId, buttonElement) {
 
             // Log save event for AI recommendations
             await logSaveEvent(currentUser.uid, propertyId);
+            currentSearchSavedMap.set(propertyId, true);
 
             buttonElement.innerHTML = '<i class="fas fa-heart save-icon" aria-hidden="true"></i>';
             buttonElement.setAttribute('data-is-saved', 'true');
@@ -2570,6 +2636,48 @@ style.textContent = `
     animation: fadeIn 0.3s ease;
 }
 
+/* Pagination */
+#pagination {
+    display: none;
+    margin-top: 26px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.pagination-btn {
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: var(--text-dark);
+    min-width: 38px;
+    height: 38px;
+    padding: 0 10px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination-btn:hover {
+    border-color: #d4af37;
+    color: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.pagination-btn.active {
+    background: var(--primary-dark);
+    color: #ffffff;
+    border-color: var(--primary-dark);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .properties-section > div:first-child {
@@ -2585,6 +2693,12 @@ style.textContent = `
     .results-count-badge {
         align-self: flex-start;
         margin-top: 10px;
+    }
+
+    .pagination-btn {
+        min-width: 34px;
+        height: 34px;
+        font-size: 0.82rem;
     }
 }
 `;

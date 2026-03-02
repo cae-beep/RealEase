@@ -598,6 +598,7 @@ const brokerId = urlParams.get('brokerId');
 const propertyId = urlParams.get('propertyId');
 const brokerName = urlParams.get('brokerName') ? decodeURIComponent(urlParams.get('brokerName')) : 'Broker';
 const propertyName = urlParams.get('propertyName') ? decodeURIComponent(urlParams.get('propertyName')) : 'Property';
+const conversationIdFromUrl = urlParams.get('conversationId');
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
@@ -972,7 +973,7 @@ async function submitScheduleRequest() {
   
   try {
     // Get or create conversation ID
-    const conversationId = [currentUser.uid, brokerId].sort().join('_');
+    const conversationId = conversationIdFromUrl || [currentUser.uid, brokerId].sort().join('_');
     
     // If there's an existing schedule for this buyer/broker/property,
     // treat "reschedule again" as an UPDATE (single schedule thread),
@@ -1060,7 +1061,7 @@ async function brokerCreateSchedule() {
   submitBtn.disabled = true;
   
   try {
-    const conversationId = [buyerId, currentUser.uid].sort().join('_');
+    const conversationId = conversationIdFromUrl || [buyerId, currentUser.uid].sort().join('_');
     const scheduleData = {
       buyerId: buyerId,
       brokerId: currentUser.uid,

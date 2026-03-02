@@ -42,12 +42,18 @@
       box-sizing: border-box;
     }
 
+    html {
+      height: 100%;
+      overflow: hidden;
+    }
+
     body {
       font-family: 'Inter', Arial, sans-serif;
       background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
       color: var(--text-dark);
       display: flex;
-      min-height: 100vh;
+      height: 100%;
+      overflow: hidden;
     }
 
     .sidebar-overlay { display: none; }
@@ -157,6 +163,7 @@
     .inquiries-container {
       display: grid;
       grid-template-columns: 350px 1fr;
+      grid-template-rows: minmax(0, 1fr);
       gap: 25px;
       flex: 1;
       min-height: 0;
@@ -171,6 +178,7 @@
       border: 1px solid rgba(0, 0, 0, 0.05);
       display: flex;
       flex-direction: column;
+      min-height: 0;
       overflow: hidden;
     }
 
@@ -507,6 +515,7 @@
       border: 1px solid rgba(0, 0, 0, 0.05);
       display: flex;
       flex-direction: column;
+      min-height: 0;
       overflow: hidden;
     }
 
@@ -913,27 +922,27 @@
     }
 
     .chat-input-container {
-      padding: 20px 25px;
+      padding: 10px 20px 0 20px;
       border-top: 1px solid var(--border);
       background: var(--bg-white);
     }
 
     .chat-input-wrapper {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       align-items: flex-end;
     }
 
     .chat-input {
       flex: 1;
-      padding: 12px 16px;
+      padding: 8px 12px;
       border: 2px solid var(--border);
-      border-radius: 12px;
+      border-radius: 10px;
       font-family: 'Inter', sans-serif;
       font-size: 14px;
       resize: none;
-      min-height: 44px;
-      max-height: 120px;
+      min-height: 36px;
+      max-height: 100px;
       transition: all 0.3s ease;
     }
 
@@ -947,8 +956,8 @@
       background: var(--primary-gradient);
       color: white;
       border: none;
-      width: 44px;
-      height: 44px;
+      width: 36px;
+      height: 36px;
       border-radius: var(--border-radius-sm);
       display: flex;
       align-items: center;
@@ -1300,11 +1309,12 @@
       
       .inquiries-container {
         grid-template-columns: 1fr;
-        min-height: 400px;
+        grid-template-rows: auto minmax(0, 1fr);
       }
       
       .conversations-sidebar {
-        max-height: 400px;
+        min-height: 0;
+        max-height: 50vh;
       }
       
       .chat-header {
@@ -1463,7 +1473,7 @@
       }
       
       .chat-input-container {
-        padding: 15px;
+        padding: 8px 12px 0 12px;
       }
       
       .message-bubble {
@@ -1586,12 +1596,6 @@
           <textarea class="chat-input" id="chatInput" placeholder="Type your message here..." rows="1"></textarea>
           <button class="send-button" id="sendButton">
             <i class="fas fa-paper-plane"></i>
-          </button>
-        </div>
-        
-        <div class="quick-actions" id="quickActions" style="display: none;">
-          <button class="action-btn" id="deleteConversationBtn" style="background: #fee; color: var(--error); border-color: var(--error);">
-            <i class="fas fa-trash-alt"></i> Delete Conversation
           </button>
         </div>
       </div>
@@ -1882,8 +1886,6 @@ function setupEventListeners() {
   });
   
   // Quick actions
-  document.getElementById('deleteConversationBtn').addEventListener('click', openDeleteModal);
-  
   // Delete modal buttons
   document.getElementById('cancelDelete').addEventListener('click', closeDeleteModal);
   document.getElementById('confirmDelete').addEventListener('click', deleteConversation);
@@ -2550,9 +2552,8 @@ async function selectConversation(conversationId, buyerId, propertyId = null) {
     await loadPropertyData(propertyId);
   }
   
-  // Show chat input and quick actions
+  // Show chat input
   document.getElementById('chatInputContainer').style.display = 'block';
-  document.getElementById('quickActions').style.display = 'flex';
   
   // Load messages for this conversation
   await loadMessages(conversationId, buyerId);
@@ -2586,7 +2587,6 @@ function backToConversationList() {
   chatAvatarEl.removeAttribute('data-fallback');
   
   document.getElementById('chatInputContainer').style.display = 'none';
-  document.getElementById('quickActions').style.display = 'none';
   
   const messagesContainer = document.getElementById('messagesContainer');
   messagesContainer.innerHTML = `
@@ -3895,9 +3895,8 @@ function resetChatUI() {
     </div>
   `;
   
-  // Hide input and actions
+  // Hide input
   document.getElementById('chatInputContainer').style.display = 'none';
-  document.getElementById('quickActions').style.display = 'none';
 }
 
 // ==================== DATA FIXING FUNCTIONS ====================

@@ -668,7 +668,7 @@ body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: var(--text-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, getDocs, query, where, addDoc, deleteDoc, setDoc, orderBy, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, getDocs, query, where, addDoc, deleteDoc, setDoc, updateDoc, orderBy, serverTimestamp, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCIfzneDzWVveG8p_0mywoA9D9F5AyzZX4",
@@ -942,6 +942,12 @@ async function loadProperty() {
     currentListing = { id: propDoc.id, ...propDoc.data() };
     const contactId = currentListing.agentId || currentListing.brokerId || currentListing.userId || currentListing.landlordId;
     currentUserInfo = await loadUserInfo(contactId);
+    // Count this as a view when buyer opens the property details page
+    try {
+      await updateDoc(doc(db, "properties", propertyId), { views: increment(1) });
+    } catch (viewErr) {
+      console.warn("Could not increment property views:", viewErr);
+    }
     renderProperty();
     setupSaveButton();
     
@@ -1370,9 +1376,6 @@ function showCalculatorResults(htmlContent, calculatorType) {
   
   resultsContainer.innerHTML = htmlContent;
   resultsContainer.classList.add('show');
-  
-  // Scroll to results
-  resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function showCalculatorError(message) {
@@ -2207,8 +2210,6 @@ onAuthStateChanged(auth, (user) => {
   if (typeof window.updateBuyerNavAuth === 'function') window.updateBuyerNavAuth(user);
   if (propertyId) loadProperty();
 });
-
-if (propertyId) loadProperty();
 </script>
 
 <script src="../sidebar-user.js"></script>

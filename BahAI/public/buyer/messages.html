@@ -288,6 +288,23 @@
       align-items: center;
       gap: 10px;
     }
+    .incoming-notification-pill {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 7px;
+      border-radius: 999px;
+      background: var(--secondary-gradient);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .incoming-notification-pill.show {
+      display: inline-flex;
+    }
     .conversations-header-title i {
       color: #d4af37;
     }
@@ -719,14 +736,40 @@
       align-items: center;
       background: white;
       position: relative;
+      gap: 12px;
+    }
+
+    .chat-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .chat-header-icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-light);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--primary);
+      font-size: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .chat-header-icon-btn:hover {
+      background: white;
+      border-color: #d4af37;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      transform: translateY(-1px);
     }
 
     .chat-back-to-list {
       display: none;
-      position: absolute;
-      top: 50%;
-      right: 20px;
-      transform: translateY(-50%);
       background: transparent;
       border: none;
       color: var(--text-dark);
@@ -1186,12 +1229,14 @@
       z-index: 10000;
       opacity: 0;
       visibility: hidden;
+      pointer-events: none;
       transition: all 0.3s ease;
     }
 
     .modal-overlay.active {
       opacity: 1;
       visibility: visible;
+      pointer-events: auto;
     }
 
     .modal {
@@ -1273,6 +1318,109 @@
     .modal-btn.delete:hover {
       background: #dc2626;
       transform: translateY(-2px);
+    }
+
+    /* Property picker for scheduling */
+    #propertyPickerModal .modal {
+      max-width: 900px;
+      width: min(900px, 95vw);
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(circle at top left, rgba(212, 175, 55, 0.08), transparent 55%), #ffffff;
+    }
+
+    #propertyPickerModal .modal-header {
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    #propertyPickerModal .modal-content h3 {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    #propertyPickerModal .modal-content p {
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    #propertyPickerModal .modal-actions {
+      margin-top: 18px;
+    }
+
+    .property-picker-list {
+      max-height: 420px;
+      overflow-y: auto;
+      margin-top: 8px;
+      padding-right: 4px;
+      padding-top: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .property-picker-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      background: var(--bg-light);
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .property-picker-item:hover {
+      transform: translateY(-1px);
+      border-color: #d4af37;
+      background: #ffffff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+    }
+
+    .property-picker-thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      background: #e5e7eb;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .property-picker-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .property-picker-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .property-picker-meta {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-bottom: 2px;
+    }
+
+    .property-picker-price {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .property-picker-empty,
+    .property-picker-loading {
+      font-size: 14px;
+      color: var(--text-light);
+      padding: 12px 0;
     }
 
     /* ===== RESPONSIVE DESIGN ===== */
@@ -1559,6 +1707,7 @@
 
       .chat-back-to-list {
         display: block;
+        position: absolute;
         right: 10px;
         top: 50%;
         transform: translateY(-50%);
@@ -1984,13 +2133,12 @@
     <!-- Conversations Sidebar -->
     <div class="conversations-sidebar">
       <div class="conversations-header">
-        <h2 class="conversations-header-title"><i class="fas fa-comments"></i> Messages</h2>
-        <p class="conversations-header-subtitle">AI-assisted communication with property owners and brokers</p>
+        <h2 class="conversations-header-title">
+          <i class="fas fa-comments"></i> Messages
+          <span id="incomingNotificationBadge" class="incoming-notification-pill">0</span>
+        </h2>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
           <span style="font-size: 0.9rem; color: var(--text-light);">Conversations</span>
-          <button class="refresh-btn" id="refreshBtn">
-            <i class="fas fa-sync-alt"></i> Refresh
-          </button>
         </div>
         
         <div class="index-notice" id="indexNotice">
@@ -2033,9 +2181,17 @@
             <p id="chatUserStatus"><i class="fas fa-circle" style="color: #ccc; font-size: 8px;"></i> Choose a conversation to start messaging</p>
           </div>
         </div>
-        <button type="button" class="chat-back-to-list" id="chatBackToList" aria-label="Back to conversations">
-          <i class="fas fa-arrow-left"></i>
-        </button>
+        <div class="chat-header-actions">
+          <button type="button" class="chat-header-icon-btn" id="scheduleViewingBtn" title="Schedule viewing">
+            <i class="fas fa-calendar-check"></i>
+          </button>
+          <button type="button" class="chat-header-icon-btn" id="deleteConversationBtn" title="Delete conversation">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+          <button type="button" class="chat-back-to-list" id="chatBackToList" aria-label="Back to conversations">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+        </div>
       </div>
 
       <div class="chat-messages-container" id="chatMessagesContainer">
@@ -2051,15 +2207,6 @@
           <textarea class="chat-input" id="chatInput" placeholder="Type your message…" rows="1"></textarea>
           <button class="send-button" id="sendButton">
             <i class="fas fa-paper-plane"></i>
-          </button>
-        </div>
-        
-        <div class="quick-actions" id="quickActions" style="display: none;">
-          <button class="action-btn primary" id="scheduleViewingBtn">
-            <i class="fas fa-calendar-check"></i> Schedule Viewing
-          </button>
-          <button class="action-btn" id="deleteConversationBtn" style="background: #fee; color: var(--error); border-color: var(--error);">
-            <i class="fas fa-trash-alt"></i> Delete Conversation
           </button>
         </div>
       </div>
@@ -2082,6 +2229,27 @@
     <div class="modal-actions">
       <button class="modal-btn cancel" id="cancelDelete">Cancel</button>
       <button class="modal-btn delete" id="confirmDelete">Delete Conversation</button>
+    </div>
+  </div>
+</div>
+
+<!-- Schedule Viewing: Property Picker Modal -->
+<div class="modal-overlay" id="propertyPickerModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-icon">
+        <i class="fas fa-calendar-check"></i>
+      </div>
+      <div class="modal-content">
+        <h3>Select a property to schedule</h3>
+        <p id="propertyPickerSubtitle">Choose one of this contact's properties to schedule a viewing.</p>
+      </div>
+    </div>
+    <div id="propertyPickerList" class="property-picker-list">
+      <div class="property-picker-loading">Loading properties...</div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" id="propertyPickerCancel">Cancel</button>
     </div>
   </div>
 </div>
@@ -2162,6 +2330,9 @@ let activeFilter = 'all';
 let searchTerm = '';
 let isLoadingMessages = false;
 let conversationToDelete = null;
+let unreadSnapshotMap = new Map();
+let hasProcessedRealtimeSnapshot = false;
+const defaultMessagesPageTitle = document.title;
 
 // Debug mode
 const DEBUG = true;
@@ -2169,6 +2340,89 @@ function debugLog(...args) {
   if (DEBUG) {
     console.log('🔍 [DEBUG]', ...args);
   }
+}
+
+function getConversationUnreadCount(conversationData) {
+  if (!conversationData || !currentUser) return 0;
+  return Number(conversationData.unreadCount?.[currentUser.uid] || 0);
+}
+
+function getTotalUnreadMessages() {
+  if (!currentUser) return 0;
+  return allConversations.reduce((sum, conv) => sum + getConversationUnreadCount(conv), 0);
+}
+
+function updateIncomingNotificationIndicators() {
+  const unreadTotal = getTotalUnreadMessages();
+  const badge = document.getElementById('incomingNotificationBadge');
+  const navBadge = document.getElementById('topNavMessagesBadge');
+  if (badge) {
+    if (unreadTotal > 0) {
+      badge.textContent = unreadTotal > 99 ? '99+' : String(unreadTotal);
+      badge.classList.add('show');
+    } else {
+      badge.textContent = '0';
+      badge.classList.remove('show');
+    }
+  }
+  if (navBadge) {
+    if (unreadTotal > 0) {
+      navBadge.textContent = unreadTotal > 99 ? '99+' : String(unreadTotal);
+      navBadge.classList.add('show');
+    } else {
+      navBadge.textContent = '0';
+      navBadge.classList.remove('show');
+    }
+  }
+
+  document.title = unreadTotal > 0
+    ? `(${unreadTotal}) ${defaultMessagesPageTitle}`
+    : defaultMessagesPageTitle;
+}
+
+function getConversationContactName(conversationData) {
+  const participants = Array.isArray(conversationData?.participants) ? conversationData.participants : [];
+  const otherUserId = conversationData?.brokerId || participants.find(id => id !== currentUser?.uid);
+  if (!otherUserId) return 'your contact';
+  const userInfo = userMap.get(otherUserId);
+  return userInfo?.displayName || `Contact ${String(otherUserId).substring(0, 8)}`;
+}
+
+function triggerIncomingMessageNotification(conversationId, conversationData) {
+  if (!currentUser || !hasProcessedRealtimeSnapshot) return;
+  const unreadNow = getConversationUnreadCount(conversationData);
+  const unreadBefore = Number(unreadSnapshotMap.get(conversationId) || 0);
+  unreadSnapshotMap.set(conversationId, unreadNow);
+
+  if (unreadNow <= unreadBefore) return;
+
+  const isActiveConversation = conversationId === currentConversationId;
+  const canSkipForegroundAlert = isActiveConversation && document.hasFocus();
+  if (canSkipForegroundAlert) return;
+
+  const contactName = getConversationContactName(conversationData);
+  const messagePreview = (conversationData?.lastMessage || 'You have a new message').toString();
+  const shortPreview = messagePreview.length > 90 ? `${messagePreview.slice(0, 90)}...` : messagePreview;
+
+  showToast(`New message from ${contactName}`, 'success');
+
+  if ('Notification' in window && Notification.permission === 'granted') {
+    try {
+      new Notification(`New message from ${contactName}`, {
+        body: shortPreview,
+        tag: `buyer-message-${conversationId}`
+      });
+    } catch (error) {
+      debugLog('Notification API failed:', error);
+    }
+  }
+}
+
+function seedUnreadSnapshotState() {
+  unreadSnapshotMap.clear();
+  allConversations.forEach(conv => {
+    unreadSnapshotMap.set(conv.id, getConversationUnreadCount(conv));
+  });
 }
 
 // Initialize on auth state change
@@ -2326,20 +2580,72 @@ async function initPage() {
     }
   }
   
-  // If userId in URL, auto-open existing conversation with that user
-  if (targetUserId && allConversations.length > 0) {
-    const conv = allConversations.find(c => {
-      const brokerId = c.brokerId || (c.participants && c.participants.find(id => id !== currentUser.uid));
-      return brokerId === targetUserId;
-    });
+  // If userId in URL, auto-open existing conversation with that user,
+  // or create a new empty conversation if none exists (e.g. from broker profile page)
+  if (targetUserId) {
+    let conv = null;
+    if (allConversations.length > 0) {
+      conv = allConversations.find(c => {
+        const brokerId = c.brokerId || (c.participants && c.participants.find(id => id !== currentUser.uid));
+        return brokerId === targetUserId;
+      });
+    }
+
     if (conv) {
       const brokerId = conv.brokerId || conv.participants.find(id => id !== currentUser.uid);
       await selectConversation(conv.id, brokerId, conv.propertyId || null);
-      // Clear URL param so back button works naturally
-      if (window.history.replaceState) {
-        window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+      try {
+        const conversationsRef = collection(db, 'conversations');
+        const newConvRef = doc(conversationsRef);
+        const convData = {
+          participants: [currentUser.uid, targetUserId],
+          buyerId: currentUser.uid,
+          brokerId: targetUserId,
+          propertyId: null,
+          lastMessage: '',
+          lastMessageTime: serverTimestamp(),
+          unreadCount: { [targetUserId]: 0 },
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        };
+        await setDoc(newConvRef, convData);
+        processConversation(newConvRef.id, convData);
+        await selectConversation(newConvRef.id, targetUserId, null);
+      } catch (e) {
+        console.error('Error creating new conversation from profile:', e);
       }
     }
+
+    // Clear URL param so back button works naturally
+    if (window.history.replaceState) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    return; // Don't apply \"last conversation\" logic when coming from a profile deep link
+  }
+
+  // If no deep link, restore last opened conversation from localStorage (desktop & mobile)
+  try {
+    const raw = localStorage.getItem('bahai_buyer_messages_last_conversation');
+    if (raw && allConversations.length > 0) {
+      let stored = null;
+      try { stored = JSON.parse(raw); } catch (_) {}
+      const lastId = stored && stored.conversationId ? stored.conversationId : raw;
+      if (lastId && typeof lastId === 'string') {
+        const conv = allConversations.find(c => c.id === lastId);
+        if (conv) {
+          const brokerId = conv.brokerId || (conv.participants && conv.participants.find(id => id !== currentUser.uid));
+          if (brokerId) {
+            await selectConversation(conv.id, brokerId, conv.propertyId || null, false);
+          }
+        } else {
+          // Conversation no longer exists; clear stale value
+          localStorage.removeItem('bahai_buyer_messages_last_conversation');
+        }
+      }
+    }
+  } catch (e) {
+    debugLog('⚠️ Could not restore last conversation:', e?.message || e);
   }
 }
 
@@ -2369,13 +2675,13 @@ async function loadCurrentUserData() {
       }
     } else {
       currentUser.displayName = 'Buyer';
-      // Fallback: use auth user for sidebar
-        const profileData = {
-          fullName: currentUser.displayName || currentUser.email?.split('@')[0] || 'User',
-          email: currentUser.email,
-          role: 'user',
-          photoURL: userData.photoURL || userData.profilePhotoURL
-        };
+      // Fallback: use auth user for sidebar (no userDoc found)
+      const profileData = {
+        fullName: currentUser.displayName || currentUser.email?.split('@')[0] || 'User',
+        email: currentUser.email,
+        role: 'user',
+        photoURL: currentUser.photoURL || null
+      };
       try { localStorage.setItem('userData', JSON.stringify(profileData)); } catch (e) {}
       if (typeof window.updateSidebarUserProfile === 'function') {
         window.updateSidebarUserProfile(profileData);
@@ -2389,10 +2695,6 @@ async function loadCurrentUserData() {
 
 // Setup event listeners
 function setupEventListeners() {
-  // Refresh button
-  document.getElementById('refreshBtn').addEventListener('click', refreshConversations);
-  
-  
   // Filter buttons
   document.getElementById('filterAll').addEventListener('click', () => setFilter('all'));
   document.getElementById('filterUnread').addEventListener('click', () => setFilter('unread'));
@@ -2428,6 +2730,20 @@ function setupEventListeners() {
   // Delete modal buttons
   document.getElementById('cancelDelete').addEventListener('click', closeDeleteModal);
   document.getElementById('confirmDelete').addEventListener('click', deleteConversation);
+
+  // Property picker modal buttons
+  const pickerCancel = document.getElementById('propertyPickerCancel');
+  if (pickerCancel) {
+    pickerCancel.addEventListener('click', closeSchedulePropertyPicker);
+  }
+  const pickerModal = document.getElementById('propertyPickerModal');
+  if (pickerModal) {
+    pickerModal.addEventListener('click', function(e) {
+      if (e.target === pickerModal) {
+        closeSchedulePropertyPicker();
+      }
+    });
+  }
   
   // Close modal when clicking outside
   document.getElementById('deleteModal').addEventListener('click', function(e) {
@@ -2485,10 +2801,13 @@ async function loadConversations() {
       
       // Update notice
       document.getElementById('indexNotice').style.display = 'none';
-      
-      // Set up real-time listener for conversations
-      setupConversationsListener();
     }
+
+    seedUnreadSnapshotState();
+    updateIncomingNotificationIndicators();
+    hasProcessedRealtimeSnapshot = false;
+    // Set up real-time listener for conversations (even when empty)
+    setupConversationsListener();
     
   } catch (error) {
     console.error('❌ Error loading conversations:', error);
@@ -2622,6 +2941,7 @@ function setupConversationsListener() {
           // New conversation added
           debugLog('➕ New conversation added:', conversationId);
           processConversation(conversationId, conversationData);
+          triggerIncomingMessageNotification(conversationId, conversationData);
           needsRefresh = true;
         } else if (change.type === 'modified') {
           // Conversation updated
@@ -2638,6 +2958,7 @@ function setupConversationsListener() {
                 conversationData.lastMessageTime.toDate() : 
                 new Date(conversationData.lastMessageTime || Date.now())
             };
+            triggerIncomingMessageNotification(conversationId, conversationData);
             needsRefresh = true;
           }
         } else if (change.type === 'removed') {
@@ -2646,6 +2967,7 @@ function setupConversationsListener() {
           const index = allConversations.findIndex(c => c.id === conversationId);
           if (index !== -1) {
             allConversations.splice(index, 1);
+            unreadSnapshotMap.delete(conversationId);
             needsRefresh = true;
           }
         }
@@ -2656,7 +2978,9 @@ function setupConversationsListener() {
         await loadAllUsersForConversations();
         await loadAllPropertiesForConversations();
         filterConversations();
+        updateIncomingNotificationIndicators();
       }
+      hasProcessedRealtimeSnapshot = true;
     });
     
   } catch (error) {
@@ -2667,6 +2991,7 @@ function setupConversationsListener() {
 // Show no conversations state
 function showNoConversations() {
   const conversationsList = document.getElementById('conversationsList');
+  updateIncomingNotificationIndicators();
   conversationsList.innerHTML = `
     <div class="empty-state" style="padding: 40px;">
       <div class="empty-state-icon">💬</div>
@@ -2828,6 +3153,7 @@ function extractUserName(userData) {
 // Display conversations in the sidebar
 function displayConversations(conversations) {
   const conversationsList = document.getElementById('conversationsList');
+  updateIncomingNotificationIndicators();
   
   if (conversations.length === 0) {
     let message = 'No conversations found';
@@ -2955,6 +3281,18 @@ async function selectConversation(conversationId, brokerId, propertyId = null, s
     return;
   }
 
+  // Remember last opened conversation so it can be restored
+  try {
+    const state = {
+      conversationId,
+      brokerId,
+      propertyId: propertyId || null
+    };
+    localStorage.setItem('bahai_buyer_messages_last_conversation', JSON.stringify(state));
+  } catch (e) {
+    debugLog('⚠️ Could not persist last conversation:', e?.message || e);
+  }
+
   // On mobile (≤768px), navigate to URL with conversationId for full-screen chat view
   if (shouldNavigate && window.innerWidth <= 768) {
     const url = new URL(window.location);
@@ -3010,9 +3348,8 @@ async function selectConversation(conversationId, brokerId, propertyId = null, s
     await loadPropertyData(propertyId);
   }
   
-  // Show chat input and quick actions
+  // Show chat input
   document.getElementById('chatInputContainer').style.display = 'block';
-  document.getElementById('quickActions').style.display = 'flex';
   
   // Load messages for this conversation
   await loadMessages(conversationId, brokerId);
@@ -3326,10 +3663,12 @@ async function markConversationAsRead(conversationId) {
             ...allConversations[conversationIndex].unreadCount,
             [currentUser.uid]: 0
           };
+          unreadSnapshotMap.set(conversationId, 0);
           
           // Update stats and UI
           updateStats();
           filterConversations();
+          updateIncomingNotificationIndicators();
         }
       }
     }
@@ -3513,6 +3852,21 @@ async function deleteConversation() {
     
     debugLog('✅ Conversation and messages deleted successfully');
     
+    // Clear persisted last conversation if it was this one
+    try {
+      const raw = localStorage.getItem('bahai_buyer_messages_last_conversation');
+      if (raw) {
+        let stored = null;
+        try { stored = JSON.parse(raw); } catch (_) {}
+        const lastId = stored && stored.conversationId ? stored.conversationId : raw;
+        if (lastId === conversationId) {
+          localStorage.removeItem('bahai_buyer_messages_last_conversation');
+        }
+      }
+    } catch (e) {
+      debugLog('⚠️ Could not clear last conversation after delete:', e?.message || e);
+    }
+    
     // Close modal
     closeDeleteModal();
     
@@ -3567,9 +3921,8 @@ function resetChatUI() {
     </div>
   `;
   
-  // Hide input and actions
+  // Hide input
   document.getElementById('chatInputContainer').style.display = 'none';
-  document.getElementById('quickActions').style.display = 'none';
 }
 
 // ==================== SCHEDULE MESSAGE FUNCTIONS ====================
@@ -3951,7 +4304,7 @@ window.suggestNewTimeFromMessage = function(conversationId, brokerIdFromMessage,
     return;
   }
   
-  const scheduleUrl = `schedule_viewing.html?buyerId=${currentUser.uid}&brokerId=${effectiveBrokerId}&propertyId=${effectivePropertyId}&brokerName=${encodeURIComponent(brokerInfo.displayName)}&propertyName=${encodeURIComponent(propertyInfo.title)}`;
+  const scheduleUrl = `schedule_viewing.html?buyerId=${currentUser.uid}&brokerId=${effectiveBrokerId}&propertyId=${effectivePropertyId}&brokerName=${encodeURIComponent(brokerInfo.displayName)}&propertyName=${encodeURIComponent(propertyInfo.title)}&conversationId=${encodeURIComponent(conversationId)}`;
   
   window.open(scheduleUrl, '_blank', 'width=800,height=700,scrollbars=yes');
 };
@@ -4015,44 +4368,184 @@ window.suggestNewTime = function(conversationId) {
     return;
   }
   
-  const scheduleUrl = `schedule_viewing.html?buyerId=${currentUser.uid}&brokerId=${currentBrokerId}&propertyId=${currentPropertyId}&brokerName=${encodeURIComponent(brokerInfo.displayName)}&propertyName=${encodeURIComponent(propertyInfo.title)}`;
+  const scheduleUrl = `schedule_viewing.html?buyerId=${currentUser.uid}&brokerId=${currentBrokerId}&propertyId=${currentPropertyId}&brokerName=${encodeURIComponent(brokerInfo.displayName)}&propertyName=${encodeURIComponent(propertyInfo.title)}&conversationId=${encodeURIComponent(conversationId || currentConversationId || '')}`;
   
   window.open(scheduleUrl, '_blank', 'width=800,height=700,scrollbars=yes');
 };
 
 // Schedule viewing
 function scheduleViewing() {
-  if (!currentBrokerId || !currentPropertyId) {
-    showError('Please select a conversation with a property');
+  if (!currentBrokerId) {
+    showError('Please select a conversation first');
     return;
   }
-  
+
+  // Prefer the property tied to this conversation (e.g. from property details)
+  let effectivePropertyId = currentPropertyId;
+
+  // Fallback: if for some reason currentPropertyId is not set,
+  // try to read it from the conversation object we have in memory
+  if (!effectivePropertyId && currentConversationId && allConversations.length > 0) {
+    const conv = allConversations.find(c => c.id === currentConversationId);
+    if (conv && conv.propertyId) {
+      effectivePropertyId = conv.propertyId;
+    }
+  }
+
+  if (effectivePropertyId) {
+    scheduleViewingForProperty(effectivePropertyId);
+    return;
+  }
+
+  // Otherwise (e.g. conversation started from broker/landlord profile),
+  // let the buyer choose from all of this contact's properties.
+  openSchedulePropertyPicker();
+}
+
+// Load all properties for the current broker/landlord so buyer can pick one
+async function loadBrokerPropertiesForSchedule(brokerId) {
+  const propsRef = collection(db, 'properties');
+  const seen = new Set();
+  const list = [];
+
+  async function addFromQuery(q) {
+    try {
+      const snap = await getDocs(q);
+      snap.forEach(d => {
+        if (seen.has(d.id)) return;
+        seen.add(d.id);
+        const data = d.data();
+        const photos = data.photos || data.imageUrls || data.galleryImages || [];
+        const prop = {
+          id: d.id,
+          title: data.title || 'Untitled Property',
+          location: data.location || data.address || data.city || 'Location not specified',
+          type: data.propertyType || data.type || 'Property',
+          photos: photos,
+          imageUrls: data.imageUrls || photos,
+          userId: data.userId || null,
+          listingType: data.listingType || data.type,
+          monthlyRent: data.monthlyRent,
+          annualRent: data.annualRent,
+          salePrice: data.salePrice,
+          pricing: data.pricing,
+          price: data.pricing || data.monthlyRent || data.salePrice || data.price || 0,
+          status: data.status
+        };
+        propertyMap.set(d.id, prop);
+        list.push(prop);
+      });
+    } catch (e) {
+      debugLog('⚠️ Error loading properties for schedule:', e?.message || e);
+    }
+  }
+
+  // Properties directly owned/listed by this user
+  await addFromQuery(query(propsRef, where('userId', '==', brokerId)));
+  // Properties where this user is stored as broker/landlord (if schema uses these fields)
+  await addFromQuery(query(propsRef, where('brokerId', '==', brokerId)));
+  await addFromQuery(query(propsRef, where('landlordId', '==', brokerId)));
+
+  // Only show active/available listings
+  return list.filter(p => !p.status || p.status === 'active' || p.status === 'available');
+}
+
+function openSchedulePropertyPicker() {
+  const modal = document.getElementById('propertyPickerModal');
+  const listEl = document.getElementById('propertyPickerList');
+  if (!modal || !listEl) {
+    showError('Unable to open property picker');
+    return;
+  }
+
+  listEl.innerHTML = '<div class="property-picker-loading">Loading properties...</div>';
+  modal.classList.add('active');
+
+  loadBrokerPropertiesForSchedule(currentBrokerId).then(properties => {
+    if (!properties || properties.length === 0) {
+      listEl.innerHTML = '<div class="property-picker-empty">This contact has no available properties for scheduling.</div>';
+      return;
+    }
+
+    const itemsHtml = properties.map(p => {
+      const photo = getPropertyThumb(p) || 'https://via.placeholder.com/80x80/0b2e52/white?text=Property';
+      const title = (p.title || 'Untitled Property').replace(/</g, '&lt;');
+      const loc = (p.location || 'Location not specified').replace(/</g, '&lt;');
+      const price = formatPropertyPrice(p);
+      return `
+        <div class="property-picker-item" data-schedule-property-id="${p.id}">
+          <img class="property-picker-thumb" src="${photo.replace(/"/g, '&quot;')}" alt="${title}">
+          <div class="property-picker-main">
+            <div class="property-picker-title">${title}</div>
+            <div class="property-picker-meta">${loc}</div>
+            <div class="property-picker-price">${price}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    listEl.innerHTML = itemsHtml;
+
+    listEl.querySelectorAll('[data-schedule-property-id]').forEach(el => {
+      el.addEventListener('click', () => {
+        const pid = el.getAttribute('data-schedule-property-id');
+        if (pid) {
+          scheduleViewingForProperty(pid);
+        }
+      });
+    });
+  }).catch(err => {
+    debugLog('❌ Failed to load properties for picker:', err?.message || err);
+    listEl.innerHTML = '<div class="property-picker-empty">Failed to load properties.</div>';
+  });
+}
+
+function closeSchedulePropertyPicker() {
+  const modal = document.getElementById('propertyPickerModal');
+  if (modal) {
+    modal.classList.remove('active');
+  }
+}
+
+// Schedule viewing for a specific property (used both from conversation context and picker)
+async function scheduleViewingForProperty(propertyId) {
+  if (!currentBrokerId) {
+    showError('Please select a conversation first');
+    return;
+  }
+
+  if (!propertyId) {
+    showError('No property selected');
+    return;
+  }
+
+  if (!propertyMap.has(propertyId)) {
+    await loadPropertyData(propertyId);
+  }
+
   const brokerInfo = userMap.get(currentBrokerId);
-  const propertyInfo = propertyMap.get(currentPropertyId);
-  
+  const propertyInfo = propertyMap.get(propertyId);
+
   if (!brokerInfo || !propertyInfo) {
     showError('Unable to schedule viewing');
     return;
   }
-  
-  // Check if there's already a pending schedule
-  checkForExistingSchedule(currentPropertyId, currentBrokerId).then(hasExisting => {
+
+  try {
+    const hasExisting = await checkForExistingSchedule(propertyId, currentBrokerId);
+    const scheduleUrl = `schedule_viewing.html?buyerId=${currentUser.uid}&brokerId=${currentBrokerId}&propertyId=${propertyId}&brokerName=${encodeURIComponent(brokerInfo.displayName)}&propertyName=${encodeURIComponent(propertyInfo.title)}&conversationId=${encodeURIComponent(currentConversationId || '')}`;
+
     if (hasExisting) {
       if (confirm('You already have a pending viewing request for this property. Would you like to view it or schedule a new one?')) {
-        // Show existing schedule details
-        viewExistingSchedule(currentPropertyId, currentBrokerId);
+        await viewExistingSchedule(propertyId, currentBrokerId);
       } else {
-        // Schedule new viewing
-        openSchedulePage();
+        window.open(scheduleUrl, '_blank', 'width=800,height=700,scrollbars=yes');
       }
     } else {
-      openSchedulePage();
+      window.open(scheduleUrl, '_blank', 'width=800,height=700,scrollbars=yes');
     }
-  });
-  
-  function openSchedulePage() {
-    const scheduleUrl = `schedule_viewing.html?buyerId=${currentUser.uid}&brokerId=${currentBrokerId}&propertyId=${currentPropertyId}&brokerName=${encodeURIComponent(brokerInfo.displayName)}&propertyName=${encodeURIComponent(propertyInfo.title)}`;
-    window.open(scheduleUrl, '_blank', 'width=800,height=700,scrollbars=yes');
+  } finally {
+    closeSchedulePropertyPicker();
   }
 }
 
@@ -4328,20 +4821,8 @@ function setFilter(filterName) {
 
 // Refresh conversations
 function refreshConversations() {
-  const refreshBtn = document.getElementById('refreshBtn');
-  const originalHTML = refreshBtn.innerHTML;
-  
-  refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing';
-  refreshBtn.classList.add('refreshing');
-  
-  // Clear and reload conversations
+  // Programmatic refresh only (button removed)
   loadConversations();
-  
-  // Reset button after 2 seconds
-  setTimeout(() => {
-    refreshBtn.innerHTML = originalHTML;
-    refreshBtn.classList.remove('refreshing');
-  }, 2000);
 }
 
 // Send email to broker
