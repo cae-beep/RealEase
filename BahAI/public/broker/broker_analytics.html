@@ -22,7 +22,7 @@
         --border-radius-lg: 24px;
         --text-dark: #1a202c;
         --text-light: #718096;
-        --bg-light: #f8fafc;
+        --bg-light: #f1f5f9;
         --bg-white: #ffffff;
         --border: #e2e8f0;
     }
@@ -75,60 +75,284 @@
 
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 24px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
     }
 
     .stat-card {
+        position: relative;
         background: var(--bg-white);
-        border-radius: var(--border-radius);
-        padding: 24px;
+        border-radius: 18px;
+        padding: 16px 18px 14px;
         box-shadow: var(--card-shadow);
-        border: 1px solid rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
-    }
-    .stat-card:hover {
-        box-shadow: var(--card-hover-shadow);
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        color: var(--text-dark);
     }
 
-    .stat-card-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: var(--border-radius-sm);
+    .stat-card-header {
         display: flex;
         align-items: center;
-        justify-content: center;
-        font-size: 1.25rem;
-        margin-bottom: 16px;
-    }
-    .stat-card-icon.properties { background: rgba(11, 46, 82, 0.1); color: var(--primary); }
-    .stat-card-icon.views { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
-    .stat-card-icon.likes { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-    .stat-card-icon.inquiries { background: rgba(212, 175, 55, 0.15); color: #b8860b; }
-
-    .stat-card-value {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: var(--text-dark);
-        margin-bottom: 4px;
+        justify-content: space-between;
+        margin-bottom: 6px;
     }
 
     .stat-card-label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        opacity: 0.92;
+    }
+
+    .stat-card-icon {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .stat-card-value {
+        font-size: 1.7rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        margin-top: 4px;
+    }
+
+    /* Property performance chart */
+    .performance-section {
+        margin-top: 32px;
+    }
+    .performance-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .performance-title i {
+        color: #d4af37;
+    }
+    .performance-chart {
+        background: var(--bg-white);
+        border-radius: var(--border-radius);
+        padding: 20px 24px 18px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    .performance-empty {
         font-size: 0.9rem;
         color: var(--text-light);
     }
+    .bar-chart {
+        position: relative;
+        height: 260px;
+        display: flex;
+        align-items: flex-end;
+        gap: 16px;
+        padding: 8px 8px 0;
+    }
+    .bar-chart::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 10px;
+        bottom: 32px;
+        background-image: linear-gradient(to top, #e5e7eb 1px, transparent 1px);
+        background-size: 100% 60px;
+        opacity: 0.7;
+        pointer-events: none;
+    }
+    .bar-item {
+        position: relative;
+        flex: 1 1 0;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        z-index: 1;
+    }
+    .bar-outer {
+        width: 100%;
+        height: 200px;
+        border-radius: 16px 16px 0 0;
+        background: #e5e7eb;
+        overflow: hidden;
+        display: flex;
+        align-items: flex-end;
+    }
+    .bar-fill {
+        width: 100%;
+        background: var(--primary);
+        border-radius: 16px 16px 0 0;
+        transition: height 0.3s ease-out;
+    }
+    .bar-label {
+        margin-top: 8px;
+        font-size: 0.8rem;
+        color: var(--text-dark);
+        max-width: 80px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .bar-tooltip {
+        position: absolute;
+        bottom: 210px;
+        left: 50%;
+        transform: translateX(-50%) translateY(6px);
+        background: #ffffff;
+        color: var(--text-dark);
+        padding: 6px 10px;
+        border-radius: 8px;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+        font-size: 0.78rem;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.16s ease, transform 0.16s ease;
+        z-index: 5;
+    }
+    .bar-tooltip-title {
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+    .bar-tooltip-views {
+        color: var(--text-light);
+    }
+    /* Engagement bars (inquiries + likes) */
+    .engagement-bars {
+        width: 100%;
+        height: 200px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 8px;
+    }
+    .engagement-bar {
+        flex: 1;
+        border-radius: 10px 10px 0 0;
+        background: var(--primary);
+        transition: height 0.3s ease-out;
+    }
+    .engagement-bar.inquiries {
+        background: var(--primary);
+    }
+    .engagement-bar.likes {
+        background: #d4af37;
+    }
+    .engagement-legend {
+        margin-top: 14px;
+        display: flex;
+        justify-content: center;
+        gap: 18px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    .engagement-legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .engagement-legend-swatch {
+        width: 12px;
+        height: 12px;
+        border-radius: 999px;
+        background: var(--primary);
+    }
+    .engagement-legend-swatch.likes {
+        background: #d4af37;
+    }
+    .bar-item:hover .bar-tooltip {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    /* Viewer Location chart (horizontal bars) */
+    .location-chart {
+        margin-top: 6px;
+    }
+    .location-row {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        align-items: center;
+        gap: 12px;
+        padding: 6px 4px;
+        position: relative;
+    }
+    .location-row:nth-child(odd) {
+        background: rgba(148, 163, 184, 0.06);
+        border-radius: 8px;
+    }
+    .location-label {
+        font-size: 0.85rem;
+        color: var(--text-dark);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .location-bar-track {
+        position: relative;
+        width: 100%;
+        height: 18px;
+        background: #e5e7eb;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+    .location-bar {
+        position: relative;
+        height: 100%;
+        border-radius: 999px;
+        background: var(--primary);
+        cursor: pointer;
+        transition: width 0.25s ease-out, background-color 0.15s ease-out;
+    }
+    .location-row:hover .location-bar {
+        background: #d4af37;
+    }
+    .location-tooltip {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) translateY(-4px);
+        background: #ffffff;
+        color: var(--text-dark);
+        padding: 6px 10px;
+        border-radius: 8px;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+        font-size: 0.78rem;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.16s ease, transform 0.16s ease;
+        z-index: 5;
+    }
+    .location-tooltip-title {
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+    .location-tooltip-views {
+        color: var(--text-light);
+    }
+    .location-row:hover .location-tooltip {
+        opacity: 1;
+        transform: translate(-50%, -50%) translateY(-8px);
+    }
 
     @media (max-width: 1024px) {
-        .container { margin-left: 0; padding-top: 70px; }
+        .container { margin-left: 0; padding: 24px 18px 32px; padding-top: 70px; }
         .mobile-menu-toggle { display: flex; align-items: center; justify-content: center; }
-        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
     }
 
     @media (max-width: 600px) {
-        .container { padding: 20px 16px 32px; padding-top: 56px; }
+        .container { padding: 18px 14px 28px; padding-top: 56px; }
         .page-title { font-size: 1.5rem; margin-bottom: 20px; }
-        .stats-grid { grid-template-columns: 1fr; gap: 16px; }
-        .stat-card { padding: 20px; }
+        .stats-grid { grid-template-columns: 1fr; gap: 12px; }
+        .stat-card { padding: 12px 14px 10px; border-radius: 12px; }
     }
 </style>
 </head>
@@ -143,32 +367,70 @@
 
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-card-icon properties">
-        <i class="fas fa-building"></i>
+      <div class="stat-card-header">
+        <div class="stat-card-label">Total Properties</div>
+        <div class="stat-card-icon">
+          <i class="fas fa-home"></i>
+        </div>
       </div>
       <div class="stat-card-value" id="totalProperties">0</div>
-      <div class="stat-card-label">Total Properties</div>
     </div>
     <div class="stat-card">
-      <div class="stat-card-icon views">
-        <i class="fas fa-eye"></i>
+      <div class="stat-card-header">
+        <div class="stat-card-label">Total Views</div>
+        <div class="stat-card-icon">
+          <i class="fas fa-eye"></i>
+        </div>
       </div>
       <div class="stat-card-value" id="totalViews">0</div>
-      <div class="stat-card-label">Total Views</div>
     </div>
     <div class="stat-card">
-      <div class="stat-card-icon likes">
-        <i class="fas fa-heart"></i>
+      <div class="stat-card-header">
+        <div class="stat-card-label">Total Likes</div>
+        <div class="stat-card-icon">
+          <i class="fas fa-heart"></i>
+        </div>
       </div>
       <div class="stat-card-value" id="totalLikes">0</div>
-      <div class="stat-card-label">Total Likes</div>
     </div>
     <div class="stat-card">
-      <div class="stat-card-icon inquiries">
-        <i class="fas fa-comments"></i>
+      <div class="stat-card-header">
+        <div class="stat-card-label">Total Inquiries</div>
+        <div class="stat-card-icon">
+          <i class="fas fa-comment-alt"></i>
+        </div>
       </div>
       <div class="stat-card-value" id="totalInquiries">0</div>
-      <div class="stat-card-label">Total Inquiries</div>
+    </div>
+  </div>
+
+  <div class="performance-section">
+    <div class="performance-title">
+      <i class="fas fa-chart-bar"></i>
+      <span>Property performance</span>
+    </div>
+    <div class="performance-chart" id="propertyPerformanceChart">
+      <div class="performance-empty">Loading property performance...</div>
+    </div>
+  </div>
+
+  <div class="performance-section" style="margin-top: 28px;">
+    <div class="performance-title">
+      <i class="fas fa-chart-bar"></i>
+      <span>Engagement</span>
+    </div>
+    <div class="performance-chart" id="engagementChart">
+      <div class="performance-empty">Loading engagement...</div>
+    </div>
+  </div>
+
+  <div class="performance-section" style="margin-top: 28px;">
+    <div class="performance-title">
+      <i class="fas fa-chart-bar"></i>
+      <span>Viewer Location</span>
+    </div>
+    <div class="performance-chart" id="viewerLocationChart">
+      <div class="performance-empty">Loading viewer locations...</div>
     </div>
   </div>
 </div>
@@ -259,28 +521,307 @@ function setTotalViews(n) {
   if (el) el.textContent = String(n);
 }
 
+function setTotalLikes(n) {
+  var el = document.getElementById('totalLikes');
+  if (el) el.textContent = String(n);
+}
+
+function setTotalInquiries(n) {
+  var el = document.getElementById('totalInquiries');
+  if (el) el.textContent = String(n);
+}
+
+function renderPropertyPerformance(properties) {
+  var container = document.getElementById('propertyPerformanceChart');
+  if (!container) return;
+
+  if (!properties || !properties.length) {
+    container.innerHTML = '<div class="performance-empty">No property data yet.</div>';
+    return;
+  }
+
+  // Sort by views descending and take top 10
+  var sorted = properties.slice().sort(function(a, b) { return (b.views || 0) - (a.views || 0); });
+  var top = sorted.slice(0, 10);
+  var maxViews = top[0].views || 1;
+
+  var html = '<div class="bar-chart">';
+
+  html += top.map(function(p) {
+    var views = p.views || 0;
+    var heightPercent = maxViews > 0 ? (views / maxViews) * 100 : 0;
+    var minHeight = views > 0 ? Math.max(heightPercent, 8) : 0; // ensure visible bar when > 0
+    var title = (p.title || 'Untitled Property');
+    var safeTitle = title.replace(/"/g, '&quot;');
+    var shortTitle = title.length > 32 ? title.substring(0, 32) + '…' : title;
+    var safeShortTitle = shortTitle.replace(/"/g, '&quot;');
+    return (
+      '<div class="bar-item">' +
+        '<div class="bar-tooltip">' +
+          '<div class="bar-tooltip-title">' + safeTitle + '</div>' +
+          '<div class="bar-tooltip-views">views: ' + views + '</div>' +
+        '</div>' +
+        '<div class="bar-outer">' +
+          '<div class="bar-fill" style="height:' + minHeight + '%;"></div>' +
+        '</div>' +
+        '<div class="bar-label" title="' + safeTitle + '">' + safeShortTitle + '</div>' +
+      '</div>'
+    );
+  }).join('');
+
+  html += '</div>';
+
+  container.innerHTML = html;
+}
+
+function renderViewerLocationChart(properties) {
+  var container = document.getElementById('viewerLocationChart');
+  if (!container) return;
+
+  if (!properties || !properties.length) {
+    container.innerHTML = '<div class="performance-empty">No viewer data yet.</div>';
+    return;
+  }
+
+  // Aggregate total views per location
+  var totals = Object.create(null);
+  properties.forEach(function(p) {
+    var loc = (p.location || '').trim();
+    if (!loc) return;
+    totals[loc] = (totals[loc] || 0) + (p.views || 0);
+  });
+
+  var entries = Object.keys(totals).map(function(loc) {
+    return { location: loc, views: totals[loc] };
+  }).filter(function(e) { return e.views > 0; });
+
+  if (!entries.length) {
+    container.innerHTML = '<div class="performance-empty">No viewer data yet.</div>';
+    return;
+  }
+
+  // Sort by views desc and take top 5
+  entries.sort(function(a, b) { return b.views - a.views; });
+  var top = entries.slice(0, 5);
+  var maxViews = top[0].views || 1;
+
+  var html = '<div class="location-chart">';
+  html += top.map(function(e) {
+    var widthPercent = Math.max(4, (e.views / maxViews) * 100);
+    var safeLocation = e.location.replace(/"/g, '&quot;');
+    return (
+      '<div class="location-row">' +
+        '<div class="location-label" title="' + safeLocation + '">' + safeLocation + '</div>' +
+        '<div class="location-bar-track">' +
+          '<div class="location-bar" style="width:' + widthPercent + '%;"></div>' +
+          '<div class="location-tooltip">' +
+            '<div class="location-tooltip-title">' + safeLocation + '</div>' +
+            '<div class="location-tooltip-views">viewers: ' + e.views + '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>'
+    );
+  }).join('');
+  html += '</div>';
+
+  container.innerHTML = html;
+}
+
+function renderEngagementChart(properties) {
+  var container = document.getElementById('engagementChart');
+  if (!container) return;
+
+  if (!properties || !properties.length) {
+    container.innerHTML = '<div class="performance-empty">No engagement data yet.</div>';
+    return;
+  }
+
+  var withEngagement = properties.filter(function(p) {
+    return (p.inquiries || 0) > 0 || (p.likes || 0) > 0;
+  });
+
+  if (!withEngagement.length) {
+    container.innerHTML = '<div class="performance-empty">No engagement data yet.</div>';
+    return;
+  }
+
+  // Sort by total engagement (inquiries + likes) and take top 10
+  var sorted = withEngagement.slice().sort(function(a, b) {
+    var ea = (a.inquiries || 0) + (a.likes || 0);
+    var eb = (b.inquiries || 0) + (b.likes || 0);
+    return eb - ea;
+  });
+  var top = sorted.slice(0, 10);
+
+  var maxMetric = 0;
+  top.forEach(function(p) {
+    maxMetric = Math.max(maxMetric, (p.inquiries || 0), (p.likes || 0));
+  });
+  if (maxMetric === 0) {
+    container.innerHTML = '<div class="performance-empty">No engagement data yet.</div>';
+    return;
+  }
+
+  var html = '<div class="bar-chart">';
+
+  html += top.map(function(p) {
+    var inquiries = p.inquiries || 0;
+    var likes = p.likes || 0;
+    var inqHeight = inquiries > 0 ? Math.max((inquiries / maxMetric) * 100, 8) : 0;
+    var likesHeight = likes > 0 ? Math.max((likes / maxMetric) * 100, 8) : 0;
+    var title = (p.title || 'Untitled Property');
+    var safeTitle = title.replace(/"/g, '&quot;');
+    var shortTitle = title.length > 32 ? title.substring(0, 32) + '…' : title;
+    var safeShortTitle = shortTitle.replace(/"/g, '&quot;');
+
+    return (
+      '<div class="bar-item">' +
+        '<div class="bar-tooltip">' +
+          '<div class="bar-tooltip-title">' + safeTitle + '</div>' +
+          '<div class="bar-tooltip-views">inquiries: ' + inquiries + '</div>' +
+          '<div class="bar-tooltip-views">likes: ' + likes + '</div>' +
+        '</div>' +
+        '<div class="engagement-bars">' +
+          '<div class="engagement-bar inquiries" style="height:' + inqHeight + '%;"></div>' +
+          '<div class="engagement-bar likes" style="height:' + likesHeight + '%;"></div>' +
+        '</div>' +
+        '<div class="bar-label" title="' + safeTitle + '">' + safeShortTitle + '</div>' +
+      '</div>'
+    );
+  }).join('');
+
+  html += '</div>' +
+          '<div class="engagement-legend">' +
+            '<span class="engagement-legend-item">' +
+              '<span class="engagement-legend-swatch"></span> Inquiries' +
+            '</span>' +
+            '<span class="engagement-legend-item">' +
+              '<span class="engagement-legend-swatch likes"></span> Likes' +
+            '</span>' +
+          '</div>';
+
+  container.innerHTML = html;
+}
+
 onAuthStateChanged(auth, function(user) {
   if (!user) {
     setTotalProperties(0);
     setTotalViews(0);
+    setTotalLikes(0);
+    setTotalInquiries(0);
+    renderPropertyPerformance([]);
+    renderEngagementChart([]);
+    renderViewerLocationChart([]);
     return;
   }
   var q = query(
     collection(db, 'properties'),
     where('userId', '==', user.uid)
   );
-  getDocs(q).then(function(snapshot) {
-    setTotalProperties(snapshot.size);
+  getDocs(q).then(async function(snapshot) {
+    var propertyIds = [];
     var totalViews = 0;
+    var propertyStats = [];
     snapshot.forEach(function(d) {
       var data = d.data();
-      totalViews += (typeof data.views === 'number' ? data.views : 0) || 0;
+      var status = (data.status || '').toString().toLowerCase();
+      // Exclude sold / rented properties from analytics
+      if (status === 'sold' || status === 'rented') {
+        return;
+      }
+
+      var views = (typeof data.views === 'number' ? data.views : 0) || 0;
+      var rawLocation = data.location || data.address || '';
+      var normalizedLocation = rawLocation.split(',')[0].trim();
+      propertyIds.push(d.id);
+      totalViews += views;
+      propertyStats.push({
+        id: d.id,
+        title: data.title || data.propertyTitle || 'Untitled Property',
+        location: normalizedLocation || '',
+        views: views,
+        likes: 0,
+        inquiries: 0
+      });
     });
+
+    setTotalProperties(propertyIds.length);
     setTotalViews(totalViews);
+
+    // Count total likes across all of this broker's properties
+    var totalLikes = 0;
+    var likesByProperty = Object.create(null);
+    if (propertyIds.length) {
+      var batchSize = 10;
+      for (var i = 0; i < propertyIds.length; i += batchSize) {
+        var batchIds = propertyIds.slice(i, i + batchSize);
+        try {
+          var likesQuery = query(
+            collection(db, 'savedProperties'),
+            where('propertyId', 'in', batchIds)
+          );
+          var likesSnap = await getDocs(likesQuery);
+          likesSnap.forEach(function(docSnap) {
+            var likeData = docSnap.data() || {};
+            var pid = likeData.propertyId || likeData.listingId;
+            if (pid && propertyIds.indexOf(pid) !== -1) {
+              likesByProperty[pid] = (likesByProperty[pid] || 0) + 1;
+              totalLikes += 1;
+            }
+          });
+        } catch (e) {
+          console.error('Analytics: error loading likes batch', e);
+        }
+      }
+    }
+    setTotalLikes(totalLikes);
+
+    // Count total inquiries (conversations) for this broker
+    var inquiriesByProperty = Object.create(null);
+    try {
+      var convQuery = query(
+        collection(db, 'conversations'),
+        where('brokerId', '==', user.uid)
+      );
+      var convSnap = await getDocs(convQuery);
+      setTotalInquiries(convSnap.size);
+
+      if (propertyIds.length) {
+        var idSet = new Set(propertyIds);
+        convSnap.forEach(function(convDoc) {
+          var convData = convDoc.data() || {};
+          var pid = convData.propertyId;
+          if (pid && idSet.has(pid)) {
+            inquiriesByProperty[pid] = (inquiriesByProperty[pid] || 0) + 1;
+          }
+        });
+      }
+    } catch (e2) {
+      console.error('Analytics: error loading inquiries', e2);
+      setTotalInquiries(0);
+    }
+
+    // Merge likes & inquiries into propertyStats
+    propertyStats = propertyStats.map(function(p) {
+      return Object.assign({}, p, {
+        likes: likesByProperty[p.id] || 0,
+        inquiries: inquiriesByProperty[p.id] || 0
+      });
+    });
+
+    // Render charts
+    renderPropertyPerformance(propertyStats);
+    renderEngagementChart(propertyStats);
+    renderViewerLocationChart(propertyStats);
   }).catch(function(err) {
     console.error('Analytics: error loading properties', err);
     setTotalProperties(0);
     setTotalViews(0);
+    setTotalLikes(0);
+    setTotalInquiries(0);
+    renderPropertyPerformance([]);
+    renderEngagementChart([]);
+    renderViewerLocationChart([]);
   });
 });
 </script>
