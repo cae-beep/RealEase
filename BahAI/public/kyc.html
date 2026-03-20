@@ -487,6 +487,30 @@
       border-radius: 0 0 var(--radius) var(--radius);
     }
 
+    .preview-delete-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(239, 68, 68, 0.95);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 3;
+      box-shadow: 0 6px 18px rgba(239, 68, 68, 0.25);
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .preview-delete-btn:hover {
+      transform: translateY(-2px);
+      background: rgba(220, 38, 38, 0.98);
+    }
+
     .quality-indicator {
       display: inline-block;
       padding: 4px 10px;
@@ -1348,9 +1372,16 @@ async function urlToBase64(url) {
 function setupPreview(inputId, previewId) {
     const input = document.getElementById(inputId);
     if (!input) return;
+    const preview = document.getElementById(previewId);
+    if (!preview) return;
+
+    // Clears the file input and its preview.
+    const clearPreview = () => {
+        preview.innerHTML = "";
+        input.value = "";
+    };
 
     input.addEventListener("change", async (e) => {
-        const preview = document.getElementById(previewId);
         preview.innerHTML = "";
         const file = e.target.files[0];
         
@@ -1363,6 +1394,16 @@ function setupPreview(inputId, previewId) {
 
             const previewItem = document.createElement('div');
             previewItem.className = 'preview-item';
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'preview-delete-btn';
+            deleteBtn.setAttribute('aria-label', 'Remove uploaded file');
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+            deleteBtn.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                clearPreview();
+            });
 
             if (file.type === "application/pdf") {
                 previewItem.innerHTML = `
@@ -1402,6 +1443,9 @@ function setupPreview(inputId, previewId) {
                     previewItem.appendChild(quality);
                 };
             }
+
+            // Attach delete button after preview content is created.
+            previewItem.appendChild(deleteBtn);
             
             preview.appendChild(previewItem);
         }
